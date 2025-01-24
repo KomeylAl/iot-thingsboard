@@ -31,7 +31,7 @@ const SideBar = ({ userInfo }: SideBarProps) => {
 
   return (
     <div>
-      <div className="fixed top-10 right-10 -z-10">
+      <div className="fixed top-10 right-10 z-0">
         <button onClick={toggleMenu}>
           <BiMenu size={30} />
         </button>

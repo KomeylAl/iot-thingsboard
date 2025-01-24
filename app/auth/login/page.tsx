@@ -17,26 +17,27 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    try {
-      const response = await axios.post("/api/auth/login", formData);
-      if (response.status === 200) {
-        toast.success("با موفقیت وارد شدید. لطفا کمی صبر کنید");
-          router.push("/");
-      }
-    } catch (error: any) {
-      if (error.status === 401) {
-        toast.error("نام کاربری یا رمز عبور اشتباه است")
-      } else if (error.status === 403) {
-        toast.error("شما به این بخش دسترسی ندارید");
-      } else {
-        toast.error("خطا در برقراری ارتباط با سرور");
-      }
-        
+    await axios
+      .post("/api/auth/login", formData)
+      .then(function (response) {
+        if (response.status === 200) {
+          // router.refresh();
+          router.replace("/dashboard");
+          toast.success("با موفقیت وارد شدید. لطفا کمی صبر کنید");
+        }
+      })
+      .catch(function (error) {
+        if (error.status === 401) {
+          toast.error("نام کاربری یا رمز عبور اشتباه است");
+        } else if (error.status === 403) {
+          toast.error("شما به این بخش دسترسی ندارید");
+        } else {
+          toast.error("خطا در برقراری ارتباط با سرور");
+        }
+
         console.log("LOGIN_ERROR", error);
-    }
-    finally {
-      setIsLoading(false);
-    }
+      })
+      .finally(() => setIsLoading(false));
   };
 
   return (
@@ -44,7 +45,9 @@ const Login = () => {
       <div className="w-[50%] h-full hidden lg:block"></div>
       <div className="w-full lg:w-[50%] h-full flex flex-col items-start justify-center md:px-10 gap-16">
         <div className="w-full">
-          <h2 className="text-2xl md:text-[40px] font-bold">ورود به داشبور مدیریتی</h2>
+          <h2 className="text-2xl md:text-[40px] font-bold">
+            ورود به داشبور مدیریتی
+          </h2>
           <p className="mt-4">
             قدرت گرفته با <span className="text-sky-600">Thingsboard</span>
           </p>
@@ -81,7 +84,7 @@ const Login = () => {
               type="submit"
               className="w-48 text-white text-xl hover:bg-sky-700 transition-all duration-300 bg-sky-500 py-2 px-4 rounded-md mt-8"
             >
-              ورود
+              {isLoading ? "در حال ارسال..." : "ورود"}
             </button>
           </form>
         </div>
