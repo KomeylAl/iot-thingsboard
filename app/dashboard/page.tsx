@@ -111,7 +111,7 @@ export default function Home() {
           <div className="w-full h-[50%] bg-white rounded-lg"></div>
         </div>
       </div>
-      <div className="w-[35%] h-full">
+      <div className="w-[35%] h-full bg-white rounded-lg">
 
       </div>
       <Popup isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
