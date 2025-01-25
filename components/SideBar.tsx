@@ -55,7 +55,7 @@ const SideBar = ({ userInfo }: SideBarProps) => {
         </button>
       </div>
       <div
-        className={`fixed top-0 right-0 lg:hidden h-screen w-56 bg-white flex flex-col items-center justify-center gap-10 shadow-lg transform ${
+        className={`fixed top-0 right-0 z-10 lg:hidden h-screen w-56 bg-white flex flex-col items-center justify-center gap-10 shadow-lg transform ${
           isMenuOpen ? "translate-x-0" : "translate-x-full"
         } transition-transform duration-300 ease-in-out`}
       >
