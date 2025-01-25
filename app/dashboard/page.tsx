@@ -54,7 +54,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="flex flex-col lg:flex-row items-center justify-between p-6 lg:p-20 w-full h-screen">
+    <div className="flex flex-col lg:flex-row items-center justify-between gap-4 p-6 lg:p-20 w-full h-screen">
       <div className="w-full h-full lg:w-[65%] flex flex-col gap-6">
         <div className="w-full flex items-center justify-between">
           <h1 className="text-xl lg:text-3xl font-bold">داشبورد</h1>
@@ -70,7 +70,7 @@ export default function Home() {
             </button>
           </div>
         </div>
-        <div className="w-full h-[100%] flex flex-col items-center justify-between">
+        <div className="w-full h-full flex flex-col items-center justify-between gap-5">
           <div className="w-full h-[50%] flex flex-col lg:flex-row items-center justify-between gap-5">
             <div className="flex flex-col w-full lg:w-[50%] h-96 lg:h-72 items-center gap-5 justify-between">
               <div className="w-full relative overflow-hidden h-[50%] bg-white rounded-lg flex items-center justify-between p-4">
@@ -108,8 +108,11 @@ export default function Home() {
                 ))} */}
             </div>
           </div>
-          <div className="w-full mt-5 lg:mt-0 h-[50%] bg-white rounded-lg"></div>
+          <div className="w-full h-[50%] bg-white rounded-lg"></div>
         </div>
+      </div>
+      <div className="w-[35%] h-full">
+
       </div>
       <Popup isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <AddDevice onDeviceAdded={() => setIsModalOpen(false)} />

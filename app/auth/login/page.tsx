@@ -21,7 +21,6 @@ const Login = () => {
       .post("/api/auth/login", formData)
       .then(function (response) {
         if (response.status === 200) {
-          // router.refresh();
           router.replace("/dashboard");
           toast.success("با موفقیت وارد شدید. لطفا کمی صبر کنید");
         }
@@ -46,7 +45,7 @@ const Login = () => {
       <div className="w-full lg:w-[50%] h-full flex flex-col items-start justify-center md:px-10 gap-16">
         <div className="w-full">
           <h2 className="text-2xl md:text-[40px] font-bold">
-            ورود به داشبور مدیریتی
+            ورود به داشبورد مدیریتی
           </h2>
           <p className="mt-4">
             قدرت گرفته با <span className="text-sky-600">Thingsboard</span>
