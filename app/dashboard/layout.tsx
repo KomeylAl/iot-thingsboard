@@ -3,6 +3,7 @@ import "@/app/globals.css";
 import SideBar from "@/components/SideBar";
 import { cookies } from "next/headers";
 import { getUserInfo } from "@/actions/get-user-info";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "داشبورد IOT",
@@ -22,6 +23,7 @@ export default async function RootLayout({
   return (
     <html lang="fa">
       <body className="bg-gray-100">
+        <Toaster />
         <SideBar userInfo={user} />
         <div className="lg:pr-56 pt-20 lg:pt-0">{children}</div>
       </body>

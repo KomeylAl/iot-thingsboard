@@ -7,23 +7,23 @@ import React from "react";
 const links = [
   {
     title: "داشبورد",
-    href: "/",
+    href: "/dashboard",
   },
   {
     title: "دستگاه ها",
-    href: "/devices",
+    href: "/dashboard/devices",
   },
   {
     title: "دارایی ها",
-    href: "/assets",
+    href: "/dashboard/assets",
   },
   {
     title: "مشتریان",
-    href: "/customers",
+    href: "/dashboard/customers",
   },
   {
     title: "مدیران",
-    href: "/admins",
+    href: "/dashboard/admins",
   },
 ];
 

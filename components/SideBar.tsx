@@ -6,7 +6,13 @@ import NavBar from "./NavBar";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { BiArrowBack, BiArrowFromLeft, BiArrowToRight, BiMenu, BiRightArrow } from "react-icons/bi";
+import {
+  BiArrowBack,
+  BiArrowFromLeft,
+  BiArrowToRight,
+  BiMenu,
+  BiRightArrow,
+} from "react-icons/bi";
 
 interface SideBarProps {
   userInfo: any;
@@ -38,7 +44,7 @@ const SideBar = ({ userInfo }: SideBarProps) => {
       </div>
       <div className="w-56 h-screen rounded-bl-3xl rounded-tl-3xl bg-white hidden lg:flex flex-col items-center justify-between shadow-lg fixed py-10">
         <div className="flex items-center gap-2">
-          {userInfo.firstName} {userInfo.lastName}
+          {!userInfo ? "name" : userInfo.firstName + userInfo.lastName}
         </div>
         <NavBar />
         <button
@@ -48,14 +54,18 @@ const SideBar = ({ userInfo }: SideBarProps) => {
           <IoExit size={20} /> خروج
         </button>
       </div>
-      <div className={`fixed top-0 right-0 lg:hidden h-screen w-56 bg-white flex flex-col items-center justify-center gap-10 shadow-lg transform ${isMenuOpen ? "translate-x-0" : "translate-x-full"} transition-transform duration-300 ease-in-out`}>
-      <div className="fixed top-10 right-10 z-10">
-        <button onClick={toggleMenu}>
-          <BiArrowToRight size={30} />
-        </button>
-      </div>
+      <div
+        className={`fixed top-0 right-0 lg:hidden h-screen w-56 bg-white flex flex-col items-center justify-center gap-10 shadow-lg transform ${
+          isMenuOpen ? "translate-x-0" : "translate-x-full"
+        } transition-transform duration-300 ease-in-out`}
+      >
+        <div className="fixed top-10 right-10 z-10">
+          <button onClick={toggleMenu}>
+            <BiArrowToRight size={30} />
+          </button>
+        </div>
         <div className="flex items-center gap-2">
-          {userInfo.firstName} {userInfo.lastName}
+          {!userInfo ? "name" : userInfo.firstName + userInfo.lastName}
         </div>
         <NavBar />
         <button

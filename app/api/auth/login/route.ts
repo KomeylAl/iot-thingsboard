@@ -1,5 +1,4 @@
 import { getUserInfo } from "@/actions/get-user-info";
-import { parseJwt } from "@/utils/token";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
