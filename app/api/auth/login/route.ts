@@ -24,9 +24,9 @@ export async function POST(req: NextRequest) {
 
     // console.log(data.token);
     const userInfo = await getUserInfo(data.token);
-    // console.log(userInfo)
+    // console.log(userInfo);
 
-    if (userInfo.authority !== "TENANT_ADMIN") {
+    if (userInfo.authority !== "TENANT_ADMIN" && userInfo.authority !== "SYS_ADMIN") {
       return NextResponse.json(
          { message: "Access Denied" },
          { status: 403 }
@@ -38,6 +38,7 @@ export async function POST(req: NextRequest) {
       `refreshToken=${data.refreshToken}; HttpOnly; Path=/; Max-Age=${
         60 * 60 * 24 * 30
       };`,
+      `role=${userInfo.authority}; Path=/;`
     ].join(", ");
 
     const headers = new Headers();

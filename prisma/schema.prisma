@@ -1,0 +1,75 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id        Int      @id @default(autoincrement())
+  things_id String   @unique
+  name      String
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  admins    User[]   @relation("TenantAdmins")
+  requests  Request[]
+  devices   Device[]
+  planId    Int
+  plan      Plan     @relation(fields: [planId], references: [id])
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  things_id String   @unique
+  email     String   @unique
+  name      String
+  role      String   // می‌تواند مقادیری مانند "admin" یا "user" داشته باشد
+  tenantId  Int
+  tenant    Tenant   @relation("TenantAdmins", fields: [tenantId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Device {
+  id        Int      @id @default(autoincrement())
+  name      String
+  type      String   // نوع دستگاه (مثلا سنسور، کنترلر و ...)
+  tenantId  Int
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  requests  Request[] // درخواست‌هایی که برای این دستگاه ثبت شده
+}
+
+model Request {
+  id        Int      @id @default(autoincrement())
+  tenantId  Int
+  tenant    Tenant @relation(fields: [tenantId], references: [id])
+  deviceId  Int
+  device    Device   @relation(fields: [deviceId], references: [id])
+  requestTime DateTime @default(now()) // زمان درخواست
+  requestType String  // نوع درخواست، مثلا "GET_TELEMETRY", "COMMAND"
+  status     String  // وضعیت پردازش: "PENDING", "SUCCESS", "FAILED"
+}
+
+model Plan {
+  id               Int    @id @default(autoincrement())
+  name             String @unique
+  maxRequestsPerHour Int  // حداکثر درخواست مجاز در ساعت
+  maxDevices      Int
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  tenants         Tenant[]
+}

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
+import { ClipLoader } from "react-spinners";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -81,9 +82,9 @@ const Login = () => {
             />
             <button
               type="submit"
-              className="w-48 text-white text-xl hover:bg-sky-700 transition-all duration-300 bg-sky-500 py-2 px-4 rounded-md mt-8"
+              className={`flex items-center justify-center text-white text-xl hover:bg-sky-700 transition-all duration-300 bg-sky-500 py-2 px-4 rounded-md mt-8 ${isLoading ? "w-fit" : "w-48"}`}
             >
-              {isLoading ? "در حال ارسال..." : "ورود"}
+              {isLoading ? <ClipLoader color="#ffffff" size={30}/> : "ورود"}
             </button>
           </form>
         </div>

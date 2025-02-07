@@ -41,7 +41,7 @@ const SideBar = ({ userInfo }: SideBarProps) => {
       </div>
       <div className="w-56 h-screen rounded-bl-3xl rounded-tl-3xl bg-white hidden lg:flex flex-col items-center justify-between shadow-lg fixed py-10">
         <div className="flex items-center gap-2">
-          {!userInfo ? "name" : userInfo.firstName + userInfo.lastName}
+          {!userInfo ? "name" : userInfo.firstName + " " + userInfo.lastName}
         </div>
         <NavBar />
         <button
@@ -62,7 +62,7 @@ const SideBar = ({ userInfo }: SideBarProps) => {
           </button>
         </div>
         <div className="flex items-center gap-2">
-          {!userInfo ? "name" : userInfo.firstName + userInfo.lastName}
+          {!userInfo ? "name" : userInfo.firstName + " " + userInfo.lastName}
         </div>
         <NavBar />
         <button

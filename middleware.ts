@@ -5,6 +5,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 export async function middleware(req: NextRequest) {
   const token = req.cookies.get("token")?.value;
   const refreshToken = req.cookies.get("refreshToken")?.value;
+  const role = req.cookies.get("role")?.value;
 
   // اگر توکن اصلی وجود ندارد و کاربر در مسیر لاگین نیست، ریدایرکت شود
   if (!token && req.nextUrl.pathname !== "/auth/login") {
@@ -63,9 +64,25 @@ export async function middleware(req: NextRequest) {
     }
   }
 
+  if (role === "SYS_ADMIN") {
+    // اجازه دسترسی به /sysadmin فقط برای SYS_ADMIN
+    if (req.nextUrl.pathname.startsWith("/dashboard")) {
+      const dashboardUrl = new URL("/sysadmin", req.url);
+      return NextResponse.redirect(dashboardUrl);
+    }
+  }
+
+  if (role === "TENANT_ADMIN") {
+    // اجازه دسترسی به /dashboard فقط برای TENANT_ADMIN
+    if (req.nextUrl.pathname.startsWith("/sysadmin")) {
+      const sysadminUrl = new URL("/dashboard", req.url);
+      return NextResponse.redirect(sysadminUrl);
+    }
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/", "/dashboard/:path*", "/auth/login"],
+  matcher: ["/", "/dashboard/:path*", "/sysadmin/:path*", "/auth/login"],
 };
