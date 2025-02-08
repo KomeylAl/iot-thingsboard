@@ -40,7 +40,7 @@ const Table = ({ data, columns, RPP, getRowLink }: TableProps) => {
 
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-full bg-white rounded-lg border-collapse border border-gray-200">
+      <table className="min-w-full table-auto rounded-lg border-separate border-spacing-y-2">
         <thead className="bg-gray-100">
           <tr>
             {columns.map((col: any, index: any) => (
@@ -58,14 +58,12 @@ const Table = ({ data, columns, RPP, getRowLink }: TableProps) => {
             <tr
               key={rowIndex}
               onClick={() => handleRowClick(row)}
-              className={
-                rowIndex % 2 === 0 ? "bg-gray-50" : "bg-white"
-              }
+              className="bg-white hover:bg-gray-100 transition-colors duration-200 group"
             >
               {columns.map((col: any, colIndex: any) => (
                 <td
                   key={colIndex}
-                  className="px-4 py-2 text-gray-600"
+                  className="px-4 py-4  rounded-md text-gray-600 mt-2 cursor-pointer group-hover:text-blue-500"
                 >
                   {row[col.accessor]}
                 </td>

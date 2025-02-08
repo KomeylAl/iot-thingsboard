@@ -14,16 +14,16 @@ const links = [
     href: "/sysadmin/tenants",
   },
   {
-    title: "کاربران",
-    href: "/sysadmin/users",
-  },
-  {
     title: "پروفایل ها",
     href: "/sysadmin/profiles",
   },
   {
     title: "پلن ها",
     href: "/sysadmin/plans",
+  },
+  {
+    title: "تنظیمات",
+    href: "/sysadmin/settings",
   },
 ];
 

@@ -1,24 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Usable } from "react";
 
-interface Params {
-   id: string;
-}
-
-interface Routeprops {
-   params: Usable<Params>;
-}
-
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(req: NextRequest) {
   const token = req.cookies.get("token");
-  const { id } = await params;
-
+  const params = req.nextUrl.searchParams;
+  const pageSize = params.get("pageSize") || 1;
+  const page = params.get("page") || 0;
   try {
     const response = await fetch(
-      `${process.env.THINGSBOARD_URL}/api/tenant/${id}`,
+      `${process.env.THINGSBOARD_URL}/api/tenantProfiles?pageSize=${pageSize}&page=${page}`,
       {
         method: "GET",
         headers: {
@@ -30,7 +19,7 @@ export async function GET(
 
     if (!response.ok) {
       return NextResponse.json(
-        { message: "Error getting tenant" },
+        { message: "Error getting tenant profiles" },
         { status: response.status }
       );
     }
@@ -40,7 +29,7 @@ export async function GET(
     return NextResponse.json(data, { status: 200 });
   } catch (error) {
     return NextResponse.json(
-      { message: "Something went wrong" },
+      { message: "Error getting tenant profiles" },
       { status: 500 }
     );
   }
