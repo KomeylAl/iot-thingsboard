@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
       additionalInfo: { location, description },
     } = await req.json();
 
-    const response = await fetch("http://62.60.204.234:8081/api/asset", {
+    const response = await fetch(`${process.env.THINGSBOARD_URL}/api/asset`, {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -50,7 +50,7 @@ export async function GET(req: NextRequest) {
   const page = params.get("page") || 0;
 
   try {
-    const response = await fetch(`http://62.60.204.234:8081/api/tenant/assets?pageSize=${pageSize}&page=${page}`, {
+    const response = await fetch(`${process.env.THINGSBOARD_URL}/api/tenant/assets?pageSize=${pageSize}&page=${page}`, {
       method: "GET",
       headers: {
         "Content-type": "application/json",

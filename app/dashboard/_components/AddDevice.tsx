@@ -1,7 +1,8 @@
 "use client";
 
+import { useUser } from "@/hooks/useUser";
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 interface AddDeviceProps {
@@ -9,22 +10,34 @@ interface AddDeviceProps {
 }
 
 const AddDevice = ({ onDeviceAdded }: AddDeviceProps) => {
-  const [isLoading, setIsLoading] = useState(false);
+  const { data, isLoading } = useUser();
+
+  const [isdLoading, setIsdLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     type: "",
     label: "",
+    tenantId: "",
     additionalInfo: {
       location: "",
       description: "",
     },
   });
 
+  useEffect(() => {
+    if (data!) {
+      setFormData((prev) => ({
+        ...prev,
+        tenantId: data.data["tenantId"]["id"],
+      }));
+    }
+  }, [data]);
+
   const handleSubmit = async () => {
     if (!formData.name) {
       toast.error("یک نام برای دستگاه انتخاب کنید");
     } else {
-      setIsLoading(true);
+      setIsdLoading(true);
       await axios
         .post("/api/devices", formData)
         .then(function (response) {
@@ -37,9 +50,11 @@ const AddDevice = ({ onDeviceAdded }: AddDeviceProps) => {
           toast.error("خطا در افزودن دستگاه");
           console.log("ERR_ADD_DEVICE", error);
         })
-        .finally(() => setIsLoading(false));
+        .finally(() => setIsdLoading(false));
     }
   };
+
+  if (isLoading) return <p>Loading...</p>;
 
   return (
     <div className="flex flex-col items-start gap-8">
@@ -106,7 +121,7 @@ const AddDevice = ({ onDeviceAdded }: AddDeviceProps) => {
           onClick={handleSubmit}
           className="bg-sky-600 p-3 rounded-lg mt-4 text-white"
         >
-          {isLoading ? "در حال ارسال..." : "افزودن دستگاه"}
+          {isdLoading ? "در حال ارسال..." : "افزودن دستگاه"}
         </button>
       </div>
     </div>

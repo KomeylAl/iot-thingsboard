@@ -5,7 +5,7 @@ export async function POST(req: NextRequest) {
   try {
     const { username, password } = await req.json();
 
-    const response = await fetch("http://62.60.204.234:8081/api/auth/login", {
+    const response = await fetch(`${process.env.THINGSBOARD_URL}/api/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -47,9 +47,9 @@ export async function POST(req: NextRequest) {
     return new NextResponse(JSON.stringify({ message: "Login successful" }), {
       headers,
     });
-  } catch (error) {
+  } catch (error: any) {
     return NextResponse.json(
-      { message: "Something went wrong"+error },
+      { message: `Something went wrong ${error.message}` },
       { status: 500 }
     );
   }

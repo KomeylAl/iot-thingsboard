@@ -6,16 +6,12 @@ import NavBar from "./NavBar";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import {
-  BiArrowToRight,
-  BiMenu,
-} from "react-icons/bi";
+import { BiArrowToRight, BiMenu } from "react-icons/bi";
+import { useUser } from "@/hooks/useUser";
 
-interface SideBarProps {
-  userInfo: any;
-}
+const SideBar = () => {
+  const { data } = useUser();
 
-const SideBar = ({ userInfo }: SideBarProps) => {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -41,7 +37,9 @@ const SideBar = ({ userInfo }: SideBarProps) => {
       </div>
       <div className="w-56 h-screen rounded-bl-3xl rounded-tl-3xl bg-white hidden lg:flex flex-col items-center justify-between shadow-lg fixed py-10">
         <div className="flex items-center gap-2">
-          {!userInfo ? "name" : userInfo.firstName + userInfo.lastName}
+          {!data?.data["firstName"]
+            ? "name"
+            : data.data["firstName"] + " " + data.data["lastName"]}
         </div>
         <NavBar />
         <button
@@ -62,7 +60,9 @@ const SideBar = ({ userInfo }: SideBarProps) => {
           </button>
         </div>
         <div className="flex items-center gap-2">
-          {!userInfo ? "name" : userInfo.firstName + userInfo.lastName}
+          {!data?.data["firstName"]
+            ? "name"
+            : data.data["firstName"] + " " + data.data["lastName"]}
         </div>
         <NavBar />
         <button

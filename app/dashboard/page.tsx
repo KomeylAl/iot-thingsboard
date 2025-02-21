@@ -1,89 +1,31 @@
 "use client";
 
 import Popup from "@/components/Popup";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { BiPlus } from "react-icons/bi";
 import AddDevice from "./_components/AddDevice";
 import Image from "next/image";
-import axios from "axios";
-import toast from "react-hot-toast";
+import { useDevices } from "@/hooks/useDevices";
+import { PuffLoader } from "react-spinners";
+import { useAssets } from "@/hooks/useAssets";
 
 export default function Home() {
+  const {
+    data: devicesData,
+    isLoading: devicesLoading,
+    error: devicesError,
+    refetch: refetchDevices
+  } = useDevices();
+
+  const {
+    data: assetsData,
+    isLoading: assetsLoading,
+    error: assetsError,
+    refetch: refetchAssets
+  } = useAssets();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const toggleMpdal = () => setIsModalOpen(!isModalOpen);
-  const [isGettingDevices, setIsGettingDevices] = useState(false);
-  const [isGettingAssets, setIsGettingAssets] = useState(false);
-  const [devices, setDevices] = useState([]);
-  const [assets, setAssets] = useState([]);
-  const [devicesPageInfo, setDevicesPageInfo] = useState({
-    totalPages: 0,
-    totalElements: 0,
-    hasNext: false,
-  });
-  const [assetsPageInfo, setAssetsPageInfo] = useState({
-    totalPages: 0,
-    totalElements: 0,
-    hasNext: false,
-  });
-
-  const fetchDevices = async () => {
-    setIsGettingDevices(true);
-    await axios
-      .get("/api/devices", {
-        params: {
-          pageSize: 10,
-          page: 0,
-        },
-      })
-      .then(function (response) {
-        const data = response.data;
-        setDevices(data.data);
-        setDevicesPageInfo({
-          totalPages: data.totalPages,
-          totalElements: data.totalElements,
-          hasNext: data.hasNext,
-        });
-      })
-      .catch(function (error) {
-        if (error.status === 500) {
-          toast.error("خطا در برقراری ارتباط");
-        }
-        console.log(error);
-      })
-      .finally(() => setIsGettingDevices(false));
-  };
-
-  const fetchAssets = async () => {
-    setIsGettingAssets(true);
-    await axios
-      .get("/api/assets", {
-        params: {
-          pageSize: 10,
-          page: 0,
-        },
-      })
-      .then(function (response) {
-        const data = response.data;
-        setAssets(data.data);
-        setAssetsPageInfo({
-          totalPages: data.totalPages,
-          totalElements: data.totalElements,
-          hasNext: data.hasNext,
-        });
-      })
-      .catch(function (error) {
-        if (error.status === 500) {
-          toast.error("خطا در برقراری ارتباط");
-        }
-        console.log(error);
-      })
-      .finally(() => setIsGettingAssets(false));
-  };
-
-  useEffect(() => {
-    fetchDevices();
-    fetchAssets();
-  }, []);
 
   return (
     <div className="flex flex-col lg:flex-row items-center justify-between gap-4 p-6 lg:p-20 w-full h-screen">
@@ -107,10 +49,22 @@ export default function Home() {
             <div className="flex flex-col w-full lg:w-[50%] h-96 lg:h-72 items-center gap-5 justify-between">
               <div className="w-full relative overflow-hidden h-[50%] bg-white rounded-lg flex items-center justify-between p-4">
                 <div className="absolute top-1 lg:top-6 left-5 w-20 h-20 bg-sky-500 rounded-full filter blur-2xl" />
-                <div className="">
-                  <p className="text-lg">تعداد دستگاه های شما</p>
-                  <p className="text-lg">{devicesPageInfo.totalElements}</p>
-                </div>
+
+                {devicesError && <p>خطا در دریافت اطلاعات دستگاه ها</p>}
+
+                {devicesLoading && (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <PuffLoader color="#3b82f6" size={45} />
+                  </div>
+                )}
+
+                {devicesData && (
+                  <div className="">
+                    <p className="text-lg">تعداد دستگاه های شما</p>
+                    <p className="text-lg">{devicesData.totalElements}</p>
+                  </div>
+                )}
+
                 <Image
                   src="/images/device_vector.png"
                   alt="devices"
@@ -121,10 +75,21 @@ export default function Home() {
               </div>
               <div className="w-full relative overflow-hidden h-[50%] bg-white rounded-lg flex items-center justify-between p-4">
                 <div className="absolute top-1 lg:top-6 left-5 w-20 h-20 bg-amber-500 rounded-full filter blur-2xl" />
-                <div className="">
-                  <p className="text-lg">تعداد دارایی های شما</p>
-                  <p className="text-lg">{assetsPageInfo.totalElements}</p>
-                </div>
+                {assetsError && <p>خطا در دریافت اطلاعات داراریی ها</p>}
+
+                {assetsLoading && (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <PuffLoader color="#3b82f6" size={45} />
+                  </div>
+                )}
+
+                {assetsData && (
+                  <div className="">
+                    <p className="text-lg">تعداد دارایی های شما</p>
+                    <p className="text-lg">{assetsData.totalElements}</p>
+                  </div>
+                )}
+
                 <Image
                   src="/images/assets_vector.png"
                   alt="assets"
@@ -135,22 +100,20 @@ export default function Home() {
               </div>
             </div>
             <div className="w-full lg:w-[50%] h-72 bg-white rounded-lg">
-              {/* {devices.map((device: any, index: number) => (
-                  <div key={index}>hi</div>
-                ))} */}
+              
             </div>
           </div>
           <div className="w-full h-[50%] bg-white rounded-lg"></div>
         </div>
       </div>
-      <div className="w-[35%] h-full bg-white rounded-lg">
-
-      </div>
+      <div className="w-[35%] h-full bg-white rounded-lg"></div>
       <Popup isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <AddDevice onDeviceAdded={() => {
-          setIsModalOpen(false);
-          fetchDevices();
-        }} />
+        <AddDevice
+          onDeviceAdded={() => {
+            setIsModalOpen(false);
+            refetchDevices();
+          }}
+        />
       </Popup>
     </div>
   );

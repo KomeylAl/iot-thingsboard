@@ -1,27 +1,24 @@
 import React from "react";
-import '@/app/globals.css';
-import { cookies } from "next/headers";
-import { getUserInfo } from "@/actions/get-user-info";
+import "@/app/globals.css";
 import { Toaster } from "react-hot-toast";
 import SideBar from "./_components/SideBar";
+import Providers from "./providers";
+import { useUser } from "@/hooks/useUser";
 
 interface AdminLayoutProps {
-   children: React.ReactNode;
+  children: React.ReactNode;
 }
 
-export default async function AdminLayout({ children }: AdminLayoutProps) {
-
-  const cookie = await cookies();
-  const token = cookie.get("token");
-  const user = await getUserInfo(token?.value);
-
-   return (
-      <html lang="fa">
-         <body className="bg-gray-100">
-            <Toaster />
-            <SideBar userInfo={user} />
-            <div className="lg:pr-56 pt-20 lg:pt-0">{children}</div>
-         </body>
-      </html>
-   );
+export default function AdminLayout({ children }: AdminLayoutProps) {
+  return (
+    <html lang="fa">
+      <body className="bg-gray-100">
+        <Toaster />
+        <Providers>
+          <SideBar />
+          <div className="lg:pr-56 pt-20 lg:pt-0">{children}</div>
+        </Providers>
+      </body>
+    </html>
+  );
 }

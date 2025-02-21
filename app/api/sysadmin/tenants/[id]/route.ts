@@ -1,13 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Usable } from "react";
-
-interface Params {
-   id: string;
-}
-
-interface Routeprops {
-   params: Usable<Params>;
-}
 
 export async function GET(
   req: NextRequest,
