@@ -14,19 +14,52 @@ datasource db {
 }
 
 model Tenant {
+  id           Int      @id @default(autoincrement())
+  things_id    String   @unique
+  name         String
+  email        String   @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  admins       User[]   @relation("TenantAdmins")
+  customers    Customer[]   @relation("TenantCustomers")
+  requests     Request[]
+  devices      Device[]
+  assets       Asset[]
+  dashboards   Dashboard[]
+  planId       Int
+  plan         Plan     @relation(fields: [planId], references: [id], onDelete: SetNull)
+}
+
+model Dashboard {
+  id        Int        @id @default(autoincrement())
+  things_id String
+  name      String
+  tenantId  Int
+  tenant    Tenant     @relation(fields: [tenantId], references: [id])
+
+  customers Customer[] @relation("CustomerDashboards") // Prisma خودش جدول واسط می‌سازه
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Customer {
   id        Int      @id @default(autoincrement())
   things_id String   @unique
-  name      String
   email     String   @unique
+  name      String
+  tenantId  Int
+  tenant    Tenant   @relation("TenantCustomers", fields: [tenantId], references: [id])
+
+  dashboards Dashboard[] @relation("CustomerDashboards") // Prisma خودش جدول واسط می‌سازه
+
+  devices   Device[]
+  assets    Asset[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  admins    User[]   @relation("TenantAdmins")
-  requests  Request[]
-  devices   Device[]
-  planId    Int
-  plan      Plan     @relation(fields: [planId], references: [id], onDelete: SetNull)
 }
+
 
 model User {
   id        Int      @id @default(autoincrement())
@@ -45,11 +78,25 @@ model Device {
   name      String
   type      String   // نوع دستگاه (مثلا سنسور، کنترلر و ...)
   tenantId  Int
+  customerId  Int?
   tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  customer  Customer? @relation(fields: [customerId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   requests  Request[] // درخواست‌هایی که برای این دستگاه ثبت شده
+}
+
+model Asset {
+  id        Int      @id @default(autoincrement())
+  name      String
+  type      String   // نوع دستگاه (مثلا سنسور، کنترلر و ...)
+  tenantId  Int
+  customerId  Int
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  customer  Customer @relation(fields: [customerId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Request {

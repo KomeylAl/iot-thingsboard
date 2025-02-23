@@ -10,7 +10,7 @@ import { BiArrowToRight, BiMenu } from "react-icons/bi";
 import { useUser } from "@/hooks/useUser";
 
 const SideBar = () => {
-  const { data } = useUser();
+  const { data, isLoading, error } = useUser();
 
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -37,9 +37,16 @@ const SideBar = () => {
       </div>
       <div className="w-56 h-screen rounded-bl-3xl rounded-tl-3xl bg-white hidden lg:flex flex-col items-center justify-between shadow-lg fixed py-10">
         <div className="flex items-center gap-2">
-          {!data?.data["firstName"]
-            ? "name"
-            : data.data["firstName"] + " " + data.data["lastName"]}
+          {error && <p>unknown user</p>}
+          {isLoading && <p>...</p>}
+          {data && (
+            <p>
+              {!data.data.firstName && !data.data.lastName
+                ? "name"
+                : data.data.firstName}{" "}
+              {data.data.lastName}
+            </p>
+          )}
         </div>
         <NavBar />
         <button

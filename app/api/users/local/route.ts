@@ -15,18 +15,17 @@ export async function GET(req: NextRequest) {
 
     const skip = (page - 1) * pageSize;
 
-    const [devices, totalCount] = await Promise.all([
-      prisma.device.findMany({
+    const [users, totalCount] = await Promise.all([
+      prisma.user.findMany({
         skip,
         take: pageSize,
-        orderBy: { createdAt: "desc"},
-        include: { customer: true }
+        orderBy: { createdAt: "desc"}
       }),
-      prisma.device.count(),
+      prisma.user.count(),
     ]);
 
     return NextResponse.json({
-      data: devices,
+      data: users,
       meta: {
         totalCount,
         totalPages: Math.ceil(totalCount / pageSize),

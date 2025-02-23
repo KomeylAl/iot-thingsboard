@@ -4,9 +4,10 @@ import prisma from "@/utils/prisma";
 
 export async function GET(req: NextRequest) {
   const token = req.cookies.get("token");
+
   try {
     const response = await fetch(
-      `${process.env.THINGSBOARD_URL}/api/devices?pageSize=1000&page=0`,
+      `${process.env.THINGSBOARD_URL}/api/tenant/devices?pageSize=1000&page=0`,
       {
         method: "GET",
         headers: {
@@ -18,67 +19,101 @@ export async function GET(req: NextRequest) {
 
     if (!response.ok) {
       return NextResponse.json(
-        { message: "Error getting tenants" },
+        { message: "Error getting devices" },
         { status: response.status }
       );
     }
 
     const data = await response.json();
-    const tbTenants = data.data.map((t: any) => ({
-      things_id: t.id.id,
-      name: t.name,
-      email: t.email || `no-email-${t.id.id}@example.com`,
-      createdAt: new Date(t.createdTime),
-      planId: 1,
-    }));
 
+    // دریافت همه tenantها از دیتابیس شخصی
     const localTenants = await prisma.tenant.findMany();
 
-    const newTenants = _.differenceBy(tbTenants, localTenants, "things_id");
-    const deletedTenants = _.differenceBy(localTenants, tbTenants, "things_id");
+    // تبدیل دستگاه‌های ThingsBoard به فرمت دیتابیس ما
+    const tbDevices = await Promise.all(
+      data.data.map(async (d: any) => {
+        const tenant = localTenants.find((t) => t.things_id === d.tenantId?.id);
+        const customer = d.customerId?.id
+          ? await prisma.customer.findUnique({
+              where: { things_id: d.customerId.id },
+            })
+          : null;
 
-    const newTenant = newTenants.map((tenant: any) => {
-      return {
-        things_id: tenant.things_id,
-        name: tenant.name,
-        email: tenant.email,
-        createdAt: tenant.createdAt,
-        planId: tenant.planId,
-      };
-    });
+        return {
+          name: d.name,
+          type: d.type || "Unknown",
+          tenantId: tenant?.id || null,
+          customerId: customer?.id || null,
+          createdAt: new Date(d.createdTime),
+        };
+      })
+    );
 
-    await prisma.tenant.createMany({
-      data: newTenant,
-      skipDuplicates: true,
-    });
+    // حذف دستگاه‌هایی که Tenant آن‌ها در دیتابیس ما وجود ندارد
+    const validDevices = tbDevices.filter((d: any) => d.tenantId !== null);
 
-    await prisma.tenant.deleteMany({
-      where: {
-        things_id: { in: deletedTenants.map((t) => t.things_id) },
-      },
-    });
+    // دریافت دستگاه‌های ذخیره‌شده در دیتابیس شخصی
+    const localDevices = await prisma.device.findMany();
 
+    // پیدا کردن دستگاه‌های جدید و دستگاه‌هایی که حذف شده‌اند
+    const newDevices = _.differenceBy(
+      validDevices,
+      localDevices,
+      (d: any) => `${d.name}-${d.tenantId}`
+    );
+    const deletedDevices = _.differenceBy(
+      localDevices,
+      validDevices,
+      (d: any) => `${d.name}-${d.tenantId}`
+    );
+
+    // اضافه کردن دستگاه‌های جدید
+    if (newDevices.length > 0) {
+      await prisma.device.createMany({
+        data: newDevices.map((device: any) => ({
+          name: device.name,
+          type: device.type,
+          tenantId: device.tenantId!,
+          customerId: device.customerId,
+          createdAt: device.createdAt,
+        })),
+        skipDuplicates: true,
+      });
+    }
+
+    // حذف دستگاه‌هایی که دیگر در ThingsBoard وجود ندارند
+    if (deletedDevices.length > 0) {
+      await prisma.device.deleteMany({
+        where: {
+          name: { in: deletedDevices.map((d) => d.name) },
+          tenantId: { in: deletedDevices.map((d) => d.tenantId) },
+        },
+      });
+    }
+
+    // لاگ موفقیت‌آمیز بودن سینک
     await prisma.syncLog.create({
       data: {
-        entity: "tenant",
+        entity: "device",
         status: "success",
       },
     });
 
     return NextResponse.json(
-      { message: "Tenant syccessfully got" },
+      { message: "Devices successfully synced" },
       { status: 200 }
     );
   } catch (error: any) {
+    // لاگ خطا
     await prisma.syncLog.create({
       data: {
-        entity: "tenant",
+        entity: "device",
         status: "error",
       },
     });
 
     return NextResponse.json(
-      { message: `Something went wrong ${error.message}` },
+      { message: `Something went wrong: ${error.message}` },
       { status: 500 }
     );
   }

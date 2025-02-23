@@ -59,7 +59,7 @@ const Assets = () => {
         <div className="w-full h-[85%]">
           <Table
             columns={columns}
-            data={data}
+            data={data.data}
             RPP={10}
             getRowLink={(row: any) => `/devices/${row.id.id}`}
           />

@@ -7,7 +7,6 @@ import * as yup from "yup";
 import axios from "axios";
 import toast from "react-hot-toast";
 import ReactSelect from "react-select";
-import { usePlans } from "@/hooks/usePlans";
 import { useTenantProfiles } from "@/hooks/useProfiles";
 
 const schema = yup.object({
@@ -72,8 +71,7 @@ const AddTenantForm = ({ onTenantAdded }: AddTenantProps) => {
   });
 
   const onSubmit = (data: any) => {
-    console.log(data);
-    addTenant(data); // اینجا mutate رو با داده‌های فرم صدا می‌زنیم
+    addTenant(data);
   };
 
   return (

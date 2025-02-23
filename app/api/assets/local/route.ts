@@ -15,18 +15,17 @@ export async function GET(req: NextRequest) {
 
     const skip = (page - 1) * pageSize;
 
-    const [devices, totalCount] = await Promise.all([
-      prisma.device.findMany({
+    const [assets, totalCount] = await Promise.all([
+      prisma.asset.findMany({
         skip,
         take: pageSize,
-        orderBy: { createdAt: "desc"},
-        include: { customer: true }
+        orderBy: { createdAt: "desc"}
       }),
-      prisma.device.count(),
+      prisma.asset.count(),
     ]);
 
     return NextResponse.json({
-      data: devices,
+      data: assets,
       meta: {
         totalCount,
         totalPages: Math.ceil(totalCount / pageSize),
@@ -35,9 +34,8 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (error: any) {
-    console.log(error.message)
     return NextResponse.json(
-      { message: `Something went wrong: ${error.message}` },
+      { message: "Something went wrong", error: error.message },
       { status: 500 }
     );
   }

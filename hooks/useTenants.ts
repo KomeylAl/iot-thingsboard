@@ -25,3 +25,16 @@ export function useTenant(id: string) {
     },
   });
 }
+
+export function useLocalTenant(id: string) {
+  return useQuery({
+    queryKey: ["localTenant"],
+    queryFn: async () => {
+      const res = await fetch(`/api/sysadmin/tenants/${id}/local`);
+      if (!res.ok) {
+        throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
+      }
+      return res.json();
+    },
+  });
+}

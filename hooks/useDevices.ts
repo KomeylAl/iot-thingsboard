@@ -30,7 +30,20 @@ export function useTenantDevices(tenantId: string, pageSize: number, page: numbe
   return useQuery({
     queryKey: ["tenantDevices"],
     queryFn: async () => {
-      const res = await fetch(`/api/sysadmin/tenants/${tenantId}/devices?pageSize=${pageSize}&page=${page}`);
+      const res = await fetch(`/api/sysadmin/tenants/devices?pageSize=${pageSize}&page=${page}`);
+      if (!res.ok) {
+        throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
+      }
+      return res.json();
+    },
+  });
+}
+
+export function useLocalTenantDevices() {
+  return useQuery({
+    queryKey: ["ocalTenantDevices"],
+    queryFn: async () => {
+      const res = await fetch("/api/devices");
       if (!res.ok) {
         throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
       }

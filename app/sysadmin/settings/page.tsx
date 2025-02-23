@@ -76,12 +76,6 @@ const Settings = () => {
                 <FaArrowLeft className="text-blue-500" />
               </button>
             </div>
-            <div className="w-full p-3 bg-white rounded-md flex items-center justify-between">
-              <p>همگام سازی اطلاعات دستگاه ها و دارایی ها</p>
-              <button>
-                <FaArrowLeft className="text-blue-500" />
-              </button>
-            </div>
           </div>
         </div>
         <div className="w-full h-[50%]">

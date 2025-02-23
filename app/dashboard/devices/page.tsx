@@ -16,10 +16,14 @@ const Devices = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const toggleMpdal = () => setIsModalOpen(!isModalOpen);
 
+  if (data) {
+    console.log(data);
+  }
+
   const columns = [
     { header: "نام", accessor: "name" },
     { header: "پروفایل", accessor: "type" },
-    { header: "برچسب", accessor: "label" },
+    { header: "مشتری", accessor: "customer.name" },
     { header: "وضعیت", accessor: "status" },
   ];
 
@@ -56,7 +60,7 @@ const Devices = () => {
         <div className="w-full h-[85%]">
         <Table 
           columns={columns}
-          data={data}
+          data={data.data}
           RPP={10}
           getRowLink={(row: any) => `/devices/${row.id.id}`}
         />

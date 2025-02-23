@@ -1,15 +1,12 @@
 "use client";
 
-import SearchBar from "@/components/SearchBar";
 import { useTenantDevices } from "@/hooks/useDevices";
-import { useTenant } from "@/hooks/useTenants";
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useLocalTenant } from "@/hooks/useTenants";
 import * as react from "react";
 import toast from "react-hot-toast";
 import { BiPencil } from "react-icons/bi";
 import { MdDelete } from "react-icons/md";
-import { PuffLoader, PulseLoader } from "react-spinners";
+import { PuffLoader } from "react-spinners";
 
 interface Params {
   tenantId: string;
@@ -21,13 +18,11 @@ interface PageProps {
 
 const Tenant = ({ params }: PageProps) => {
   const { tenantId } = react.use<Params>(params);
-  const { data, isLoading, error, refetch } = useTenant(tenantId);
-  const {
-    data: devicesData,
-    isLoading: isDevicesLoading,
-    error: devicesError,
-    refetch: devicesRefetch,
-  } = useTenantDevices(tenantId, 10, 0);
+  const { data, isLoading, error, refetch } = useLocalTenant(tenantId);
+
+  if (data) {
+    console.log(data);
+  }
 
   return (
     <div className="p-6 lg:p-20 w-full h-screen flex flex-col items-center justify-between gap-6">
@@ -69,8 +64,8 @@ const Tenant = ({ params }: PageProps) => {
         {data && (
           <div className="w-full h-full flex-1 items-center">
             <div className="w-full h-full bg-white rounded-md p-6">
-              {devicesData.data.map((devices: any) => (
-                <div>{devices.name}</div>
+              {data.devices.map((devices: any) => (
+                <div>kkk</div>
               ))}
             </div>
           </div>

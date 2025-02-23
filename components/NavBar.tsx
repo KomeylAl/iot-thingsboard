@@ -57,6 +57,11 @@ const links = [
     title: "هشدار ها",
     href: "/dashboard/alarms",
   },
+  {
+    id: "settings",
+    title: "تنظیات",
+    href: "/dashboard/settings",
+  },
 ];
 
 const NavBar = () => {

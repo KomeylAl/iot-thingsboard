@@ -11,6 +11,9 @@ import { useLocalCustomers } from "@/hooks/useCustomers";
 
 const Customers = () => {
   const { data, isLoading, error, refetch } = useLocalCustomers();
+  if (data) {
+    console.log(data);
+  }
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const toggleMpdal = () => setIsModalOpen(!isModalOpen);
@@ -59,7 +62,7 @@ const Customers = () => {
         <div className="w-full h-[85%]">
           <Table
             columns={columns}
-            data={data}
+            data={data.data}
             RPP={10}
             getRowLink={(row: any) => `/devices/${row.id.id}`}
           />
