@@ -14,7 +14,7 @@ export default function Providers({ children }: { children: ReactNode }) {
       onError: (error) => {
         toast.error(error.message);
         console.log(error);
-      },
+      }
     }),
   });
 

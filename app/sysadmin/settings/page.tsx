@@ -1,5 +1,6 @@
 "use client";
 
+import { useSyncLogs, useSyncTenants } from "@/hooks/useSync";
 import { convertISOToJalali } from "@/utils/convert";
 import { useQueries } from "@tanstack/react-query";
 import axios from "axios";
@@ -7,17 +8,6 @@ import React from "react";
 import toast from "react-hot-toast";
 import { FaArrowLeft } from "react-icons/fa";
 import { ClipLoader, PuffLoader } from "react-spinners";
-
-const synsTenants = async () => {
-  const res = await axios.get("/api/sysadmin/syncronization/tenants");
-  if (res.status === 200) {
-    toast.success("عملیات موفقت آمیز بود");
-  } else {
-    toast.error(`خطا در همگام سازی اطلاعات ${res.status}`);
-    console.log(res.data);
-  }
-  return res;
-};
 
 const getSyncLog = async () => {
   const res = await axios.get("/api/sysadmin/syncronization/logs");
@@ -28,14 +18,19 @@ const getSyncLog = async () => {
 };
 
 const Settings = () => {
-  const results = useQueries({
-    queries: [
-      { queryKey: ["tenants"], queryFn: synsTenants, enabled: false },
-      { queryKey: ["logs"], queryFn: getSyncLog, enabled: true },
-    ],
-  });
+  const {
+    data: syncTenantsData,
+    isLoading: syncTenantsLoading,
+    error: syncTenantsError,
+    refetch: syncTenantsRefetch,
+  } = useSyncTenants();
 
-  const [tenants, logs] = results;
+  const {
+    data: syncLogsData,
+    isLoading: syncLogsLoading,
+    error: syncLogsError,
+    refetch: syncLogsRefetch,
+  } = useSyncLogs();
 
   return (
     <div className="p-6 lg:p-20 w-full h-screen flex flex-col items-center justify-between gap-6">
@@ -52,12 +47,12 @@ const Settings = () => {
               <p>همگام سازی اطلاعات سازمان ها</p>
               <button
                 onClick={() => {
-                  tenants.refetch();
-                  logs.refetch();
+                  syncTenantsRefetch();
+                  syncLogsRefetch();
                 }}
                 className="flex items-center justify-center"
               >
-                {tenants.isLoading ? (
+                {syncTenantsLoading ? (
                   <ClipLoader color="#2775f2" size={20} />
                 ) : (
                   <FaArrowLeft className="text-blue-500" />
@@ -81,12 +76,15 @@ const Settings = () => {
         <div className="w-full h-[50%]">
           <h2>آخرین همگام سازی ها</h2>
           <div className="w-full md:w-[50%] h-full rounded-md mt-4 overflow-auto">
-            {logs.isLoading && (
+            {syncLogsLoading && (
               <div className="w-full h-full flex items-center justify-center">
                 <PuffLoader color="#3b82f6" />
               </div>
             )}
-            {logs.data?.data.map((log: any, index: any) => (
+            {syncLogsError && (
+              <p>خطا در دریافت اطلاعات لاگ ها</p>
+            )}
+            {syncLogsData && syncLogsData.map((log: any, index: any) => (
               <div
                 key={log.id}
                 className="w-full bg-white rounded-md p-4 flex items-center justify-between mt-2"

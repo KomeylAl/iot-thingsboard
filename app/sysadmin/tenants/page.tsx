@@ -15,11 +15,12 @@ const columns = [
   { header: "نام", accessor: "name" },
   { header: "ایمیل", accessor: "email" },
   { header: "تلفن", accessor: "phone" },
-  { header: "شهر", accessor: "state" },
+  { header: "زمان ایجاد", accessor: "createdAt" },
 ];
 
 const Tenants = () => {
   const { data, isLoading, error, refetch } = useTenants();
+  console.log(data);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const toggleMpdal = () => setIsModalOpen(!isModalOpen);

@@ -24,24 +24,27 @@ export async function GET(req: NextRequest) {
     }
 
     const data = await response.json();
+    console.log(data);
     const tbTenants = data.data.map((t: any) => ({
       things_id: t.id.id,
       name: t.name,
       email: t.email || `no-email-${t.id.id}@example.com`,
+      phone: t.phone || `no-phone-${t.id.id}`,
       createdAt: new Date(t.createdTime),
       planId: 1,
     }));
-
+    
     const localTenants = await prisma.tenant.findMany();
-
+    
     const newTenants = _.differenceBy(tbTenants, localTenants, "things_id");
     const deletedTenants = _.differenceBy(localTenants, tbTenants, "things_id");
-
+    
     const newTenant = newTenants.map((tenant: any) => {
       return {
         things_id: tenant.things_id,
         name: tenant.name,
         email: tenant.email,
+        phone: tenant.phone,
         createdAt: tenant.createdAt,
         planId: tenant.planId,
       };

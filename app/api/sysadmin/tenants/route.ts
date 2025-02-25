@@ -12,7 +12,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
   try {
     const {
-      title,
+      id,
+      name,
       country,
       state,
       city,
@@ -24,7 +25,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
       region,
       profile,
       additionalInfo: { description },
-      tenantProfileId: { value, lable },
+      tenantProfileId,
     } = data;
 
     const response = await fetch(`${process.env.THINGSBOARD_URL}/api/tenant`, {
@@ -34,7 +35,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
         Authorization: `Bearer ${token?.value}`,
       },
       body: JSON.stringify({
-        title,
+        id: { id, entityType: "TENANT" },
+        title: name,
         country,
         state,
         city,
@@ -46,9 +48,28 @@ export async function POST(req: NextRequest, res: NextResponse) {
         region,
         profile,
         additionalInfo: { description },
-        tenantProfileId: { id: value, entityType: "TENANT_PROFILE" },
+        tenantProfileId,
       }),
     });
+
+    const resBody = JSON.stringify({
+      id: { id, entityType: "TENANT" },
+      title: name,
+      country,
+      state,
+      city,
+      address,
+      address2,
+      zip,
+      phone,
+      email,
+      region,
+      profile,
+      additionalInfo: { description },
+      tenantProfileId,
+    })
+
+    console.log(resBody)
 
     if (!response.ok) {
       return NextResponse.json(
@@ -59,22 +80,31 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
     const newTenant = await response.json();
 
-    const tenant = await prisma.tenant.create({
-      data: {
-        email: email || `no-email-${newTenant.id.id}@example.com`,
-        name: title,
-        things_id: newTenant.id.id,
-        planId: 1,
-      },
+    const tenant = await prisma.tenant.findUnique({
+      where: { things_id: id }
     });
 
     if (!tenant) {
-      return NextResponse.json(
-        {
-          message: `Error adding tenant: Tenant added in thingsboard, but not in local database.`,
+      await prisma.tenant.create({
+        data: {
+          email: email || `no-email-${newTenant.id.id}@example.com`,
+          name,
+          phone: newTenant.phone,
+          things_id: newTenant.id.id,
+          planId: 1,
         },
-        { status: 400 }
-      );
+      });
+    } else {
+      await prisma.tenant.update({
+        where: { things_id: id },
+        data: {
+          email: email || `no-email-${newTenant.id.id}@example.com`,
+          name,
+          phone: newTenant.phone,
+          things_id: newTenant.id.id,
+          planId: 1,
+        }
+      })
     }
 
     return NextResponse.json(
@@ -82,6 +112,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
       { status: 201 }
     );
   } catch (error: any) {
+    console.log(error.message);
     return NextResponse.json(
       { message: `Error adding tenant: ${error.message}` },
       { status: 500 }

@@ -1,3 +1,4 @@
+import { convertISOToJalali } from "@/utils/convert";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
@@ -65,7 +66,7 @@ const Table = ({ data, columns, RPP, getRowLink }: TableProps) => {
                   key={colIndex}
                   className="px-4 py-4  rounded-md text-gray-600 mt-2 cursor-pointer group-hover:text-blue-500"
                 >
-                  {row[col.accessor]}
+                  {col.accessor === "createdAt" ? convertISOToJalali(row[col.accessor]) : row[col.accessor]}
                 </td>
               ))}
             </tr>

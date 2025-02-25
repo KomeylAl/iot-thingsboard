@@ -18,6 +18,7 @@ model Tenant {
   things_id    String   @unique
   name         String
   email        String   @unique
+  phone        String   @unique
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
