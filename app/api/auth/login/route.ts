@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
       `refreshToken=${data.refreshToken}; HttpOnly; Path=/; Max-Age=${
         60 * 60 * 24 * 30
       };`,
-      `role=${userInfo.authority}; Path=/;`
+      `role=${userInfo.authority}; HttpOnly; Path=/; Max-Age=${60 * 60 * 24 * 30};`,
     ].join(", ");
 
     const headers = new Headers();

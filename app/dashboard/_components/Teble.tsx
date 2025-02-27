@@ -1,15 +1,17 @@
 import { convertISOToJalali } from "@/utils/convert";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { MdDelete, MdEdit } from "react-icons/md";
 
 interface TableProps {
    data: any;
    columns: any;
    RPP: any;
    getRowLink: (row: any) => string;
+   clickableRows?: boolean;
 }
 
-const Table = ({ data, columns, RPP, getRowLink }: TableProps) => {
+const Table = ({ data, columns, RPP, getRowLink, clickableRows= true }: TableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = RPP;
 
@@ -64,9 +66,11 @@ const Table = ({ data, columns, RPP, getRowLink }: TableProps) => {
               {columns.map((col: any, colIndex: any) => (
                 <td
                   key={colIndex}
-                  className="px-4 py-4  rounded-md text-gray-600 mt-2 cursor-pointer group-hover:text-blue-500"
+                  className={`px-4 py-4  rounded-md text-gray-600 mt-2 ${clickableRows && "cursor-pointer group-hover:text-blue-500"}`}
                 >
                   {col.accessor === "createdAt" ? convertISOToJalali(row[col.accessor]) : row[col.accessor]}
+                  {col.type === "editButton" && <MdEdit size={20} className="text-blue-500"/>}
+                  {col.type === "deleteButton" && <MdDelete size={20} className="text-rose-500"/>}
                 </td>
               ))}
             </tr>

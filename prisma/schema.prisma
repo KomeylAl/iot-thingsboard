@@ -22,7 +22,7 @@ model Tenant {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  admins       User[]   @relation("TenantAdmins")
+  users        User[]   @relation("TenantUsers")
   customers    Customer[]   @relation("TenantCustomers")
   requests     Request[]
   devices      Device[]
@@ -66,10 +66,13 @@ model User {
   id        Int      @id @default(autoincrement())
   things_id String   @unique
   email     String   @unique
-  name      String
+  phone     String?   @unique
+  firstName      String?
+  lastName      String?
   role      String   // می‌تواند مقادیری مانند "admin" یا "user" داشته باشد
+  customerId  String? @unique
   tenantId  Int
-  tenant    Tenant   @relation("TenantAdmins", fields: [tenantId], references: [id])
+  tenant    Tenant   @relation("TenantUsers", fields: [tenantId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

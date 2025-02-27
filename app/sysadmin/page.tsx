@@ -11,6 +11,7 @@ import { useTenants } from "@/hooks/useTenants";
 import SystemInfo from "./_components/SystemInfo";
 import { useTenantProfiles } from "@/hooks/useProfiles";
 import EntitiesSection from "./_components/EntitiesSection";
+import AddProfileForm from "./_components/AddProfileForm";
 
 const AdminDashboard = () => {
   
@@ -27,7 +28,8 @@ const AdminDashboard = () => {
     refetch: profilesRefetch,
   } = useTenantProfiles(1, 0);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddTenantOpen, setIsAddTenantOpen] = useState(false);
+  const [isAddProfileOpen, setIsAddProfileOpen] = useState(false);
 
   return (
     <div className="p-6 lg:p-20 w-full min-h-screen flex flex-col">
@@ -59,7 +61,7 @@ const AdminDashboard = () => {
                   <p className="text-lg">تعداد سازمان ها</p>
                   <div className="flex items-center gap-4 mt-3">
                     <p className="text-lg">{tenantsData.totalElements}</p>
-                    <button onClick={() => setIsModalOpen(true)}>
+                    <button onClick={() => setIsAddTenantOpen(true)}>
                       <BiPlus size={25} className="text-blue-500" />
                     </button>
                   </div>
@@ -90,7 +92,7 @@ const AdminDashboard = () => {
                   <p className="text-lg">تعداد پروفایل سازمان ها</p>
                   <div className="flex items-center gap-4 mt-3">
                     <p className="text-lg">{profilesData.totalElements}</p>
-                    <button onClick={() => setIsModalOpen(true)}>
+                    <button onClick={() => setIsAddProfileOpen(true)}>
                       <BiPlus size={25} className="text-blue-500" />
                     </button>
                   </div>
@@ -119,11 +121,20 @@ const AdminDashboard = () => {
       </div>
 
       {/* مودال */}
-      <Popup isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+      <Popup isOpen={isAddTenantOpen} onClose={() => setIsAddTenantOpen(false)}>
         <AddTenantForm
           onTenantAdded={() => {
-            setIsModalOpen(false);
+            setIsAddTenantOpen(false);
             tenantsRefetch();
+          }}
+        />
+      </Popup>
+
+      <Popup isOpen={isAddProfileOpen} onClose={() => setIsAddProfileOpen(false)}>
+        <AddProfileForm
+          onProfileAdded={() => {
+            setIsAddProfileOpen(false);
+            profilesRefetch();
           }}
         />
       </Popup>

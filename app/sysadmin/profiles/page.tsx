@@ -7,12 +7,14 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { BiPlus } from "react-icons/bi";
+import AddProfileForm from "../_components/AddProfileForm";
 
 const columns = [
-  { header: "نام", accessor: "name" },
-  { header: "توضیحات", accessor: "description" },
-  { header: "پیش فرض", accessor: "default" },
-  { header: "زمان ایجاد", accessor: "createdTime" },
+  { header: "نام", accessor: "name", type: "string" },
+  { header: "توضیحات", accessor: "description", type: "string" },
+  { header: "زمان ایجاد", accessor: "createdTime", type: "string" },
+  { header: "ویرایش", accessor: "", type: "editButton" },
+  { header: "حذف", accessor: "", type: "deleteButton" },
 ];
 
 const Profiles = () => {
@@ -78,16 +80,17 @@ const Profiles = () => {
           columns={columns}
           data={profiles}
           RPP={10}
+          clickableRows={false}
           getRowLink={(row: any) => `/sysadmin/profiles/${row.id.id}`}
         />
       </div>
       <Popup isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        {/* <AddDevice
-       onDeviceAdded={() => {
-         setIsModalOpen(false);
-         fetchDevices();
-       }}
-     /> */}
+        <AddProfileForm
+          onProfileAdded={() => {
+            setIsModalOpen(false);
+            fetchProfiles();
+          }}
+        />
         <div></div>
       </Popup>
     </div>

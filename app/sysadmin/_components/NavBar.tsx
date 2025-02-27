@@ -18,8 +18,8 @@ const links = [
     href: "/sysadmin/profiles",
   },
   {
-    title: "پلن ها",
-    href: "/sysadmin/plans",
+    title: "اعلانات",
+    href: "/sysadmin/notifications",
   },
   {
     title: "تنظیمات",

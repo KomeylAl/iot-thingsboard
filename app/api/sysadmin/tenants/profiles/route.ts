@@ -34,3 +34,86 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+
+export async function POST(req: NextRequest) {
+  const token = req.cookies.get("token");
+
+  if (!token || !token.value) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
+  const data = await req.json();
+
+  try {
+    const {
+      set_id,
+      name,
+      description,
+      type,
+      maxDevices,
+      maxAssets,
+      maxCustomers,
+      maxUsers,
+      maxDashboards,
+      maxRuleChains,
+      maxEmails,
+      smsEnabled,
+      maxSms,
+      limit1,
+      interval1,
+      limit2,
+      interval2,
+    } = data;
+
+    const id = set_id && {id: set_id,
+      entityType: "TENANT_PROFILE",}
+
+    const reqData = JSON.stringify({
+      id,
+      name,
+      description,
+      profileData: {
+        configuration: {
+          type,
+          maxDevices,
+          maxAssets,
+          maxCustomers,
+          maxUsers,
+          maxDashboards,
+          maxRuleChains,
+          maxEmails,
+          smsEnabled,
+          maxSms,
+          transportTenantMsgRateLimit: `${limit1}:${interval1},${limit2}:${interval2}`
+        },
+      },
+    });
+
+    const response = await fetch(`${process.env.THINGSBOARD_URL}/api/tenantProfile`, {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `Bearer ${token?.value}`,
+      },
+      body: reqData
+    });
+
+    if (!response.ok) {
+      return NextResponse.json(
+        { message: "Error adding profile" },
+        { status: response.status }
+      );
+    }
+
+    return NextResponse.json(
+      { message: "Profile Added Successful" },
+      { status: 201 }
+    );
+  } catch (error: any) {
+    console.log(error.message);
+    return NextResponse.json(
+      { message: `Error adding profile: ${error.message}` },
+      { status: 500 }
+    );
+  }
+}

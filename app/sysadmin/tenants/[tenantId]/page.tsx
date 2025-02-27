@@ -1,17 +1,17 @@
 "use client";
 
 import Popup from "@/components/Popup";
-import { useTenantDevices } from "@/hooks/useDevices";
 import { useDeleteTenant, useLocalTenant } from "@/hooks/useTenants";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import toast from "react-hot-toast";
 import { BiPencil } from "react-icons/bi";
 import { MdDelete } from "react-icons/md";
 import { PuffLoader } from "react-spinners";
 import EditTenantForm from "../../_components/EditTenantForm";
 import { Tab, Tabs } from "@/components/Tabs";
 import Table from "@/app/dashboard/_components/Teble";
+import { useLocalTenantsUsers, useSyncTenantUsers } from "@/hooks/useUser";
+import TenantUsers from "../../_components/TenantUsers";
 
 interface Params {
   tenantId: string;
@@ -26,6 +26,12 @@ const Tenant = ({ params }: PageProps) => {
 
   const { tenantId } = React.use<Params>(params);
   const { data, isLoading, error, refetch } = useLocalTenant(tenantId);
+  const {
+    data: syncUsersData,
+    isLoading: syncUsersLoading,
+    error: syncUsersError,
+    refetch: syncUsersRefetch,
+  } = useSyncTenantUsers(tenantId);
   const { mutate: deleteTenant, isPending: isDeleting } = useDeleteTenant(
     tenantId,
     () => {
@@ -51,6 +57,12 @@ const Tenant = ({ params }: PageProps) => {
             سازمان {data && data.name}
           </h1>
           <div className="flex items-center gap-4">
+            <button
+              onClick={() => syncUsersRefetch()}
+              className="py-2 px-4 border border-blue-500 text-blue-500 rounded-lg flex items-center"
+            >
+              {syncUsersLoading ? "در حال ارسال..." : "همگام سازی کاربران"}
+            </button>
             <button
               onClick={toggleMpdal}
               className="py-2 px-4 bg-blue-500 text-white rounded-lg flex items-center"
@@ -88,18 +100,20 @@ const Tenant = ({ params }: PageProps) => {
             {data && (
               <div className="w-full h-full flex-1 items-center">
                 <div className="w-full h-full bg-white rounded-md p-6">
-                  <Table 
+                  <Table
                     columns={columns}
                     data={data.devices}
                     RPP={10}
-                    getRowLink={(row: any) => `/tenants/${tenantId}/devices/${row.things_id}`}
+                    getRowLink={(row: any) =>
+                      `/tenants/${tenantId}/devices/${row.things_id}`
+                    }
                   />
                 </div>
               </div>
             )}
           </Tab>
-          <Tab label="مدیران">
-            <div></div>
+          <Tab label="کاربران">
+            <TenantUsers tenantId={tenantId} />
           </Tab>
           <Tab label="هشدار ها">
             <div></div>
