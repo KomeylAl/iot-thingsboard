@@ -1,26 +1,29 @@
-"use client";
+'use client';
 
 import Popup from "@/components/Popup";
-import SearchBar from "@/components/SearchBar";
 import React, { useState } from "react";
+import Table from "../../_components/Teble";
+import SearchBar from "@/components/SearchBar";
 import { BiPlus } from "react-icons/bi";
-import AddDevice from "../_components/AddDevice";
-import Table from "@/app/dashboard/_components/Teble";
+import { useAssetProfiles } from "@/hooks/useProfiles";
 import { PuffLoader } from "react-spinners";
-import { useLocalAssets } from "@/hooks/useAssets";
 
-const Assets = () => {
-  const { data, isLoading, error, refetch } = useLocalAssets();
+const AssetProfiles = () => {
+  const { data, isLoading, error, refetch } = useAssetProfiles(10, 0);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const toggleMpdal = () => setIsModalOpen(!isModalOpen);
 
+  if (data) {
+    console.log(data);
+  }
+
   const columns = [
     { header: "نام", accessor: "name" },
-    { header: "پروفایل", accessor: "type" },
-    { header: "برچسب", accessor: "label" },
-    { header: "وضعیت", accessor: "status" },
+    { header: "توضیحات", accessor: "description" },
     { header: "زمان ایجاد", accessor: "createdTime" },
+    { header: "ویرایش", accessor: "editButton", type: "editButton" },
+    { header: "حذف", accessor: "deleteButton", type: "deleteButton" },
   ];
 
   return (
@@ -28,21 +31,17 @@ const Assets = () => {
       <div className="w-full h-[15%] flex flex-col items-start justify-between">
         <SearchBar />
         <div className="flex items-center justify-between w-full">
-          <h1 className="text-xl lg:text-3xl font-bold">دارایی ها</h1>
+          <h1 className="text-xl lg:text-3xl font-bold">پروفایل دستگاه ها</h1>
           <button
             onClick={toggleMpdal}
             className="py-2 px-4 bg-blue-500 text-white rounded-lg flex items-center"
           >
-            <BiPlus size={24} /> افزودن دارایی جدید
+            <BiPlus size={24} /> افزودن پروفایل جدید
           </button>
         </div>
       </div>
 
-      {error && (
-        <div className="w-full h-full flex items-center justify-center">
-          <p>خطا در دریافت اطلاعات دارایی ها</p>
-        </div>
-      )}
+      {error && <p>خطا در دریافت اطلاعات پروفایل ها</p>}
 
       {isLoading && (
         <div className="w-full h-full flex items-center justify-center">
@@ -50,11 +49,7 @@ const Assets = () => {
         </div>
       )}
 
-      {!data && !isLoading && !error && (
-        <div className="w-full h-full flex items-center justify-center">
-          <p>دارایی ای برای نمایش وجود ندارد!</p>
-        </div>
-      )}
+      {!data && !isLoading && <p>پروفایلی برای نمایش وجود ندارد!</p>}
 
       {data && (
         <div className="w-full h-[85%]">
@@ -62,21 +57,23 @@ const Assets = () => {
             columns={columns}
             data={data.data}
             RPP={10}
-            getRowLink={(row: any) => `/devices/${row.id.id}`}
+            clickableRows={false}
+            getRowLink={(row: any) => ``}
           />
         </div>
       )}
 
       <Popup isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <AddDevice
-          onDeviceAdded={() => {
-            setIsModalOpen(false);
-            refetch();
-          }}
-        />
+        {/* <AddDevice
+       onDeviceAdded={() => {
+         setIsModalOpen(false);
+         refetch();
+       }}
+     /> */}
+        <div></div>
       </Popup>
     </div>
   );
 };
 
-export default Assets;
+export default AssetProfiles;

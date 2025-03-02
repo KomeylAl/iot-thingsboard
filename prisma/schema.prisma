@@ -72,13 +72,14 @@ model User {
   role      String   // می‌تواند مقادیری مانند "admin" یا "user" داشته باشد
   customerId  String? @unique
   tenantId  Int
-  tenant    Tenant   @relation("TenantUsers", fields: [tenantId], references: [id])
+  tenant    Tenant   @relation("TenantUsers", fields: [tenantId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Device {
   id        Int      @id @default(autoincrement())
+  things_id String   @unique
   name      String
   type      String   // نوع دستگاه (مثلا سنسور، کنترلر و ...)
   tenantId  Int

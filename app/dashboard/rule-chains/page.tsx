@@ -2,16 +2,14 @@
 
 import Popup from "@/components/Popup";
 import SearchBar from "@/components/SearchBar";
+import { useRuleChains } from "@/hooks/useRuleChains";
 import React, { useState } from "react";
 import { BiPlus } from "react-icons/bi";
-import AddDevice from "../_components/AddDevice";
-import Table from '@/app/dashboard/_components/Teble';
-import { useLocalDevices } from "@/hooks/useDevices";
 import { PuffLoader } from "react-spinners";
+import Table from "../_components/Teble";
 
-const Devices = () => {
-
-  const { data, isLoading, error, refetch } = useLocalDevices();
+const RuleChains = () => {
+  const { data, isLoading, error, refetch } = useRuleChains(10, 0);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const toggleMpdal = () => setIsModalOpen(!isModalOpen);
@@ -22,10 +20,9 @@ const Devices = () => {
 
   const columns = [
     { header: "نام", accessor: "name" },
-    { header: "پروفایل", accessor: "type" },
-    { header: "مشتری", accessor: "customer.name" },
-    { header: "وضعیت", accessor: "status" },
-    { header: "زمان ایجاد", accessor: "createdAt" },
+    { header: "نوع", accessor: "type" },
+    { header: "توضیحات", accessor: "" },
+    { header: "تاریخ ایجاد", accessor: "createdTime" },
   ];
 
   return (
@@ -33,51 +30,48 @@ const Devices = () => {
       <div className="w-full h-[15%] flex flex-col items-start justify-between">
         <SearchBar />
         <div className="flex items-center justify-between w-full">
-          <h1 className="text-xl lg:text-3xl font-bold">دستگاه ها</h1>
+          <h1 className="text-xl lg:text-3xl font-bold">زنجیره قواعد</h1>
           <button
             onClick={toggleMpdal}
             className="py-2 px-4 bg-blue-500 text-white rounded-lg flex items-center"
           >
-            <BiPlus size={24} /> افزودن دستگاه جدید
+            <BiPlus size={24} /> افزودن زنجیره جدید
           </button>
         </div>
       </div>
-      
-      {error && (
-        <p>خطا در دریافت اطلاعات دستگاه ها</p>
-      )}
+
+      {error && <p>خطا در دریافت اطلاعات زنجیره ها</p>}
 
       {isLoading && (
         <div className="w-full h-full flex items-center justify-center">
-        <PuffLoader color="#3b82f6" />
-      </div>
+          <PuffLoader color="#3b82f6" />
+        </div>
       )}
 
-      {(!data && !isLoading) && (
-        <p>دستگاهی برای نمایش وجود ندارد!</p>
-      )}
+      {!data && !isLoading && <p>زنجیره ای برای نمایش وجود ندارد!</p>}
 
       {data && (
         <div className="w-full h-[85%]">
-        <Table 
-          columns={columns}
-          data={data.data}
-          RPP={10}
-          getRowLink={(row: any) => `/dashboard/devices/${row.things_id}`}
-        />
-      </div>
+          <Table
+            columns={columns}
+            data={data.data}
+            RPP={10}
+            getRowLink={(row: any) => `/devices/${row.id.id}`}
+          />
+        </div>
       )}
 
       <Popup isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <AddDevice
+        {/* <AddDevice
           onDeviceAdded={() => {
             setIsModalOpen(false);
             refetch();
           }}
-        />
+        /> */}
+        <div></div>
       </Popup>
     </div>
   );
 };
 
-export default Devices;
+export default RuleChains;

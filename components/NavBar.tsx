@@ -32,13 +32,13 @@ const links = [
     subItems: [
       {
         id: "devices-profiles",
-        title: "دستگاه ها",
-        href: "/dashboard/devices",
+        title: "پروفیال دستگاه ها",
+        href: "/dashboard/profiles/devices",
       },
       {
         id: "assets-profiles",
-        title: "دارایی ها",
-        href: "/dashboard/assets",
+        title: "پروفیال دارایی ها",
+        href: "/dashboard/profiles/assets",
       },
     ],
   },
@@ -56,6 +56,11 @@ const links = [
     id: "alarms",
     title: "هشدار ها",
     href: "/dashboard/alarms",
+  },
+  {
+    id: "rule-chains",
+    title: "زنجیره قواعد",
+    href: "/dashboard/rule-chains",
   },
   {
     id: "settings",

@@ -37,9 +37,9 @@ const SideBar = () => {
       </div>
       <div className="w-56 h-screen rounded-bl-3xl rounded-tl-3xl bg-white hidden lg:flex flex-col items-center justify-between shadow-lg fixed py-10">
         <div className="flex items-center gap-2">
-          {!data?.data["firstName"]
+          {!data?.data.firstName
             ? "name"
-            : data.data["firstName"] + " " + data.data["lastName"]}
+            : data.data.firstName + " " + data.data.lastName}
         </div>
         <NavBar />
         <button

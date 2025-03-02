@@ -41,6 +41,7 @@ export async function GET(req: NextRequest) {
 
         return {
           name: d.name,
+          things_id: d.id.id,
           type: d.type || "Unknown",
           tenantId: tenant?.id || null,
           customerId: customer?.id || null,
@@ -72,6 +73,7 @@ export async function GET(req: NextRequest) {
       await prisma.device.createMany({
         data: newDevices.map((device: any) => ({
           name: device.name,
+          things_id: device.things_id,
           type: device.type,
           tenantId: device.tenantId!,
           customerId: device.customerId,

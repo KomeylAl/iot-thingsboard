@@ -12,9 +12,10 @@ const Alarms = () => {
 
   const columns = [
     { header: "نام", accessor: "name" },
-    { header: "پروفایل", accessor: "type" },
-    { header: "برچسب", accessor: "label" },
+    { header: "نوع", accessor: "type" },
+    { header: "شدت", accessor: "label" },
     { header: "وضعیت", accessor: "status" },
+    { header: "زمان ایجاد", accessor: "status" },
   ];
 
   return (
@@ -44,9 +45,9 @@ const Alarms = () => {
         <div className="w-full h-[85%]">
         <Table 
           columns={columns}
-          data={data}
+          data={data.data}
           RPP={10}
-          getRowLink={(row: any) => `/devices/${row.id.id}`}
+          getRowLink={(row: any) => `/dashboard/alarms/${row.id.id}`}
         />
       </div>
       )}

@@ -14,6 +14,32 @@ export function useTenantProfiles(pageSize: number = 1, page: number = 0) {
   });
 }
 
+export function useDeviceProfiles(pageSize: number = 1, page: number = 0) {
+  return useQuery({
+    queryKey: ["deviceProfiles"],
+    queryFn: async () => {
+      const res = await fetch(`/api/devices/profiles?pageSize=${pageSize}&page=${page}`);
+      if (!res.ok) {
+        throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
+      }
+      return res.json();
+    },
+  });
+}
+
+export function useAssetProfiles(pageSize: number = 1, page: number = 0) {
+  return useQuery({
+    queryKey: ["assetProfiles"],
+    queryFn: async () => {
+      const res = await fetch(`/api/assets/profiles?pageSize=${pageSize}&page=${page}`);
+      if (!res.ok) {
+        throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
+      }
+      return res.json();
+    },
+  });
+}
+
 export function useStoreProfile(onProfileStored: () => void) {
   return useMutation({
     mutationFn: async (profileData: any) => {

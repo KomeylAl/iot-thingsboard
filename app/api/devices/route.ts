@@ -12,13 +12,15 @@ export async function POST(req: NextRequest) {
       additionalInfo: { location, description },
     } = await req.json();
 
+    
     const tenant = await prisma.tenant.findUnique({
       where: { things_id: tenantId }
     });
-
+    
+    console.log(tenant);
     if (!tenant) {
       return NextResponse.json(
-        { message: "No Tenant Find." },
+        { message: "No Tenant Found." },
         { status: 400 }
       );
     }

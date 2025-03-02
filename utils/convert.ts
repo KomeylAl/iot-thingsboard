@@ -54,3 +54,19 @@ export function convertISOToJalali(isoDate: any) {
    // ساخت خروجی به‌صورت رشته‌ای
    return `${jy}/${jm.toString().padStart(2, '0')}/${jd.toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
 }
+
+export const transformTelemetryData = (wsData: any) => {
+   if (!wsData) return [];
+ 
+   return Object.entries(wsData)
+     .filter(([key]) => key.startsWith("temperature")) // فقط داده‌های دما را بگیر
+     .flatMap(([key, values]: [string, any]) =>
+       values.map((item: [number, string]) => ({
+         name: key, // نام سنسور
+         type: "دما", // این مقدار را ثابت می‌گذاریم
+         label: `${item[1]}°C`, // مقدار دما
+         status: "فعال", // مقدار پیش‌فرض
+         createdAtTime: new Date(item[0]).toLocaleString("fa-IR"), // تبدیل timestamp به تاریخ شمسی
+       }))
+     );
+ };

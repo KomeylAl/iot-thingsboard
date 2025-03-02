@@ -11,6 +11,9 @@ interface AddDeviceProps {
 
 const AddDevice = ({ onDeviceAdded }: AddDeviceProps) => {
   const { data, isLoading } = useUser();
+  if (data) {
+    console.log(data.data.tenantId.id);
+  }
 
   const [isdLoading, setIsdLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -25,10 +28,10 @@ const AddDevice = ({ onDeviceAdded }: AddDeviceProps) => {
   });
 
   useEffect(() => {
-    if (data!) {
+    if (data) {
       setFormData((prev) => ({
         ...prev,
-        tenantId: data.data["tenantId"]["id"],
+        tenantId: data.data.tenantId.id,
       }));
     }
   }, [data]);
