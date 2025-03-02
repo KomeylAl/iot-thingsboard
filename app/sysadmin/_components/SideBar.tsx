@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { BiArrowToRight, BiMenu } from "react-icons/bi";
 import { useUser } from "@/hooks/useUser";
+import Image from "next/image";
 
 const SideBar = () => {
   const { data, isLoading, error } = useUser();
@@ -36,17 +37,20 @@ const SideBar = () => {
         </button>
       </div>
       <div className="w-56 h-screen rounded-bl-3xl rounded-tl-3xl bg-white hidden lg:flex flex-col items-center justify-between shadow-lg fixed py-10">
-        <div className="flex items-center gap-2">
-          {error && <p>unknown user</p>}
-          {isLoading && <p>...</p>}
-          {data && (
-            <p>
-              {!data.data.firstName && !data.data.lastName
-                ? "name"
-                : data.data.firstName}{" "}
-              {data.data.lastName}
-            </p>
-          )}
+        <div>
+          <Image src="/images/lotos.png" alt="lotos" width={100} height={100} />
+          <div className="flex items-center justify-center gap-2 mt-5">
+            {error && <p>unknown user</p>}
+            {isLoading && <p>...</p>}
+            {data && (
+              <p>
+                {!data.data.firstName && !data.data.lastName
+                  ? "name"
+                  : data.data.firstName}{" "}
+                {data.data.lastName}
+              </p>
+            )}
+          </div>
         </div>
         <NavBar />
         <button
@@ -66,10 +70,20 @@ const SideBar = () => {
             <BiArrowToRight size={30} />
           </button>
         </div>
-        <div className="flex items-center gap-2">
-          {!data?.data["firstName"]
-            ? "name"
-            : data.data["firstName"] + " " + data.data["lastName"]}
+        <div>
+          <Image src="/images/lotos.png" alt="lotos" width={100} height={100} />
+          <div className="flex items-center gap-2">
+            {error && <p>unknown user</p>}
+            {isLoading && <p>...</p>}
+            {data && (
+              <p>
+                {!data.data.firstName && !data.data.lastName
+                  ? "name"
+                  : data.data.firstName}{" "}
+                {data.data.lastName}
+              </p>
+            )}
+          </div>
         </div>
         <NavBar />
         <button

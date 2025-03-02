@@ -46,7 +46,7 @@ const Login = () => {
       <div className="w-full lg:w-[50%] h-full flex flex-col items-start justify-center md:px-10 gap-16">
         <div className="w-full">
           <h2 className="text-2xl md:text-[40px] font-bold">
-            ورود به داشبورد مدیریتی
+            داشبورد خدمات هوشمند اینترنت اشیاء
           </h2>
           <p className="mt-4">
             قدرت گرفته با <span className="text-sky-600">Thingsboard</span>
