@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import Table from "@/app/dashboard/_components/Teble";
 import Popup from "@/components/Popup";
@@ -9,18 +9,16 @@ import toast from "react-hot-toast";
 import { BiPlus } from "react-icons/bi";
 import AddProfileForm from "../_components/AddProfileForm";
 
-const columns = [
-  { header: "نام", accessor: "name", type: "string" },
-  { header: "توضیحات", accessor: "description", type: "string" },
-  { header: "زمان ایجاد", accessor: "createdTime", type: "string" },
-  { header: "ویرایش", accessor: "", type: "editButton" },
-  { header: "حذف", accessor: "", type: "deleteButton" },
-];
-
 const Profiles = () => {
-
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const toggleMpdal = () => setIsModalOpen(!isModalOpen);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [modal, setModal] = useState("add");
+  const toggleMpdal = () => {
+    setModal("add");
+    setIsModalOpen(!isModalOpen);
+  };
+
   const [isLoading, setIsLoading] = useState(false);
   const [profiles, setProfiles] = useState([]);
   const [profilesPageInfo, setProfilesPageInfo] = useState({
@@ -28,6 +26,14 @@ const Profiles = () => {
     totalElements: 0,
     hasNext: false,
   });
+
+  const columns = [
+    { header: "نام", accessor: "name", type: "string" },
+    { header: "توضیحات", accessor: "description", type: "string" },
+    { header: "زمان ایجاد", accessor: "createdTime", type: "string" },
+    { header: "ویرایش", accessor: "", type: "editButton" },
+    { header: "حذف", accessor: "", type: "deleteButton" },
+  ];
 
   const fetchProfiles = async () => {
     setIsLoading(true);
@@ -82,6 +88,7 @@ const Profiles = () => {
           RPP={10}
           clickableRows={false}
           getRowLink={(row: any) => `/sysadmin/profiles/${row.id.id}`}
+          onDeleteClicked={(row: any) => `${row.id.id}`}
         />
       </div>
       <Popup isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
@@ -91,7 +98,6 @@ const Profiles = () => {
             fetchProfiles();
           }}
         />
-        <div></div>
       </Popup>
     </div>
   );

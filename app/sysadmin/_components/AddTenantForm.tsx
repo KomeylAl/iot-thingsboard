@@ -36,7 +36,7 @@ interface AddTenantProps {
 
 const AddTenantForm = ({ onTenantAdded }: AddTenantProps) => {
 
-  const { data, isLoading, error} = useTenantProfiles();
+  const { data, isLoading, error} = useTenantProfiles(100, 0);
 
   const profilesOptions =
     data?.data.map((profile: any) => ({

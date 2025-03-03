@@ -37,7 +37,7 @@ model Dashboard {
   things_id String
   name      String
   tenantId  Int
-  tenant    Tenant     @relation(fields: [tenantId], references: [id])
+  tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   customers Customer[] @relation("CustomerDashboards") // Prisma خودش جدول واسط می‌سازه
 
@@ -51,7 +51,7 @@ model Customer {
   email     String   @unique
   name      String
   tenantId  Int
-  tenant    Tenant   @relation("TenantCustomers", fields: [tenantId], references: [id])
+  tenant    Tenant   @relation("TenantCustomers", fields: [tenantId], references: [id], onDelete: Cascade)
 
   dashboards Dashboard[] @relation("CustomerDashboards") // Prisma خودش جدول واسط می‌سازه
 
@@ -84,8 +84,8 @@ model Device {
   type      String   // نوع دستگاه (مثلا سنسور، کنترلر و ...)
   tenantId  Int
   customerId  Int?
-  tenant    Tenant   @relation(fields: [tenantId], references: [id])
-  customer  Customer? @relation(fields: [customerId], references: [id])
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customer  Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -98,8 +98,8 @@ model Asset {
   type      String   // نوع دستگاه (مثلا سنسور، کنترلر و ...)
   tenantId  Int
   customerId  Int
-  tenant    Tenant   @relation(fields: [tenantId], references: [id])
-  customer  Customer @relation(fields: [customerId], references: [id])
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customer  Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -107,9 +107,9 @@ model Asset {
 model Request {
   id        Int      @id @default(autoincrement())
   tenantId  Int
-  tenant    Tenant @relation(fields: [tenantId], references: [id])
+  tenant    Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   deviceId  Int
-  device    Device   @relation(fields: [deviceId], references: [id])
+  device    Device   @relation(fields: [deviceId], references: [id], onDelete: Cascade)
   requestTime DateTime @default(now()) // زمان درخواست
   requestType String  // نوع درخواست، مثلا "GET_TELEMETRY", "COMMAND"
   status     String  // وضعیت پردازش: "PENDING", "SUCCESS", "FAILED"

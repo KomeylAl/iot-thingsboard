@@ -17,7 +17,6 @@ export async function POST(req: NextRequest) {
       where: { things_id: tenantId }
     });
     
-    console.log(tenant);
     if (!tenant) {
       return NextResponse.json(
         { message: "No Tenant Found." },
@@ -45,9 +44,12 @@ export async function POST(req: NextRequest) {
         { status: response.status }
       );
     }
+
+    const data = await response.json();
     
     await prisma.device.create({
       data: {
+        things_id: data.id.id,
         name,
         type,
         tenantId: tenant!.id,

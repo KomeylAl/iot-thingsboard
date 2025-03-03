@@ -14,7 +14,7 @@ interface TenantUsersProps {
 }
 
 const TenantUsers = ({ tenantId }: TenantUsersProps) => {
-  const { data, isLoading, error, refetch } = useLocalTenantsUsers();
+  const { data, isLoading, error, refetch } = useLocalTenantsUsers(tenantId);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const toggleModal = () => setIsModalOpen(!isModalOpen);

@@ -48,9 +48,9 @@ const Login = () => {
           <h2 className="text-2xl md:text-[40px] font-bold">
             داشبورد خدمات هوشمند اینترنت اشیاء
           </h2>
-          <p className="mt-4">
+          {/* <p className="mt-4">
             قدرت گرفته با <span className="text-sky-600">Thingsboard</span>
-          </p>
+          </p> */}
         </div>
         <div className="w-full">
           <form onSubmit={handleSubmit} className="flex flex-col w-full">

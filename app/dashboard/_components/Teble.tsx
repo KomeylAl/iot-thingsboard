@@ -1,6 +1,8 @@
+import Popup from "@/components/Popup";
 import { convertISOToJalali } from "@/utils/convert";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import toast from "react-hot-toast";
 import { MdDelete, MdEdit } from "react-icons/md";
 
 interface TableProps {
@@ -9,6 +11,7 @@ interface TableProps {
   RPP: any;
   getRowLink: (row: any) => string;
   clickableRows?: boolean;
+  onDeleteClicked?: (rowId: string) => string;
 }
 
 const Table = ({
@@ -17,6 +20,7 @@ const Table = ({
   RPP,
   getRowLink,
   clickableRows = true,
+  onDeleteClicked,
 }: TableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = RPP;
@@ -29,6 +33,17 @@ const Table = ({
   );
 
   const router = useRouter();
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [modal, setModal] = useState("edit");
+  const toggleDeleteModal = () => {
+    setIsDeleteModalOpen(!isDeleteModalOpen);
+    setModal("delete");
+  };
+  const toggleEditModal = (rowId: string) => {
+    setIsEditModalOpen(!isEditModalOpen);
+    setModal("edit");
+  };
 
   const handleRowClick = (row: any) => {
     if (getRowLink) {
@@ -36,6 +51,18 @@ const Table = ({
       if (link) {
         router.push(link);
       }
+    }
+  };
+
+  const handleDelete = (row: any) => {
+    if (onDeleteClicked) {
+      toggleDeleteModal()
+    }
+  };
+
+  const handleEdit = (row: any) => {
+    if (onDeleteClicked) {
+      toggleEditModal(row.id)
     }
   };
 
@@ -66,7 +93,7 @@ const Table = ({
           {currentData.map((row: any, rowIndex: any) => (
             <tr
               key={rowIndex}
-              onClick={() => handleRowClick(row)}
+              onClick={() => clickableRows && handleRowClick(row)}
               className="bg-white hover:bg-gray-100 transition-colors duration-200 group"
             >
               {columns.map((col: any, colIndex: any) => (
@@ -81,10 +108,18 @@ const Table = ({
                     ? convertISOToJalali(row[col.accessor])
                     : row[col.accessor]}
                   {col.type === "editButton" && (
-                    <MdEdit size={20} className="text-blue-500" />
+                    <MdEdit
+                      size={20}
+                      className="text-blue-500 cursor-pointer"
+                      onClick={() => handleEdit(row)}
+                    />
                   )}
                   {col.type === "deleteButton" && (
-                    <MdDelete size={20} className="text-rose-500" />
+                    <MdDelete
+                      size={20}
+                      className="text-rose-500 cursor-pointer"
+                      onClick={() => handleDelete(row)}
+                    />
                   )}
                 </td>
               ))}
@@ -113,6 +148,16 @@ const Table = ({
           بعدی
         </button>
       </div>
+      <Popup
+        isOpen={modal === "delete" ? isDeleteModalOpen : isEditModalOpen}
+        onClose={() =>
+          modal === "delete"
+            ? setIsDeleteModalOpen(false)
+            : setIsEditModalOpen(false)
+        }
+      >
+        <div>{modal === "delete" ? "delete" : "edit"}</div>
+      </Popup>
     </div>
   );
 };

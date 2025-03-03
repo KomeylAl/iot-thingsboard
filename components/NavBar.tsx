@@ -32,12 +32,12 @@ const links = [
     subItems: [
       {
         id: "devices-profiles",
-        title: "پروفیال دستگاه ها",
+        title: "پروفایل دستگاه ها",
         href: "/dashboard/profiles/devices",
       },
       {
         id: "assets-profiles",
-        title: "پروفیال دارایی ها",
+        title: "پروفایل دارایی ها",
         href: "/dashboard/profiles/assets",
       },
     ],
@@ -64,7 +64,7 @@ const links = [
   },
   {
     id: "settings",
-    title: "تنظیات",
+    title: "تنظیمات",
     href: "/dashboard/settings",
   },
 ];

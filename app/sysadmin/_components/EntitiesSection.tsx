@@ -1,7 +1,7 @@
 import { useLocalAssets } from "@/hooks/useAssets";
 import { useCustomers, useLocalCustomers } from "@/hooks/useCustomers";
 import { useLocalDevices } from "@/hooks/useDevices";
-import { useLocalTenantsUsers } from "@/hooks/useUser";
+import { useAllUsers } from "@/hooks/useUser";
 import React from "react";
 import { PuffLoader } from "react-spinners";
 
@@ -22,7 +22,7 @@ const EntitiesSection = () => {
     data: usersData,
     isLoading: usersLoading,
     error: usersError,
-  } = useLocalTenantsUsers();
+  } = useAllUsers();
 
   const {
     data: customersData,

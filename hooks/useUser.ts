@@ -11,7 +11,17 @@ export function useUser() {
   });
 }
 
-export function useLocalTenantsUsers() {
+export function useLocalTenantsUsers(tenantId: string) {
+  return useQuery({
+    queryKey: ["localUsers"],
+    queryFn: async () => {
+      const res = await fetch(`/api/sysadmin/tenants/${tenantId}/users/local`);
+      return res.json();
+    },
+  });
+}
+
+export function useAllUsers() {
   return useQuery({
     queryKey: ["localUsers"],
     queryFn: async () => {

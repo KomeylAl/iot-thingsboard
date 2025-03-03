@@ -1,6 +1,9 @@
+'use client';
+
 import { useEffect, useState } from "react";
 import { transformTelemetryData } from "./convert";
 import Table from "@/app/dashboard/_components/Teble";
+import toast from "react-hot-toast";
 
 const getTokenFromApi = async () => {
   const res = await fetch("/api/token");
@@ -71,7 +74,10 @@ const TelemetryDevices = ({ deviceId }: { deviceId: string }) => {
         });
       };
 
-      ws.onerror = (error) => console.error("WebSocket Error:", error);
+      ws.onerror = (error) => {
+        console.error("WebSocket Error:", error);
+        toast.error("خطا در برقراری ارتباط");
+      };
       ws.onclose = () => console.log("WebSocket Disconnected");
 
       return () => ws.close();
