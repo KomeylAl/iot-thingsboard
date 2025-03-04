@@ -63,3 +63,48 @@ export function useStoreProfile(onProfileStored: () => void) {
     },
   });
 }
+
+export function useUpdateProfile(onProfileStored: () => void) {
+  return useMutation({
+    mutationFn: async (profileData: any) => {
+      const res = await fetch("/api/sysadmin/tenants/profiles", {
+        method: "POST",
+        body: JSON.stringify(profileData),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        console.log(data)
+        throw new Error("مشکلی در ویرایش پروفایل پیش آمده!");
+      }
+    },
+    onError(error) {
+      toast.error(error.message);
+      console.log(error);
+    },
+    onSuccess: () => {
+      toast.success("پروفایل با ویرایش حذف شد");
+      onProfileStored();
+    },
+  });
+}
+
+export function useDeleteProfile(profileId: string, onDeletedProfile: () => void) {
+  return useMutation({
+    mutationFn: async () => {
+      const res = await fetch(`/api/sysadmin/tenants/profiles/${profileId}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        throw new Error("مشکلی در حذف پروفایل پیش آمده!");
+      }
+    },
+    onError(error) {
+      toast.error(error.message);
+      console.log(error);
+    },
+    onSuccess: () => {
+      toast.success("پروفایل با موفقت حذف شد");
+      onDeletedProfile();
+    },
+  });
+}

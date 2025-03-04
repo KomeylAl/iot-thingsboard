@@ -3,29 +3,23 @@
 import Table from "@/app/dashboard/_components/Teble";
 import Popup from "@/components/Popup";
 import SearchBar from "@/components/SearchBar";
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import React, { useState } from "react";
 import { BiPlus } from "react-icons/bi";
 import AddProfileForm from "../_components/AddProfileForm";
+import EditProfileForm from "../_components/EditProfileForm";
+import DeleteModal from "@/components/DeleteModal";
+import { useDeleteProfile, useTenantProfiles } from "@/hooks/useProfiles";
+import { PuffLoader } from "react-spinners";
 
 const Profiles = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [modal, setModal] = useState("add");
+  const [id, setId] = useState("");
+  const [profile, setProfile] = useState<any>({});
   const toggleMpdal = () => {
-    setModal("add");
     setIsModalOpen(!isModalOpen);
   };
-
-  const [isLoading, setIsLoading] = useState(false);
-  const [profiles, setProfiles] = useState([]);
-  const [profilesPageInfo, setProfilesPageInfo] = useState({
-    totalPages: 0,
-    totalElements: 0,
-    hasNext: false,
-  });
 
   const columns = [
     { header: "نام", accessor: "name", type: "string" },
@@ -35,37 +29,12 @@ const Profiles = () => {
     { header: "حذف", accessor: "", type: "deleteButton" },
   ];
 
-  const fetchProfiles = async () => {
-    setIsLoading(true);
-    await axios
-      .get("/api/sysadmin/tenants/profiles", {
-        params: {
-          pageSize: 10,
-          page: 0,
-        },
-      })
-      .then(function (response) {
-        const data = response.data;
-        setProfiles(data.data);
-        console.log(data);
-        setProfilesPageInfo({
-          totalPages: data.totalPages,
-          totalElements: data.totalElements,
-          hasNext: data.hasNext,
-        });
-      })
-      .catch(function (error) {
-        if (error.status === 500) {
-          toast.error("خطا در برقراری ارتباط");
-        }
-        console.log(error);
-      })
-      .finally(() => setIsLoading(false));
-  };
+  const { data, isLoading, error, refetch } = useTenantProfiles(10, 0);
 
-  useEffect(() => {
-    fetchProfiles();
-  }, []);
+  const { mutate: deleteProfile, isPending } = useDeleteProfile(id, () => {
+    setIsDeleteModalOpen(false);
+    refetch();
+  });
 
   return (
     <div className="p-6 lg:p-20 w-full h-screen flex flex-col items-center justify-between gap-6">
@@ -82,21 +51,58 @@ const Profiles = () => {
         </div>
       </div>
       <div className="w-full h-[85%]">
-        <Table
-          columns={columns}
-          data={profiles}
-          RPP={10}
-          clickableRows={false}
-          getRowLink={(row: any) => `/sysadmin/profiles/${row.id.id}`}
-          onDeleteClicked={(row: any) => `${row.id.id}`}
-        />
+        {error && (
+          <div className="w-full h-full flex items-center justify-center">
+            <p style={{ color: "red" }}>خطا در دریافت اطلاعات پروفایل ها</p>
+          </div>
+        )}
+
+        {isLoading && (
+          <div className="w-full h-full flex items-center justify-center">
+            <PuffLoader color="#3b82f6" />
+          </div>
+        )}
+
+        {data && (
+          <Table
+            columns={columns}
+            data={data.data}
+            RPP={10}
+            clickableRows={false}
+            getRowLink={(row: any) => `/sysadmin/profiles/${row.id.id}`}
+            onDeleteClicked={(row: any) => {
+              setId(row.id.id);
+              setIsDeleteModalOpen(true);
+            }}
+            onEditClicked={(row: any) => {
+              setProfile(row);
+              setIsEditModalOpen(true);
+            }}
+          />
+        )}
       </div>
       <Popup isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <AddProfileForm
           onProfileAdded={() => {
             setIsModalOpen(false);
-            fetchProfiles();
+            refetch();
           }}
+        />
+      </Popup>
+      <Popup isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}>
+        <EditProfileForm
+          profileData={profile}
+          onProfileEdited={() => setIsEditModalOpen(false)}
+        />
+      </Popup>
+      <Popup
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+      >
+        <DeleteModal
+          onCancel={() => setIsDeleteModalOpen(false)}
+          deleteFunc={() => deleteProfile()}
+          isDeleting={isPending}
         />
       </Popup>
     </div>

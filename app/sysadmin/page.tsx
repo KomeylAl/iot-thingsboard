@@ -12,6 +12,7 @@ import SystemInfo from "./_components/SystemInfo";
 import { useTenantProfiles } from "@/hooks/useProfiles";
 import EntitiesSection from "./_components/EntitiesSection";
 import AddProfileForm from "./_components/AddProfileForm";
+import Header from "@/components/Header";
 
 const AdminDashboard = () => {
   
@@ -34,7 +35,7 @@ const AdminDashboard = () => {
   return (
     <div className="p-6 lg:p-20 w-full min-h-screen flex flex-col">
       {/* هدر */}
-      <h1 className="text-xl lg:text-3xl font-bold">داشبورد مدیریت</h1>
+      <Header title="داشبورد مدیریت" isShowSearch={false} />
 
       {/* محتوای اصلی */}
       <div className="flex-1 flex flex-col lg:flex-row gap-6 mt-6 overflow-hidden">

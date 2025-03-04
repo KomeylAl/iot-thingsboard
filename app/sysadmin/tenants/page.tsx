@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import { BiPlus } from "react-icons/bi";
 import AddTenantForm from "../_components/AddTenantForm";
 import { PuffLoader } from "react-spinners";
+import Header from "@/components/Header";
 
 const columns = [
   { header: "نام", accessor: "name" },
@@ -28,9 +29,8 @@ const Tenants = () => {
   return (
     <div className="p-6 lg:p-20 w-full h-screen flex flex-col items-center justify-between gap-6">
       <div className="w-full h-[15%] flex flex-col items-start justify-between">
-        <SearchBar />
+        <Header title="سازمان ها" isShowSearch />
         <div className="flex items-center justify-between w-full">
-          <h1 className="text-xl lg:text-3xl font-bold">سازمان ها</h1>
           <button
             onClick={toggleMpdal}
             className="py-2 px-4 bg-blue-500 text-white rounded-lg flex items-center"
