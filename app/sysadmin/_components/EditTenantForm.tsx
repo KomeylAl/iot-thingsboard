@@ -66,9 +66,10 @@ const EditTenantForm = ({ tenantData, onTenantUpdated }: EditTenantProps) => {
   const onSubmit = (data: any) => {
     const formattedData = {
       ...data,
-      tenantProfileId: data.tenantProfileId ? data.tenantProfileId.value : tenantData.tenantProfileId.id,
+      tenantprofileId: data.tenantProfileId.value ? data.tenantProfileId.value : tenantData.tenantProfileId.id,
       set_id: tenantData.id.id
     };
+    console.log(formattedData)
     updateTenant(formattedData);
   };
 

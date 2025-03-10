@@ -25,7 +25,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
       region,
       profile,
       additionalInfo: { description },
-      tenantProfileId,
+      tenantprofileId,
     } = data;
 
     const id = set_id && { id: set_id, entityType: "TENANT" };
@@ -44,8 +44,10 @@ export async function POST(req: NextRequest, res: NextResponse) {
       region,
       profile,
       additionalInfo: { description },
-      tenantProfileId: { id: tenantProfileId, entityType: "TENANT_PROFILE" },
+      tenantProfileId: { id: tenantprofileId, entityType: "TENANT_PROFILE" },
     });
+
+    console.log(sendData)
 
     const response = await fetch(`${process.env.THINGSBOARD_URL}/api/tenant`, {
       method: "POST",

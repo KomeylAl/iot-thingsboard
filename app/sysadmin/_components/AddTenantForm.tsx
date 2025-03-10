@@ -71,7 +71,12 @@ const AddTenantForm = ({ onTenantAdded }: AddTenantProps) => {
   });
 
   const onSubmit = (data: any) => {
-    addTenant(data);
+    const formattedData = {
+      ...data,
+      tenantprofileId: data.tenantProfileId.value ? data.tenantProfileId.value : profilesOptions[0].value
+    }
+    console.log(formattedData);
+    addTenant(formattedData);
   };
 
   return (
@@ -100,6 +105,7 @@ const AddTenantForm = ({ onTenantAdded }: AddTenantProps) => {
                 className=""
                 placeholder="پروفایل سازمان"
                 options={profilesOptions}
+                defaultInputValue={profilesOptions[0].label}
                 getOptionLabel={(option) => option.label}
                 getOptionValue={(option) => option.value}
                 value={
@@ -108,7 +114,7 @@ const AddTenantForm = ({ onTenantAdded }: AddTenantProps) => {
                   ) || null
                 }
                 defaultValue={
-                  profilesOptions.length > 0 ? profilesOptions[0] : null
+                  profilesOptions.length > 0 ? profilesOptions[0].value : null
                 }
               />
             )}
