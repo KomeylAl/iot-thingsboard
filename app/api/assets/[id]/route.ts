@@ -1,13 +1,16 @@
+import prisma from "@/utils/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   const token = req.cookies.get("token");
-  const params = req.nextUrl.searchParams;
-  const pageSize = params.get("pageSize") || 1;
-  const page = params.get("page") || 0;
+  const { id } = await params;
+
   try {
     const response = await fetch(
-      `${process.env.THINGSBOARD_URL}/api/assetProfiles?pageSize=${pageSize}&page=${page}`,
+      `${process.env.THINGSBOARD_URL}/api/asset/${id}`,
       {
         method: "GET",
         headers: {
@@ -19,73 +22,63 @@ export async function GET(req: NextRequest) {
 
     if (!response.ok) {
       return NextResponse.json(
-        { message: "Error getting asset profiles" },
-        { status: response.status }
+        { message: "Error getting asset" },
+        { status: response.status },
       );
     }
 
     const data = await response.json();
 
     return NextResponse.json(data, { status: 200 });
-  } catch (error) {
+  } catch (error: any) {
     return NextResponse.json(
-      { message: "Error getting asset profiles" },
+      { message: `Something went wrong: ${error.message}` },
       { status: 500 }
     );
   }
 }
 
-export async function POST(req: NextRequest) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   const token = req.cookies.get("token");
+  const { id } = await params;
 
-  if (!token || !token.value) {
+  if (!token) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
-  const data = await req.json();
-
   try {
-    const {
-      set_id,
-      name,
-      description,
-    } = data;
-
-    const id = set_id && { id: set_id, entityType: "ASSET_PROFILE" };
-
-    const reqData = JSON.stringify({
-      id,
-      name,
-      description,
-    });
-
     const response = await fetch(
-      `${process.env.THINGSBOARD_URL}/api/assetProfile`,
+      `${process.env.THINGSBOARD_URL}/api/asset/${id}`,
       {
-        method: "POST",
+        method: "DELETE",
         headers: {
           "Content-type": "application/json",
           Authorization: `Bearer ${token?.value}`,
         },
-        body: reqData,
       }
     );
 
     if (!response.ok) {
       return NextResponse.json(
-        { message: "Error adding profile" },
+        { message: "Error deleteing asset" },
         { status: response.status }
       );
     }
 
+   //  await prisma.device.delete({
+   //    where: { things_id: id },
+   //  });
+
     return NextResponse.json(
-      { message: "Profile Added Successful" },
-      { status: 201 }
+      { message: "Asset deleted successfully" },
+      { status: 200 }
     );
   } catch (error: any) {
-    console.log(error.message);
     return NextResponse.json(
-      { message: `Error adding profile: ${error.message}` },
+      { message: `Something went wrong: ${error.message}` },
       { status: 500 }
     );
   }

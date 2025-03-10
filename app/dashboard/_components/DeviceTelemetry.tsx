@@ -12,8 +12,6 @@ interface DeviceTelemetryProps {
 }
 
 const DeviceTelemetry = ({ deviceId }: DeviceTelemetryProps) => {
-//   const telemetryData: any = useTelemetryWebSocket(deviceId);
-//   console.log(telemetryData)
 
   const columns = [
     { header: "نام", accessor: "name" },
@@ -25,25 +23,7 @@ const DeviceTelemetry = ({ deviceId }: DeviceTelemetryProps) => {
 
   return (
     <div>
-      {/* <h3>آخرین مقدار دما: {telemetryData? || "در حال دریافت..."}°C</h3> */}
       <TelemetryDevices deviceId={deviceId} />
-
-      {/* {!telemetryData?.data && (
-        <div className="w-full h-full flex items-center justify-center">
-          <PuffLoader color="#3b82f6" />
-        </div>
-      )}
-
-      {telemetryData?.data && (
-        <div className="w-full h-[85%]">
-          <Table
-            columns={columns}
-            data={telemetryData?.data}
-            RPP={10}
-            getRowLink={(row: any) => `/dashboard/alarms/${row.id.id}`}
-          />
-        </div>
-      )} */}
     </div>
   );
 };

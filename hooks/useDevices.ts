@@ -76,6 +76,49 @@ export function useDeviceAlarms(
   });
 }
 
+export function useDeviceAudits(
+  deviceId: string,
+  pageSize: number = 1,
+  page: number = 0
+) {
+  return useQuery({
+    queryKey: ["deviceAudits"],
+    queryFn: async () => {
+      const res = await fetch(
+        `/api/devices/${deviceId}/audits?pageSize=${pageSize}&page=${page}`
+      );
+      if (!res.ok) {
+        const data = await res.json();
+        console.log(data);
+        throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
+      }
+      return res.json();
+    },
+  });
+}
+
+export function useDeviceEvents(
+  deviceId: string,
+  tenantId: string,
+  pageSize: number = 1,
+  page: number = 0
+) {
+  return useQuery({
+    queryKey: ["deviceEvents"],
+    queryFn: async () => {
+      const res = await fetch(
+        `/api/devices/${deviceId}/events?tenantId=${tenantId}&pageSize=${pageSize}&page=${page}`
+      );
+      if (!res.ok) {
+        const data = await res.json();
+        console.log(data);
+        throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
+      }
+      return res.json();
+    },
+  });
+}
+
 export function useDeleteDevice(deviceId: string, onDeviceDeleted: () => void) {
   return useMutation({
     mutationFn: async () => {
@@ -115,7 +158,7 @@ export function useUpdateDevice(onDeviceUpdated: () => void) {
       console.log(error);
     },
     onSuccess: () => {
-      toast.success("دستگاه با ویرایش حذف شد");
+      toast.success("دستگاه با موفقیت ویرایش حذف شد");
       onDeviceUpdated();
     },
   });

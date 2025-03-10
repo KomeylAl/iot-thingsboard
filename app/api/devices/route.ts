@@ -5,16 +5,17 @@ export async function POST(req: NextRequest) {
   const token = req.cookies.get("token");
   try {
     const {
+      set_id,
       name,
       label,
       type,
       tenantId,
+      deviceProfileId,
       additionalInfo: { location, description },
     } = await req.json();
-
     
     const tenant = await prisma.tenant.findUnique({
-      where: { things_id: tenantId }
+      where: { things_id: tenantId.id }
     });
     
     if (!tenant) {
@@ -24,21 +25,31 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const id = set_id && {id: set_id,
+      entityType: "DEVICE",}
+
+      const sendData = JSON.stringify({
+        id,
+        name,
+        label,
+        type,
+        deviceProfileId: { id: deviceProfileId, entityType: "DEVICE_PROFILE" },
+        tenantId,
+        additionalInfo: { location, description },
+      });
+
     const response = await fetch(`${process.env.THINGSBOARD_URL}/api/device`, {
       method: "POST",
       headers: {
         "Content-type": "application/json",
         Authorization: `Bearer ${token?.value}`,
       },
-      body: JSON.stringify({
-        name,
-        label,
-        type,
-        additionalInfo: { location, description },
-      }),
+      body: sendData,
     });
 
     if (!response.ok) {
+      const data = await response.json();
+      console.log(data)
       return NextResponse.json(
         { message: "Error adding device" },
         { status: response.status }
@@ -46,15 +57,31 @@ export async function POST(req: NextRequest) {
     }
 
     const data = await response.json();
-    
-    await prisma.device.create({
-      data: {
-        things_id: data.id.id,
-        name,
-        type,
-        tenantId: tenant!.id,
-      },
+
+    const device = await prisma.device.findUnique({
+      where: { things_id: data.id.id }
     });
+
+    if (!device) {
+      await prisma.device.create({
+        data: {
+          things_id: data.id.id,
+          name,
+          type,
+          tenantId: tenant!.id,
+        },
+      });
+    } else {
+      await prisma.device.update({
+        where: { things_id: set_id },
+        data: {
+          things_id: data.id.id,
+          name,
+          type,
+          tenantId: tenant!.id,
+        },
+      });
+    }
 
     return NextResponse.json(
       { message: "Device Added Successful" },

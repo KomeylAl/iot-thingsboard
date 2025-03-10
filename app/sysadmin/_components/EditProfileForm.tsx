@@ -41,7 +41,7 @@ interface EditProfileProps {
 }
 
 const EditProfileForm = ({ profileData, onProfileEdited }: EditProfileProps) => {
-  const { mutate: upfateProfile, isPending } = useUpdateProfile(() => {
+  const { mutate: updateProfile, isPending } = useUpdateProfile(() => {
     onProfileEdited();
   });
 
@@ -70,7 +70,7 @@ const EditProfileForm = ({ profileData, onProfileEdited }: EditProfileProps) => 
       set_id: profileData.id.id,
    }
     console.log(data);
-    upfateProfile(formattedData);
+    updateProfile(formattedData);
   };
 
   return (

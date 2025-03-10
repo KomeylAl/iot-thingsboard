@@ -56,7 +56,8 @@ const RuleChains = () => {
             columns={columns}
             data={data.data}
             RPP={10}
-            getRowLink={(row: any) => `/devices/${row.id.id}`}
+            clickableRows={false}
+            getRowLink={() => ""}
           />
         </div>
       )}

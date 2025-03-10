@@ -9,7 +9,7 @@ import { useEffect } from "react";
 import { useUpdateTenant } from "@/hooks/useTenants";
 
 const schema = yup.object({
-  name: yup.string().required("عنوان الزامی است"),
+  title: yup.string().required("عنوان الزامی است"),
   country: yup.string().optional(),
   state: yup.string().optional(),
   city: yup.string().optional(),
@@ -66,8 +66,8 @@ const EditTenantForm = ({ tenantData, onTenantUpdated }: EditTenantProps) => {
   const onSubmit = (data: any) => {
     const formattedData = {
       ...data,
-      tenantProfileId: data.tenantProfileId ? { id: data.tenantProfileId.value, entityType: "TENANT_PROFILE" } : null,
-      id: tenantData.things_id
+      tenantProfileId: data.tenantProfileId ? data.tenantProfileId.value : tenantData.tenantProfileId.id,
+      set_id: tenantData.id.id
     };
     updateTenant(formattedData);
   };
@@ -80,12 +80,12 @@ const EditTenantForm = ({ tenantData, onTenantUpdated }: EditTenantProps) => {
         className="flex flex-col gap-3 w-72 md:w-96"
       >
         <input
-          {...register("name")}
+          {...register("title")}
           className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
           placeholder="عنوان*"
         />
-        {errors.name && (
-          <p className="text-red-500 text-sm">{errors.name.message as string}</p>
+        {errors.title && (
+          <p className="text-red-500 text-sm">{errors.title.message as string}</p>
         )}
 
         {!isLoading && (

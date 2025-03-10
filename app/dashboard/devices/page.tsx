@@ -22,9 +22,8 @@ const Devices = () => {
 
   const columns = [
     { header: "نام", accessor: "name" },
-    { header: "پروفایل", accessor: "type" },
+    { header: "نوع", accessor: "type" },
     { header: "مشتری", accessor: "customer.name" },
-    { header: "وضعیت", accessor: "status" },
     { header: "زمان ایجاد", accessor: "createdAt" },
   ];
 

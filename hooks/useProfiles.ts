@@ -50,7 +50,7 @@ export function useStoreProfile(onProfileStored: () => void) {
       if (!res.ok) {
         const data = await res.json();
         console.log(data)
-        throw new Error("مشکلی در ویرایش پروفایل پیش آمده!");
+        throw new Error("مشکلی در افزودن پروفایل پیش آمده!");
       }
     },
     onError(error) {
@@ -58,7 +58,7 @@ export function useStoreProfile(onProfileStored: () => void) {
       console.log(error);
     },
     onSuccess: () => {
-      toast.success("پروفایل با ویرایش حذف شد");
+      toast.success("پروفایل با موفقیت افزوده حذف شد");
       onProfileStored();
     },
   });
@@ -82,7 +82,7 @@ export function useUpdateProfile(onProfileStored: () => void) {
       console.log(error);
     },
     onSuccess: () => {
-      toast.success("پروفایل با ویرایش حذف شد");
+      toast.success("پروفایل با موفقیت ویرایش حذف شد");
       onProfileStored();
     },
   });
@@ -92,6 +92,75 @@ export function useDeleteProfile(profileId: string, onDeletedProfile: () => void
   return useMutation({
     mutationFn: async () => {
       const res = await fetch(`/api/sysadmin/tenants/profiles/${profileId}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        throw new Error("مشکلی در حذف پروفایل پیش آمده!");
+      }
+    },
+    onError(error) {
+      toast.error(error.message);
+      console.log(error);
+    },
+    onSuccess: () => {
+      toast.success("پروفایل با موفقت حذف شد");
+      onDeletedProfile();
+    },
+  });
+}
+
+export function useStoreAssetsProfile(onProfileStored: () => void) {
+  return useMutation({
+    mutationFn: async (profileData: any) => {
+      const res = await fetch("/api/assets/profiles", {
+        method: "POST",
+        body: JSON.stringify(profileData),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        console.log(data)
+        throw new Error("مشکلی در افزودن پروفایل پیش آمده!");
+      }
+    },
+    onError(error) {
+      toast.error(error.message);
+      console.log(error);
+    },
+    onSuccess: () => {
+      toast.success("پروفایل با موفقست افزوده حذف شد");
+      onProfileStored();
+    },
+  });
+}
+
+export function useUpdateAssetsProfile(onProfileStored: () => void) {
+  return useMutation({
+    mutationFn: async (profileData: any) => {
+      const res = await fetch("/api/assets/profiles", {
+        method: "POST",
+        body: JSON.stringify(profileData),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        console.log(data)
+        throw new Error("مشکلی در ویرایش پروفایل پیش آمده!");
+      }
+    },
+    onError(error) {
+      toast.error(error.message);
+      console.log(error);
+    },
+    onSuccess: () => {
+      toast.success("پروفایل با موفقیت ویرایش حذف شد");
+      onProfileStored();
+    },
+  });
+}
+
+export function useDeleteAssetsProfile(profileId: string, onDeletedProfile: () => void) {
+  return useMutation({
+    mutationFn: async () => {
+      const res = await fetch(`/api/assets/profiles/${profileId}`, {
         method: "DELETE",
       });
       if (!res.ok) {

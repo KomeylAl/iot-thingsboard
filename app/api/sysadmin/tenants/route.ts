@@ -12,8 +12,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
   try {
     const {
-      id,
-      name,
+      set_id,
+      title,
       country,
       state,
       city,
@@ -28,33 +28,11 @@ export async function POST(req: NextRequest, res: NextResponse) {
       tenantProfileId,
     } = data;
 
-    const response = await fetch(`${process.env.THINGSBOARD_URL}/api/tenant`, {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-        Authorization: `Bearer ${token?.value}`,
-      },
-      body: JSON.stringify({
-        id: { id, entityType: "TENANT" },
-        title: name,
-        country,
-        state,
-        city,
-        address,
-        address2,
-        zip,
-        phone,
-        email,
-        region,
-        profile,
-        additionalInfo: { description },
-        tenantProfileId,
-      }),
-    });
+    const id = set_id && { id: set_id, entityType: "TENANT" };
 
-    const resBody = JSON.stringify({
-      id: { id, entityType: "TENANT" },
-      title: name,
+    const sendData = JSON.stringify({
+      id,
+      title,
       country,
       state,
       city,
@@ -66,12 +44,21 @@ export async function POST(req: NextRequest, res: NextResponse) {
       region,
       profile,
       additionalInfo: { description },
-      tenantProfileId,
-    })
+      tenantProfileId: { id: tenantProfileId, entityType: "TENANT_PROFILE" },
+    });
 
-    console.log(resBody)
+    const response = await fetch(`${process.env.THINGSBOARD_URL}/api/tenant`, {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `Bearer ${token?.value}`,
+      },
+      body: sendData,
+    });
 
     if (!response.ok) {
+      const data = await response.json();
+      console.log(data);
       return NextResponse.json(
         { message: "Error adding tenant" },
         { status: response.status }
@@ -80,31 +67,33 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
     const newTenant = await response.json();
 
+    console.log(newTenant)
+
     const tenant = await prisma.tenant.findUnique({
-      where: { things_id: id }
+      where: { things_id: newTenant.id.id },
     });
 
     if (!tenant) {
       await prisma.tenant.create({
         data: {
           email: email || `no-email-${newTenant.id.id}@example.com`,
-          name,
-          phone: newTenant.phone,
+          name: title,
+          phone: newTenant.phone || `no-phone-${newTenant.id.id}`,
           things_id: newTenant.id.id,
           planId: 1,
         },
       });
     } else {
       await prisma.tenant.update({
-        where: { things_id: id },
+        where: { things_id: set_id },
         data: {
           email: email || `no-email-${newTenant.id.id}@example.com`,
-          name,
-          phone: newTenant.phone,
+          name: title,
+          phone: newTenant.phone || `no-phone-${newTenant.id.id}`,
           things_id: newTenant.id.id,
           planId: 1,
-        }
-      })
+        },
+      });
     }
 
     return NextResponse.json(

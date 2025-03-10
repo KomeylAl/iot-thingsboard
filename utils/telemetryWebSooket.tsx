@@ -1,9 +1,10 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from "react";
 import { transformTelemetryData } from "./convert";
 import Table from "@/app/dashboard/_components/Teble";
 import toast from "react-hot-toast";
+import { PuffLoader } from "react-spinners";
 
 const getTokenFromApi = async () => {
   const res = await fetch("/api/token");
@@ -52,15 +53,17 @@ const TelemetryDevices = ({ deviceId }: { deviceId: string }) => {
       ws.onmessage = (event) => {
         const receivedData = JSON.parse(event.data);
         console.log("Received telemetry:", receivedData);
-      
+
         setData((prevData: any) => {
           const newData = transformTelemetryData(receivedData.data);
-      
+
           // ترکیب داده‌های قبلی و جدید، بدون حذف ردیف‌های قدیمی
           const mergedData = [...prevData];
-      
+
           newData.forEach((newItem) => {
-            const index = mergedData.findIndex((item) => item.name === newItem.name);
+            const index = mergedData.findIndex(
+              (item) => item.name === newItem.name
+            );
             if (index !== -1) {
               // اگر مقدار قبلاً وجود دارد، مقدار جدید را جایگزین آن کنیم
               mergedData[index] = newItem;
@@ -69,7 +72,7 @@ const TelemetryDevices = ({ deviceId }: { deviceId: string }) => {
               mergedData.push(newItem);
             }
           });
-      
+
           return mergedData;
         });
       };
@@ -85,12 +88,22 @@ const TelemetryDevices = ({ deviceId }: { deviceId: string }) => {
   }, [deviceId]);
 
   return (
-    <Table
-      columns={columns}
-      data={data}
-      RPP={10}
-      getRowLink={(row: any) => `/dashboard/alarms/${row.id?.id}`}
-    />
+    <div>
+      {!data && (
+        <div className="w-full h-full flex items-center justify-center">
+          <PuffLoader color="#3b82f6" />
+        </div>
+      )}
+
+      {data && (
+        <Table
+          columns={columns}
+          data={data}
+          RPP={10}
+          getRowLink={(row: any) => `/dashboard/alarms/${row.id?.id}`}
+        />
+      )}
+    </div>
   );
 };
 

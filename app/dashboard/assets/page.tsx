@@ -7,10 +7,11 @@ import { BiPlus } from "react-icons/bi";
 import AddDevice from "../_components/AddDevice";
 import Table from "@/app/dashboard/_components/Teble";
 import { PuffLoader } from "react-spinners";
-import { useLocalAssets } from "@/hooks/useAssets";
+import { useAssets, useLocalAssets } from "@/hooks/useAssets";
+import AddAssetForm from "../_components/AddAssetForm";
 
 const Assets = () => {
-  const { data, isLoading, error, refetch } = useLocalAssets();
+  const { data, isLoading, error, refetch } = useAssets(10, 0);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const toggleMpdal = () => setIsModalOpen(!isModalOpen);
@@ -62,14 +63,14 @@ const Assets = () => {
             columns={columns}
             data={data.data}
             RPP={10}
-            getRowLink={(row: any) => `/devices/${row.id.id}`}
+            getRowLink={(row: any) => `/dashboard/assets/${row.id.id}`}
           />
         </div>
       )}
 
       <Popup isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <AddDevice
-          onDeviceAdded={() => {
+        <AddAssetForm 
+          onAssetAdded={() => {
             setIsModalOpen(false);
             refetch();
           }}

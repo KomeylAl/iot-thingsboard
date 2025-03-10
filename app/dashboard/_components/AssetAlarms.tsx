@@ -4,14 +4,14 @@ import React from "react";
 import Table from "./Teble";
 import SearchBar from "@/components/SearchBar";
 import { PuffLoader } from "react-spinners";
-import { useDeviceAlarms } from "@/hooks/useDevices";
+import { useAssetAlarms } from "@/hooks/useAssets";
 
-interface DeviceAlarmsProps {
-  deviceId: string;
+interface AssetAlarmsProps {
+  assetId: string;
 }
 
-const DeviceAlarms = ({ deviceId }: DeviceAlarmsProps) => {
-  const { data, isLoading, error, refetch } = useDeviceAlarms(deviceId, 10, 0);
+const AssetAlarms = ({ assetId }: AssetAlarmsProps) => {
+  const { data, isLoading, error, refetch } = useAssetAlarms(assetId, 10, 0);
 
   const columns = [
     { header: "نام", accessor: "name" },
@@ -48,4 +48,4 @@ const DeviceAlarms = ({ deviceId }: DeviceAlarmsProps) => {
   );
 };
 
-export default DeviceAlarms;
+export default AssetAlarms;

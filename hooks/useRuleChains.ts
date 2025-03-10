@@ -12,3 +12,16 @@ export function useRuleChains(pageSize: any = 1, page: any = 0) {
      },
    });
  }
+
+ export function useEdgeRuleChains(pageSize: any = 1, page: any = 0) {
+  return useQuery({
+    queryKey: ["edgeRuleChains"],
+    queryFn: async () => {
+      const res = await fetch(`/api/rule-chains?pageSize=${pageSize}&page=${page}`);
+      if (!res.ok) {
+        throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
+      }
+      return res.json();
+    },
+  });
+}

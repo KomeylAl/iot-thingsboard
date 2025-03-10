@@ -1,7 +1,7 @@
 "use client";
 
 import Popup from "@/components/Popup";
-import { useDeleteTenant, useLocalTenant } from "@/hooks/useTenants";
+import { useDeleteTenant, useLocalTenant, useTenant } from "@/hooks/useTenants";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { BiPencil } from "react-icons/bi";
@@ -26,6 +26,7 @@ const Tenant = ({ params }: PageProps) => {
 
   const { tenantId } = React.use<Params>(params);
   const { data, isLoading, error, refetch } = useLocalTenant(tenantId);
+  const { data: serverData } = useTenant(tenantId);
   const {
     data: syncUsersData,
     isLoading: syncUsersLoading,
@@ -129,7 +130,7 @@ const Tenant = ({ params }: PageProps) => {
             setIsModalOpen(false);
             refetch();
           }}
-          tenantData={data}
+          tenantData={serverData}
         />
       </Popup>
     </div>
