@@ -48,7 +48,11 @@ const AddAssetForm = ({ onAssetAdded }: AddAssetProps) => {
   });
 
   const onSubmit = (data: any) => {
-    addAsset(data);
+    const formattedData = {
+      ...data,
+      assetprofileId: data.assetProfileId.value ? data.assetProfileId.value : profilesOptions[0].value
+    }
+    addAsset(formattedData);
   };
 
   return (

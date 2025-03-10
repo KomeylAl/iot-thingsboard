@@ -68,7 +68,7 @@ const AddAssetProfileForm = ({ onProfileEdited }: AddAssetProfileProps) => {
           disabled={isPending || isSubmitting}
           className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg"
         >
-          {isPending || isSubmitting ? "⏳ در حال ویرایش..." : "ویرایش پروفایل"}
+          {isPending || isSubmitting ? "⏳ در حال افزودن..." : "افزودن پروفایل"}
         </button>
       </form>
     </div>

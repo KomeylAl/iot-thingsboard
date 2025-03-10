@@ -59,7 +59,7 @@ const EditAssetForm = ({ assetData, onAssetUpdated }: EditAssetProps) => {
     console.log(data.assetProfileId)
     const formattedData = {
       ...data,
-      assetProfileId: data.assetProfileId.value ? data.assetProfileId.value : assetData.assetProfileId.id,
+      assetprofileId: data.assetProfileId.value ? data.assetProfileId.value : assetData.assetProfileId.id,
       set_id: assetData.id.id
     };
     console.log(formattedData);

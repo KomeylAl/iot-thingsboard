@@ -119,6 +119,30 @@ export function useDeviceEvents(
   });
 }
 
+export function useAddDevice(onDeviceAdded: () => void) {
+  return useMutation({
+    mutationFn: async (assetData: any) => {
+      const res = await fetch("/api/devices", {
+        method: "POST",
+        body: JSON.stringify(assetData),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        console.log(data)
+        throw new Error("مشکلی در افزودن دستگاه پیش آمده!");
+      }
+    },
+    onError(error) {
+      toast.error(error.message);
+      console.log(error);
+    },
+    onSuccess: () => {
+      toast.success("دستگاه با موفقت افزوده شد");
+      onDeviceAdded();
+    },
+  });
+}
+
 export function useDeleteDevice(deviceId: string, onDeviceDeleted: () => void) {
   return useMutation({
     mutationFn: async () => {

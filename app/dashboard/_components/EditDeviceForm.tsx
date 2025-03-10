@@ -60,7 +60,8 @@ const EditDeviceForm = ({ deviceData, onDeviceUpdated }: EditDeviceProps) => {
     console.log(data.deviceProfileId)
     const formattedData = {
       ...data,
-      deviceProfileId: data.deviceProfileId.value ? data.deviceProfileId.value : deviceData.deviceProfileId.id,
+      deviceprofileId: data.deviceProfileId.value ? data.deviceProfileId.value : deviceData.deviceProfileId.id,
+      tenantid: data.tenantId.id,
       set_id: deviceData.id.id
     };
     console.log(formattedData);

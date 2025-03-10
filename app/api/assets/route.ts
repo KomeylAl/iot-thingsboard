@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
       label,
       type,
       additionalInfo: { description },
-      assetProfileId
+      assetprofileId
     } = await req.json();
 
     const id = set_id && {id: set_id,
@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
       label,
       type,
       additionalInfo: { description },
-      assetProfileId: { entityType: "ASSET_PROFILE", id: assetProfileId }
+      assetProfileId: { entityType: "ASSET_PROFILE", id: assetprofileId }
     });
 
     const response = await fetch(`${process.env.THINGSBOARD_URL}/api/asset`, {

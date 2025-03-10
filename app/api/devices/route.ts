@@ -9,13 +9,13 @@ export async function POST(req: NextRequest) {
       name,
       label,
       type,
-      tenantId,
-      deviceProfileId,
+      tenantid,
+      deviceprofileId,
       additionalInfo: { location, description },
     } = await req.json();
     
     const tenant = await prisma.tenant.findUnique({
-      where: { things_id: tenantId.id }
+      where: { things_id: tenantid }
     });
     
     if (!tenant) {
@@ -33,8 +33,7 @@ export async function POST(req: NextRequest) {
         name,
         label,
         type,
-        deviceProfileId: { id: deviceProfileId, entityType: "DEVICE_PROFILE" },
-        tenantId,
+        deviceProfileId: { id: deviceprofileId, entityType: "DEVICE_PROFILE" },
         additionalInfo: { location, description },
       });
 
