@@ -82,7 +82,7 @@ export function useUpdateProfile(onProfileStored: () => void) {
       console.log(error);
     },
     onSuccess: () => {
-      toast.success("پروفایل با موفقیت ویرایش حذف شد");
+      toast.success("پروفایل با موفقیت ویرایش شد");
       onProfileStored();
     },
   });

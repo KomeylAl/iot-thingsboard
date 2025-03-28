@@ -4,25 +4,37 @@ import Popup from "@/components/Popup";
 import SearchBar from "@/components/SearchBar";
 import React, { useState } from "react";
 import { BiPlus } from "react-icons/bi";
-import AddDevice from "../_components/AddDevice";
 import Table from "@/app/dashboard/_components/Teble";
 import { PuffLoader } from "react-spinners";
-import { useLocalCustomers } from "@/hooks/useCustomers";
+import { useCustomers, useDeleteCustomer } from "@/hooks/useCustomers";
+import AddCustomerForm from "../_components/AddCustomerForm";
+import DeleteModal from "@/components/DeleteModal";
+import EditCustomerForm from "../_components/EditCustomerForm";
 
 const Customers = () => {
-  const { data, isLoading, error, refetch } = useLocalCustomers();
+  const { data, isLoading, error, refetch } = useCustomers(10, 0);
   if (data) {
     console.log(data);
   }
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const toggleMpdal = () => setIsModalOpen(!isModalOpen);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [id, setId] = useState("");
+  const [customer, setCustomer] = useState<any>({});
+
+  const { mutate: deleteCustomer, isPending } = useDeleteCustomer(id, () => {
+    setIsDeleteModalOpen(false);
+    refetch();
+  });
 
   const columns = [
     { header: "نام", accessor: "name" },
-    { header: "پروفایل", accessor: "type" },
-    { header: "برچسب", accessor: "label" },
-    { header: "وضعیت", accessor: "status" },
+    { header: "ایمیل", accessor: "email" },
+    { header: "زمان ایجاد", accessor: "createdTime" },
+    { header: "ویرایش", accessor: "", type: "editButton" },
+    { header: "حذف", accessor: "", type: "deleteButton" },
   ];
 
   return (
@@ -64,17 +76,45 @@ const Customers = () => {
             columns={columns}
             data={data.data}
             RPP={10}
-            getRowLink={(row: any) => `/devices/${row.id.id}`}
+            clickableRows={false}
+            getRowLink={(row: any) => ``}
+            onDeleteClicked={(row: any) => {
+              setId(row.id.id);
+              setIsDeleteModalOpen(true);
+            }}
+            onEditClicked={(row: any) => {
+              setCustomer(row);
+              setIsEditModalOpen(true);
+            }}
           />
         </div>
       )}
 
       <Popup isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <AddDevice
-          onDeviceAdded={() => {
+        <AddCustomerForm
+          onCustomerAdded={() => {
             setIsModalOpen(false);
             refetch();
           }}
+        />
+      </Popup>
+      <Popup isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}>
+        <EditCustomerForm
+          customerData={customer}
+          onCustomerUpdated={() => {
+            setIsEditModalOpen(false);
+            refetch();
+          }}
+        />
+      </Popup>
+      <Popup
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+      >
+        <DeleteModal
+          onCancel={() => setIsDeleteModalOpen(false)}
+          deleteFunc={() => deleteCustomer()}
+          isDeleting={isPending}
         />
       </Popup>
     </div>

@@ -2,10 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   const token = req.cookies.get("token");
-
+  const params = req.nextUrl.searchParams;
+  const pageSize = params.get("pageSize") || 1;
+  const page = params.get("page") || 0;
   try {
     const response = await fetch(
-      `${process.env.THINGSBOARD_URL}/api/notifications/unread/count?deliveryMethod=WEB`,
+      `${process.env.THINGSBOARD_URL}/api/tenant/dashboards?pageSize=${pageSize}&page=${page}`,
       {
         method: "GET",
         headers: {
@@ -17,18 +19,17 @@ export async function GET(req: NextRequest) {
 
     if (!response.ok) {
       return NextResponse.json(
-        { message: "Error getting devices" },
+        { message: "Error getting tenant dashboards" },
         { status: response.status }
       );
     }
 
     const data = await response.json();
-    console.log(data);
 
-    return NextResponse.json(data, { status: 200 });
-  } catch (error: any) {
+    return NextResponse.json(data , { status: 200 });
+  } catch (error) {
     return NextResponse.json(
-      { message: `Error geting devices: ${error.message}` },
+      { message: "Something went wrong" },
       { status: 500 }
     );
   }

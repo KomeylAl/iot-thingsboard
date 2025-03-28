@@ -1,13 +1,11 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import axios from "axios";
 import toast from "react-hot-toast";
-import ReactSelect from "react-select";
-import { useTenantProfiles } from "@/hooks/useProfiles";
 
 const schema = yup.object({
   title: yup.string().required("عنوان الزامی است"),
@@ -23,27 +21,14 @@ const schema = yup.object({
   additionalInfo: yup.object({
     description: yup.string().optional(),
   }),
-  tenantProfileId: yup.object({
-    id: yup.string().optional(),
-    entityType: yup.string().optional(),
-  }),
   email: yup.string().email("ایمیل معتبر نیست").optional(),
 });
 
-interface AddTenantProps {
-  onTenantAdded: () => void;
+interface AddCustomerProps {
+  onCustomerAdded: () => void;
 }
 
-const AddTenantForm = ({ onTenantAdded }: AddTenantProps) => {
-
-  const { data, isLoading} = useTenantProfiles(100, 0);
-
-  const profilesOptions =
-    data?.data.map((profile: any) => ({
-      value: profile.id.id,
-      label: profile.name,
-    })) || [];
-
+const AddCustomerForm = ({ onCustomerAdded }: AddCustomerProps) => {
   const {
     register,
     handleSubmit,
@@ -54,16 +39,16 @@ const AddTenantForm = ({ onTenantAdded }: AddTenantProps) => {
     resolver: yupResolver(schema),
   });
 
-  const { mutate: addTenant, isPending } = useMutation({
-    mutationFn: async (tenantData) => {
-      const res = await axios.post("/api/sysadmin/tenants", tenantData);
+  const { mutate: addCustomer, isPending } = useMutation({
+    mutationFn: async (CustomerData) => {
+      const res = await axios.post("/api/customers", CustomerData);
       return res.data;
     },
     onSuccess: () => {
       reset();
       console.log();
-      toast.success("سازمان جدید با موفقیت اضافه شد");
-      onTenantAdded();
+      toast.success("مشتری جدید با موفقیت اضافه شد");
+      onCustomerAdded();
     },
     onError: (error) => {
       console.log(error);
@@ -71,17 +56,12 @@ const AddTenantForm = ({ onTenantAdded }: AddTenantProps) => {
   });
 
   const onSubmit = (data: any) => {
-    const formattedData = {
-      ...data,
-      tenantprofileId: data.tenantProfileId.value ? data.tenantProfileId.value : profilesOptions[0].value
-    }
-    console.log(formattedData);
-    addTenant(formattedData);
+    addCustomer(data);
   };
 
   return (
     <div className="flex flex-col items-start gap-8">
-      <h1 className="font-bold text-xl">افزودن سازمان</h1>
+      <h1 className="font-bold text-xl">افزودن مشتری</h1>
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col gap-3 w-72 md:w-96"
@@ -93,31 +73,6 @@ const AddTenantForm = ({ onTenantAdded }: AddTenantProps) => {
         />
         {errors.title && (
           <p className="text-red-500 text-sm">{errors.title.message}</p>
-        )}
-
-        {!isLoading && (
-          <Controller
-            name="tenantProfileId"
-            control={control}
-            render={({ field }) => (
-              <ReactSelect
-                {...field}
-                className=""
-                placeholder="پروفایل سازمان"
-                options={profilesOptions}
-                getOptionLabel={(option) => option.label}
-                getOptionValue={(option) => option.value}
-                value={
-                  profilesOptions.find(
-                    (option: any) => option.value === field.value
-                  ) || null
-                }
-                defaultValue={
-                  profilesOptions.length > 0 ? profilesOptions[0].value : null
-                }
-              />
-            )}
-          />
         )}
 
         <input
@@ -182,11 +137,11 @@ const AddTenantForm = ({ onTenantAdded }: AddTenantProps) => {
           disabled={isPending || isSubmitting}
           className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg"
         >
-          {isPending || isSubmitting ? "⏳ در حال افزودن..." : "افزودن سازمان"}
+          {isPending || isSubmitting ? "⏳ در حال افزودن..." : "افزودن مشتری"}
         </button>
       </form>
     </div>
   );
 };
 
-export default AddTenantForm;
+export default AddCustomerForm;

@@ -5,7 +5,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const response = await fetch(
-      `${process.env.THINGSBOARD_URL}/api/notifications/unread/count?deliveryMethod=WEB`,
+      "http://93.127.180.145:8080/api/audit/logs?pageSize=1000&page=0",
       {
         method: "GET",
         headers: {
@@ -17,18 +17,19 @@ export async function GET(req: NextRequest) {
 
     if (!response.ok) {
       return NextResponse.json(
-        { message: "Error getting devices" },
+        { message: "Error" },
         { status: response.status }
       );
     }
 
+    
     const data = await response.json();
-    console.log(data);
 
     return NextResponse.json(data, { status: 200 });
   } catch (error: any) {
+    console.log(error.message);
     return NextResponse.json(
-      { message: `Error geting devices: ${error.message}` },
+      { message: `Somethings went wrong: ${error.message}` },
       { status: 500 }
     );
   }

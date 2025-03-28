@@ -2,12 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   const token = req.cookies.get("token");
+  const params = req.nextUrl.searchParams;
+  const id = params.get("id");
 
   try {
     const response = await fetch(
-      `${process.env.THINGSBOARD_URL}/api/notifications/unread/count?deliveryMethod=WEB`,
+      `${process.env.THINGSBOARD_URL}/api/notification/${id}/read`,
       {
-        method: "GET",
+        method: "PUT",
         headers: {
           "Content-type": "application/json",
           Authorization: `Bearer ${token?.value}`,
@@ -16,19 +18,18 @@ export async function GET(req: NextRequest) {
     );
 
     if (!response.ok) {
+      const data = await response.json();
+      console.log(data);
       return NextResponse.json(
-        { message: "Error getting devices" },
+        { message: `Error marking noti: ${data}` },
         { status: response.status }
       );
     }
-
-    const data = await response.json();
-    console.log(data);
-
-    return NextResponse.json(data, { status: 200 });
+    return NextResponse.json({ message: "Notif marked successfully" }, { status: 200 });
   } catch (error: any) {
+    console.log(error);
     return NextResponse.json(
-      { message: `Error geting devices: ${error.message}` },
+      { message: `Error marking notif: ${error.message}` },
       { status: 500 }
     );
   }

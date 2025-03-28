@@ -5,9 +5,9 @@ export async function GET(req: NextRequest) {
 
   try {
     const response = await fetch(
-      `${process.env.THINGSBOARD_URL}/api/notifications/unread/count?deliveryMethod=WEB`,
+      `${process.env.THINGSBOARD_URL}/api/notifications/read?deliveryMethod=WEB`,
       {
-        method: "GET",
+        method: "PUT",
         headers: {
           "Content-type": "application/json",
           Authorization: `Bearer ${token?.value}`,
@@ -16,19 +16,18 @@ export async function GET(req: NextRequest) {
     );
 
     if (!response.ok) {
+      const data = await response.json();
+      console.log(data);
       return NextResponse.json(
-        { message: "Error getting devices" },
+        { message: `Error marking notis: ${data}` },
         { status: response.status }
       );
     }
-
-    const data = await response.json();
-    console.log(data);
-
-    return NextResponse.json(data, { status: 200 });
+    return NextResponse.json({ message: "Notifs marked successfully" }, { status: 200 });
   } catch (error: any) {
+    console.log(error);
     return NextResponse.json(
-      { message: `Error geting devices: ${error.message}` },
+      { message: `Error marking notifs: ${error.message}` },
       { status: 500 }
     );
   }

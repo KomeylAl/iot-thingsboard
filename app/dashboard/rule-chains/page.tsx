@@ -2,27 +2,36 @@
 
 import Popup from "@/components/Popup";
 import SearchBar from "@/components/SearchBar";
-import { useRuleChains } from "@/hooks/useRuleChains";
+import { useDeleteRuleChain, useRuleChains } from "@/hooks/useRuleChains";
 import React, { useState } from "react";
 import { BiPlus } from "react-icons/bi";
 import { PuffLoader } from "react-spinners";
 import Table from "../_components/Teble";
+import AddRuleChainForm from "../_components/AddRuleChainForm";
+import DeleteModal from "@/components/DeleteModal";
+import EditRuleChainForm from "../_components/EditRuleChainForm";
 
 const RuleChains = () => {
   const { data, isLoading, error, refetch } = useRuleChains(10, 0);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const toggleMpdal = () => setIsModalOpen(!isModalOpen);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [id, setId] = useState("");
+  const [ruleChain, setRuleChain] = useState<any>({});
 
-  if (data) {
-    console.log(data);
-  }
+  const { mutate: deleteRuleChain, isPending } = useDeleteRuleChain(id, () => {
+    setIsDeleteModalOpen(false);
+    refetch();
+  });
 
   const columns = [
     { header: "نام", accessor: "name" },
     { header: "نوع", accessor: "type" },
-    { header: "توضیحات", accessor: "" },
     { header: "تاریخ ایجاد", accessor: "createdTime" },
+    { header: "ویرایش", accessor: "", type: "editButton" },
+    { header: "حذف", accessor: "", type: "deleteButton" },
   ];
 
   return (
@@ -58,18 +67,45 @@ const RuleChains = () => {
             RPP={10}
             clickableRows={false}
             getRowLink={() => ""}
+            onDeleteClicked={(row: any) => {
+              setId(row.id.id);
+              setIsDeleteModalOpen(true);
+            }}
+            onEditClicked={(row: any) => {
+              setRuleChain(row);
+              setIsEditModalOpen(true);
+            }}
           />
         </div>
       )}
 
       <Popup isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        {/* <AddDevice
-          onDeviceAdded={() => {
+        <AddRuleChainForm
+          onRuleChainAdded={() => {
             setIsModalOpen(false);
             refetch();
           }}
-        /> */}
-        <div></div>
+        />
+      </Popup>
+
+      <Popup isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}>
+        <EditRuleChainForm
+          ruleChainData={ruleChain}
+          onRuleChainUpdated={() => {
+            setIsEditModalOpen(false);
+            refetch();
+          }}
+        />
+      </Popup>
+      <Popup
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+      >
+        <DeleteModal
+          onCancel={() => setIsDeleteModalOpen(false)}
+          deleteFunc={() => deleteRuleChain()}
+          isDeleting={isPending}
+        />
       </Popup>
     </div>
   );

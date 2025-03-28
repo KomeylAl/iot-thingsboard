@@ -2,11 +2,8 @@
 
 import Table from "@/app/dashboard/_components/Teble";
 import Popup from "@/components/Popup";
-import SearchBar from "@/components/SearchBar";
 import { useTenants } from "@/hooks/useTenants";
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import React, { useState } from "react";
 import { BiPlus } from "react-icons/bi";
 import AddTenantForm from "../_components/AddTenantForm";
 import { PuffLoader } from "react-spinners";
@@ -30,7 +27,7 @@ const Tenants = () => {
     <div className="p-6 lg:p-20 w-full h-screen flex flex-col items-center justify-between gap-6">
       <div className="w-full h-[15%] flex flex-col items-start justify-between">
         <Header title="سازمان ها" isShowSearch />
-        <div className="flex items-center justify-between w-full">
+        <div className="flex items-center justify-end w-full">
           <button
             onClick={toggleMpdal}
             className="py-2 px-4 bg-blue-500 text-white rounded-lg flex items-center"

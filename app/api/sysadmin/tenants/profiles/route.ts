@@ -27,9 +27,9 @@ export async function GET(req: NextRequest) {
     const data = await response.json();
 
     return NextResponse.json(data, { status: 200 });
-  } catch (error) {
+  } catch (error: any) {
     return NextResponse.json(
-      { message: "Error getting tenant profiles" },
+      { message: `Something went wrong: ${error.message}` },
       { status: 500 }
     );
   }
@@ -99,6 +99,8 @@ export async function POST(req: NextRequest) {
     });
 
     if (!response.ok) {
+      const data = await response.json();
+      console.log(data);
       return NextResponse.json(
         { message: "Error adding profile" },
         { status: response.status }

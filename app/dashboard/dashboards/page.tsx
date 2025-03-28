@@ -1,20 +1,19 @@
 "use client";
 
 import SearchBar from "@/components/SearchBar";
-import React, { useState } from "react";
+import React from "react";
 import Table from '@/app/dashboard/_components/Teble';
 import { PuffLoader } from "react-spinners";
-import { useLocaldashboards } from "@/hooks/useDashboards";
+import { useDashboards } from "@/hooks/useDashboards";
 
 const Dashboards = () => {
 
-  const { data, isLoading, error, refetch } = useLocaldashboards();
+  const { data, isLoading, error, refetch } = useDashboards(10, 0);
 
   const columns = [
     { header: "نام", accessor: "name" },
-    { header: "پروفایل", accessor: "type" },
-    { header: "برچسب", accessor: "label" },
-    { header: "وضعیت", accessor: "status" },
+    { header: "ورژن", accessor: "version" },
+    { header: "زمان ایجاد", accessor: "createdTime" },
   ];
 
   return (
@@ -44,9 +43,10 @@ const Dashboards = () => {
         <div className="w-full h-[85%]">
         <Table 
           columns={columns}
-          data={data}
+          data={data.data}
           RPP={10}
-          getRowLink={(row: any) => `/devices/${row.id.id}`}
+          clickableRows={false}
+          getRowLink={(row: any) => ``}
         />
       </div>
       )}

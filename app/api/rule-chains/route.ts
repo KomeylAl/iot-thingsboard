@@ -1,5 +1,64 @@
 import { NextRequest, NextResponse } from "next/server";
 
+export async function POST(req: NextRequest, res: NextResponse) {
+  const token = req.cookies.get("token");
+
+  if (!token || !token.value) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
+  const data = await req.json();
+
+  try {
+    const {
+      set_id,
+      name,
+      debugMode,
+      additionalInfo: { description },
+    } = data;
+
+    const id = set_id && { id: set_id, entityType: "RULE_CHAIN" };
+
+    const sendData = JSON.stringify({
+      id,
+      name,
+      debugMode,
+      additionalInfo: { description },
+    });
+
+    console.log(sendData)
+
+    const response = await fetch(`${process.env.THINGSBOARD_URL}/api/ruleChain`, {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `Bearer ${token?.value}`,
+      },
+      body: sendData,
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      console.log(data);
+      return NextResponse.json(
+        { message: "Error adding rule chain" },
+        { status: response.status }
+      );
+    }
+
+    return NextResponse.json(
+      { message: "Rule Chain Added Successful" },
+      { status: 201 }
+    );
+  } catch (error: any) {
+    console.log(error.message);
+    return NextResponse.json(
+      { message: `Error adding rule chain: ${error.message}` },
+      { status: 500 }
+    );
+  }
+}
+
 export async function GET(req: NextRequest) {
   const token = req.cookies.get("token");
   const params = req.nextUrl.searchParams;

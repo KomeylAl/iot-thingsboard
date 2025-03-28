@@ -1,7 +1,7 @@
 "use client";
 
 import Popup from "@/components/Popup";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BiPlus } from "react-icons/bi";
 import AddDevice from "./_components/AddDevice";
 import Image from "next/image";
