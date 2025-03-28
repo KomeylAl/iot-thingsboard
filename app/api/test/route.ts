@@ -1,29 +1,43 @@
+import prisma from "@/utils/prisma";
+import { NextApiRequest } from "next";
 import { NextRequest, NextResponse } from "next/server";
+import requestIp from "request-ip";
 
-export async function GET(req: NextRequest) {
-  const token = req.cookies.get("token");
-
+export async function POST(req: NextRequest) {
   try {
-    const response = await fetch(
-      "http://93.127.180.145:8080/api/audit/logs?pageSize=1000&page=0",
-      {
-        method: "GET",
-        headers: {
-          "Content-type": "application/json",
-          Authorization: `Bearer ${token?.value}`,
-        },
-      }
-    );
+    const { name, phone, ip } = await req.json();
 
-    if (!response.ok) {
-      return NextResponse.json(
-        { message: "Error" },
-        { status: response.status }
-      );
+    if (!name || !phone || !ip) {
+      return NextResponse.json({ message: "Bad Request." }, { status: 422 });
     }
 
-    
-    const data = await response.json();
+    const test = await prisma.test.findUnique({
+      where: { phone },
+    });
+
+    if (!test) {
+      await prisma.test.create({
+        data: { ip, name, phone },
+      });
+    } else {
+      await prisma.test.update({
+        where: { phone },
+        data: { ip },
+      });
+    }
+
+    return NextResponse.json({ message: "OK" }, { status: 200 });
+  } catch (error: any) {
+    return NextResponse.json(
+      { message: `Something went wrong: ${error.message}` },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET(req: NextRequest) {
+  try {
+    const data = await prisma.test.findMany();
 
     return NextResponse.json(data, { status: 200 });
   } catch (error: any) {

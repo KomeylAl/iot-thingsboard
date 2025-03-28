@@ -92,6 +92,13 @@ model Device {
   requests  Request[] // درخواست‌هایی که برای این دستگاه ثبت شده
 }
 
+model Test {
+  id   Int   @id @default(autoincrement())
+  ip   String
+  name String
+  phone String @unique
+}
+
 model Asset {
   id        Int      @id @default(autoincrement())
   name      String
