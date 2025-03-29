@@ -1,11 +1,14 @@
 import prisma from "@/utils/prisma";
-import { NextApiRequest } from "next";
-import { NextRequest, NextResponse } from "next/server";
-import requestIp from "request-ip";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
+
+  const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "";
+  const userAgent = req.headers.get("user-agent") || "";
+
   try {
-    const { name, phone, ip } = await req.json();
+    const { name, phone } = await req.json();
 
     if (!name || !phone || !ip) {
       return NextResponse.json({ message: "Bad Request." }, { status: 422 });
