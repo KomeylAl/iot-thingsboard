@@ -12,6 +12,7 @@ import AddAssetForm from "../_components/AddAssetForm";
 
 const Assets = () => {
   const { data, isLoading, error, refetch } = useAssets(10, 0);
+  console.log(data);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const toggleMpdal = () => setIsModalOpen(!isModalOpen);
@@ -20,14 +21,13 @@ const Assets = () => {
     { header: "نام", accessor: "name" },
     { header: "پروفایل", accessor: "type" },
     { header: "برچسب", accessor: "label" },
-    { header: "وضعیت", accessor: "status" },
     { header: "زمان ایجاد", accessor: "createdTime" },
   ];
 
   return (
     <div className="p-6 lg:p-20 w-full h-screen flex flex-col items-center justify-between gap-6">
       <div className="w-full h-[15%] flex flex-col items-start justify-between">
-        <SearchBar />
+        <SearchBar onChange={() => {}}/>
         <div className="flex items-center justify-between w-full">
           <h1 className="text-xl lg:text-3xl font-bold">دارایی ها</h1>
           <button

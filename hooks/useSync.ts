@@ -37,6 +37,25 @@ export function useSyncCustomers(tenantId: string) {
   });
 }
 
+export function useSyncAssets(tenantId: string) {
+  return useQuery({
+    queryKey: ["syncAssets"],
+    queryFn: async () => {
+      const res = await fetch(
+        `/api/syncronization/assets?tenantId=${tenantId}`
+      );
+      if (!res.ok) {
+        const data = await res.json();
+        console.log(data);
+        throw new Error("خطا در همگام سازی اطلاعات دارایی ها");
+      }
+      toast.success("عملیات موفقت آمیز بود");
+      return res.json();
+    },
+    enabled: false,
+  });
+}
+
 export function useSyncTenants() {
   return useQuery({
     queryKey: ["syncTenants"],
@@ -46,6 +65,23 @@ export function useSyncTenants() {
         const data = await res.json();
         console.log(data);
         throw new Error("خطا در همگام سازی اطلاعات سازمان ها");
+      }
+      toast.success("عملیات موفقت آمیز بود");
+      return res.json();
+    },
+    enabled: false,
+  });
+}
+
+export function useSyncTenantProfiles() {
+  return useQuery({
+    queryKey: ["syncTenantProfiles"],
+    queryFn: async () => {
+      const res = await fetch("/api/syncronization/profiles/tenants");
+      if (!res.ok) {
+        const data = await res.json();
+        console.log(data);
+        throw new Error("خطا در همگام سازی اطلاعات پروفایل ها");
       }
       toast.success("عملیات موفقت آمیز بود");
       return res.json();

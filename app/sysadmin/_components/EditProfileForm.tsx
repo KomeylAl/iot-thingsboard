@@ -75,7 +75,7 @@ const EditProfileForm = ({ profileData, onProfileEdited }: EditProfileProps) => 
 
   return (
     <div className="flex flex-col items-start gap-8 max-h-screen overflow-auto">
-      <h1 className="font-bold text-xl">افزودن پروفایل سازمان</h1>
+      <h1 className="font-bold text-xl">ویرایش پروفایل سازمان</h1>
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col gap-3 w-72 md:w-96"

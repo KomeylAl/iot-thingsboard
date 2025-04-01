@@ -40,7 +40,7 @@ const Customers = () => {
   return (
     <div className="p-6 lg:p-20 w-full h-screen flex flex-col items-center justify-between gap-6">
       <div className="w-full h-[15%] flex flex-col items-start justify-between">
-        <SearchBar />
+        <SearchBar onChange={() => {}}/>
         <div className="flex items-center justify-between w-full">
           <h1 className="text-xl lg:text-3xl font-bold">مشتری ها</h1>
           <button

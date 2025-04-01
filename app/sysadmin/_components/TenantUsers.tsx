@@ -44,10 +44,6 @@ const TenantUsers = ({ tenantId }: TenantUsersProps) => {
       {data && (
         <div className="w-full h-full flex-1 items-center">
           <div className="w-full h-full bg-white rounded-md p-6">
-            <button className="mb-4 bg-blue-500 rounded-lg py-2 px-4 text-white flex items-center gap-2" onClick={toggleModal}>
-              <BiPlus size={20} className="text-white" />
-              افزودن کاربر
-            </button>
             <Table
               columns={columns}
               data={data.data}

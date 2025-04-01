@@ -16,7 +16,7 @@ const schema = yup.object({
   address: yup.string().optional(),
   address2: yup.string().optional(),
   zip: yup.string().optional(),
-  phone: yup.string().optional(),
+  phone: yup.string().required("تلفن الزامی است"),
   region: yup.string().optional(),
   profile: yup.string().optional(),
   additionalInfo: yup.object({
@@ -26,7 +26,7 @@ const schema = yup.object({
     id: yup.string().optional(),
     entityType: yup.string().optional(),
   }),
-  email: yup.string().email("ایمیل معتبر نیست").optional(),
+  email: yup.string().email("ایمیل معتبر نیست").required("ایمیل الزامی است"),
 });
 
 interface EditTenantProps {
@@ -98,11 +98,14 @@ const EditTenantForm = ({ tenantData, onTenantUpdated }: EditTenantProps) => {
                 {...field}
                 placeholder="پروفایل سازمان"
                 options={profilesOptions}
-                getOptionLabel={(option) => option.label}
-                getOptionValue={(option) => option.value}
                 value={
                   profilesOptions.find(
-                    (option: any) => option.value === field.value
+                    (option: any) => option.value === field.value?.id
+                  )
+                }
+                defaultValue={  
+                  profilesOptions.find(
+                    (option: any) => option.value === field.value?.id
                   ) || null
                 }
               />
@@ -120,7 +123,13 @@ const EditTenantForm = ({ tenantData, onTenantUpdated }: EditTenantProps) => {
         <input {...register("address")} className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200" placeholder="نشانی" />
         <input {...register("address2")} className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200" placeholder="نشانی ۲" />
         <input {...register("phone")} className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200" placeholder="تلفن" />
+        {errors.phone && (
+          <p className="text-red-500 text-sm">{errors.phone.message as string}</p>
+        )}
         <input {...register("email")} className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200" placeholder="ایمیل" />
+        {errors.email && (
+          <p className="text-red-500 text-sm">{errors.email.message as string}</p>
+        )}
         {errors.email && <p className="text-red-500 text-sm">{errors.email.message as string}</p>}
 
         <textarea

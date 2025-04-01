@@ -1,11 +1,30 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
-export function useDevices() {
+export function useDevices(page: number = 0, pageSize: number = 1) {
   return useQuery({
     queryKey: ["devices"],
     queryFn: async () => {
-      const res = await fetch("/api/devices");
+      const res = await fetch(`/api/devices?page=${page}&pageSize=${pageSize}`);
+      if (!res.ok) {
+        throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
+      }
+      return res.json();
+    },
+  });
+}
+
+export function useSearchDevices(
+  page: number = 0,
+  pageSize: number = 1,
+  textSearch: string = ""
+) {
+  return useQuery({
+    queryKey: ["serachDevices"],
+    queryFn: async () => {
+      const res = await fetch(
+        `/api/devices/search?page=${page}&pageSize=${pageSize}&textSearch=${textSearch}`
+      );
       if (!res.ok) {
         throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
       }
@@ -48,7 +67,7 @@ export function useTestDevice(deviceId: string) {
       if (!res.ok) {
         throw new Error("مشکلی در ارسال اطلاعات پیش آمده!");
       }
-      toast.success("داده با موفقیت ارسال شد")
+      toast.success("داده با موفقیت ارسال شد");
       return res.json();
     },
     enabled: false,
@@ -128,7 +147,7 @@ export function useAddDevice(onDeviceAdded: () => void) {
       });
       if (!res.ok) {
         const data = await res.json();
-        console.log(data)
+        console.log(data);
         throw new Error("مشکلی در افزودن دستگاه پیش آمده!");
       }
     },

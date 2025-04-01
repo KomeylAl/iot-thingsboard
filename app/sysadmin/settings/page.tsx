@@ -1,6 +1,10 @@
 "use client";
 
-import { useSyncLogs, useSyncTenants } from "@/hooks/useSync";
+import {
+  useSyncLogs,
+  useSyncTenantProfiles,
+  useSyncTenants,
+} from "@/hooks/useSync";
 import { convertISOToJalali } from "@/utils/convert";
 import { useQueries } from "@tanstack/react-query";
 import axios from "axios";
@@ -24,6 +28,13 @@ const Settings = () => {
     error: syncTenantsError,
     refetch: syncTenantsRefetch,
   } = useSyncTenants();
+
+  const {
+    data: syncTenantProfilesData,
+    isLoading: syncTenantProfilesLoading,
+    error: syncTenantProfilesError,
+    refetch: syncTenantProfilesRefetch,
+  } = useSyncTenantProfiles();
 
   const {
     data: syncLogsData,
@@ -61,14 +72,18 @@ const Settings = () => {
             </div>
             <div className="w-full p-3 bg-white rounded-md flex items-center justify-between">
               <p>همگام سازی اطلاعات پروفایل ها</p>
-              <button>
-                <FaArrowLeft className="text-blue-500" />
-              </button>
-            </div>
-            <div className="w-full p-3 bg-white rounded-md flex items-center justify-between">
-              <p>همگام سازی اطلاعات کاربران</p>
-              <button>
-                <FaArrowLeft className="text-blue-500" />
+              <button
+                onClick={() => {
+                  syncTenantProfilesRefetch();
+                  syncLogsRefetch();
+                }}
+                className="flex items-center justify-center"
+              >
+                {syncTenantProfilesLoading ? (
+                  <ClipLoader color="#2775f2" size={20} />
+                ) : (
+                  <FaArrowLeft className="text-blue-500" />
+                )}
               </button>
             </div>
           </div>
@@ -81,20 +96,19 @@ const Settings = () => {
                 <PuffLoader color="#3b82f6" />
               </div>
             )}
-            {syncLogsError && (
-              <p>خطا در دریافت اطلاعات لاگ ها</p>
-            )}
-            {syncLogsData && syncLogsData.map((log: any, index: any) => (
-              <div
-                key={log.id}
-                className="w-full bg-white rounded-md p-4 flex items-center justify-between mt-2"
-              >
-                <p className="text-blue-500">{index + 1}</p>
-                <p className="">{log.entity}</p>
-                <p className="">{log.status}</p>
-                <p className="">{convertISOToJalali(log.timestamp)}</p>
-              </div>
-            ))}
+            {syncLogsError && <p>خطا در دریافت اطلاعات لاگ ها</p>}
+            {syncLogsData &&
+              syncLogsData.map((log: any, index: any) => (
+                <div
+                  key={log.id}
+                  className="w-full bg-white rounded-md p-4 flex items-center justify-between mt-2"
+                >
+                  <p className="text-blue-500">{index + 1}</p>
+                  <p className="">{log.entity}</p>
+                  <p className="">{log.status}</p>
+                  <p className="">{convertISOToJalali(log.timestamp)}</p>
+                </div>
+              ))}
           </div>
         </div>
       </div>

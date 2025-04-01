@@ -13,6 +13,7 @@ import DeviceTelemetry from "../../_components/DeviceTelemetry";
 import DeviceAudits from "../../_components/DeviceAudits";
 import DeviceEvents from "../../_components/DeviceEvents";
 import EditDeviceForm from "../../_components/EditDeviceForm";
+import DeleteModal from "@/components/DeleteModal";
 
 interface Params {
   deviceId: string;
@@ -42,6 +43,7 @@ const DevicePage = ({ params }: PageProps) => {
   );
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const toggleMpdal = () => setIsModalOpen(!isModalOpen);
 
   return (
@@ -67,7 +69,7 @@ const DevicePage = ({ params }: PageProps) => {
             </button>
             <button
               disabled={isDeleting}
-              onClick={() => deleteDevice()}
+              onClick={() => setIsDeleteModalOpen(true)}
               className={`py-2 px-4 bg-rose-500 text-white rounded-lg flex items-center ${
                 isDeleting && "bg-rose-300"
               }`}
@@ -116,6 +118,13 @@ const DevicePage = ({ params }: PageProps) => {
             refetch();
           }}
         />
+      </Popup>
+      <Popup isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)}>
+          <DeleteModal 
+            deleteFunc={deleteDevice}
+            isDeleting={isDeleting}
+            onCancel={() => setIsDeleteModalOpen(false)}
+          />
       </Popup>
     </div>
   );

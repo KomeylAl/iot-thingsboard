@@ -12,6 +12,7 @@ import { Tab, Tabs } from "@/components/Tabs";
 import Table from "@/app/dashboard/_components/Teble";
 import { useLocalTenantsUsers, useSyncTenantUsers } from "@/hooks/useUser";
 import TenantUsers from "../../_components/TenantUsers";
+import DeleteModal from "@/components/DeleteModal";
 
 interface Params {
   tenantId: string;
@@ -41,6 +42,7 @@ const Tenant = ({ params }: PageProps) => {
   );
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const toggleMpdal = () => setIsModalOpen(!isModalOpen);
 
   const columns = [
@@ -73,7 +75,7 @@ const Tenant = ({ params }: PageProps) => {
             </button>
             <button
               disabled={isDeleting}
-              onClick={() => deleteTenant()}
+              onClick={() => setIsDeleteModalOpen(true)}
               className={`py-2 px-4 bg-rose-500 text-white rounded-lg flex items-center ${
                 isDeleting && "bg-rose-300"
               }`}
@@ -131,6 +133,13 @@ const Tenant = ({ params }: PageProps) => {
             refetch();
           }}
           tenantData={serverData}
+        />
+      </Popup>
+      <Popup isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)}>
+        <DeleteModal 
+          deleteFunc={deleteTenant}
+          isDeleting={isDeleting}
+          onCancel={() => setIsDeleteModalOpen(false)}
         />
       </Popup>
     </div>

@@ -17,7 +17,7 @@ const schema = yup.object({
   address: yup.string().optional(),
   address2: yup.string().optional(),
   zip: yup.string().optional(),
-  phone: yup.string().optional(),
+  phone: yup.string().required("تلفن الزامی است"),
   region: yup.string().optional(),
   profile: yup.string().optional(),
   additionalInfo: yup.object({
@@ -27,7 +27,7 @@ const schema = yup.object({
     id: yup.string().optional(),
     entityType: yup.string().optional(),
   }),
-  email: yup.string().email("ایمیل معتبر نیست").optional(),
+  email: yup.string().email("ایمیل معتبر نیست").required("ایمیل الزامی است"),
 });
 
 interface AddTenantProps {
@@ -71,6 +71,10 @@ const AddTenantForm = ({ onTenantAdded }: AddTenantProps) => {
   });
 
   const onSubmit = (data: any) => {
+    if (!data.title || !data.email || !data.phone) {
+      toast.error("لطفا همه فیلد های اجباری را پر کنید");
+      return;
+    }
     const formattedData = {
       ...data,
       tenantprofileId: data.tenantProfileId.value ? data.tenantProfileId.value : profilesOptions[0].value
@@ -107,11 +111,6 @@ const AddTenantForm = ({ onTenantAdded }: AddTenantProps) => {
                 options={profilesOptions}
                 getOptionLabel={(option) => option.label}
                 getOptionValue={(option) => option.value}
-                value={
-                  profilesOptions.find(
-                    (option: any) => option.value === field.value
-                  ) || null
-                }
                 defaultValue={
                   profilesOptions.length > 0 ? profilesOptions[0].value : null
                 }
@@ -159,13 +158,16 @@ const AddTenantForm = ({ onTenantAdded }: AddTenantProps) => {
         <input
           {...register("phone")}
           className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
-          placeholder="تلفن"
+          placeholder="تلفن*"
         />
+        {errors.phone && (
+          <p className="text-red-500 text-sm">{errors.phone.message}</p>
+        )}
 
         <input
           {...register("email")}
           className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
-          placeholder="ایمیل"
+          placeholder="ایمیل*"
         />
         {errors.email && (
           <p className="text-red-500 text-sm">{errors.email.message}</p>
