@@ -30,8 +30,6 @@ const EntitiesSection = () => {
     error: customersError,
   } = useLocalCustomers();
 
-  console.log(assetsData);
-
   return (
     <>
       {/* بخش راست */}

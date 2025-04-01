@@ -16,15 +16,11 @@ const Header = ({ title, isShowSearch }: HeaderProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { data } = useUnreadNotifsCount();
 
-  if (data) {
-    console.log("notifs" + data)
-  }
-
   return (
     <div className="w-full flex items-center justify-between">
       <div className="w-full flex items-center gap-4">
         <h1 className="text-xl lg:text-3xl font-bold">{title}</h1>
-        {isShowSearch && <SearchBar />}
+        {isShowSearch && <SearchBar onChange={() => {}}/>}
       </div>
       <div
         className="w-fit h-fit relative cursor-pointer"

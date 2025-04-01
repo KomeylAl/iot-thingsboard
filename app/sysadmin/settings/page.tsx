@@ -6,20 +6,11 @@ import {
   useSyncTenants,
 } from "@/hooks/useSync";
 import { convertISOToJalali } from "@/utils/convert";
-import { useQueries } from "@tanstack/react-query";
 import axios from "axios";
 import React from "react";
 import toast from "react-hot-toast";
 import { FaArrowLeft } from "react-icons/fa";
 import { ClipLoader, PuffLoader } from "react-spinners";
-
-const getSyncLog = async () => {
-  const res = await axios.get("/api/sysadmin/syncronization/logs");
-  if (res.status !== 200) {
-    toast.error(`خطا در دریافت اطلاعات ${res.status}`);
-  }
-  return res;
-};
 
 const Settings = () => {
   const {

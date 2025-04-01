@@ -15,7 +15,6 @@ import AddProfileForm from "./_components/AddProfileForm";
 import Header from "@/components/Header";
 
 const AdminDashboard = () => {
-  
   const {
     data: tenantsData,
     isLoading: tenantsIsLoading,
@@ -47,26 +46,24 @@ const AdminDashboard = () => {
               <div className="w-full flex-1 bg-white rounded-lg p-4 flex items-center justify-between relative overflow-hidden">
                 <div className="absolute top-1 lg:top-6 left-5 w-20 h-20 bg-sky-500 rounded-full filter blur-2xl" />
 
-                {tenantsError && (
-                  <p>خطا در دریافت اطلاعات سازمان ها</p>
-                )}
+                {tenantsError && <p>خطا در دریافت اطلاعات سازمان ها</p>}
 
                 {tenantsIsLoading && (
                   <div className="w-full h-full flex items-center justify-center">
-                  <PuffLoader color="#3b82f6" size={45} />
-                </div>
+                    <PuffLoader color="#3b82f6" size={45} />
+                  </div>
                 )}
 
                 {tenantsData && (
                   <div>
-                  <p className="text-lg">تعداد سازمان ها</p>
-                  <div className="flex items-center gap-4 mt-3">
-                    <p className="text-lg">{tenantsData.totalElements}</p>
-                    <button onClick={() => setIsAddTenantOpen(true)}>
-                      <BiPlus size={25} className="text-blue-500" />
-                    </button>
+                    <p className="text-lg">تعداد سازمان ها</p>
+                    <div className="flex items-center gap-4 mt-3">
+                      <p className="text-lg">{tenantsData.totalElements}</p>
+                      <button onClick={() => setIsAddTenantOpen(true)}>
+                        <BiPlus size={25} className="text-blue-500" />
+                      </button>
+                    </div>
                   </div>
-                </div>
                 )}
                 <Image
                   src="/images/device_vector.png"
@@ -78,26 +75,24 @@ const AdminDashboard = () => {
               </div>
               <div className="w-full flex-1 bg-white rounded-lg p-4 flex items-center justify-between relative overflow-hidden">
                 <div className="absolute top-1 lg:top-6 left-5 w-20 h-20 bg-amber-500 rounded-full filter blur-2xl" />
-                {profilesError && (
-                  <p>خطا در دریافت اطلاعات پروفایل ها</p>
-                )}
+                {profilesError && <p>خطا در دریافت اطلاعات پروفایل ها</p>}
 
                 {profilesLoading && (
                   <div className="w-full h-full flex items-center justify-center">
-                  <PuffLoader color="#3b82f6" size={45} />
-                </div>
+                    <PuffLoader color="#3b82f6" size={45} />
+                  </div>
                 )}
 
                 {profilesData && (
                   <div>
-                  <p className="text-lg">تعداد پروفایل سازمان ها</p>
-                  <div className="flex items-center gap-4 mt-3">
-                    <p className="text-lg">{profilesData.totalElements}</p>
-                    <button onClick={() => setIsAddProfileOpen(true)}>
-                      <BiPlus size={25} className="text-blue-500" />
-                    </button>
+                    <p className="text-lg">تعداد پروفایل سازمان ها</p>
+                    <div className="flex items-center gap-4 mt-3">
+                      <p className="text-lg">{profilesData.totalElements}</p>
+                      <button onClick={() => setIsAddProfileOpen(true)}>
+                        <BiPlus size={25} className="text-blue-500" />
+                      </button>
+                    </div>
                   </div>
-                </div>
                 )}
                 <Image
                   src="/images/assets_vector.png"
@@ -109,10 +104,9 @@ const AdminDashboard = () => {
               </div>
             </div>
             <EntitiesSection />
-          </div>  
-          
+          </div>
+
           <SystemInfo />
-          
         </div>
 
         {/* سایدبار */}
@@ -131,7 +125,10 @@ const AdminDashboard = () => {
         />
       </Popup>
 
-      <Popup isOpen={isAddProfileOpen} onClose={() => setIsAddProfileOpen(false)}>
+      <Popup
+        isOpen={isAddProfileOpen}
+        onClose={() => setIsAddProfileOpen(false)}
+      >
         <AddProfileForm
           onProfileAdded={() => {
             setIsAddProfileOpen(false);

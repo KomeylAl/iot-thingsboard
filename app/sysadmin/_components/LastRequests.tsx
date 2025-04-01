@@ -1,24 +1,41 @@
-import React from 'react'
-import RequestItem from './RequestItem'
-import { useWebSocket } from '@/hooks/useWebSocket'
-import { useRequests } from '@/hooks/useRequest';
-import RequestChart from './RequestChart';
-import TelemetryChart from './TelemtryChart';
+"use client";
+
+import React from "react";
+import { useRequests } from "@/hooks/useRequest";
+import { PuffLoader } from "react-spinners";
 
 const LastRequests = () => {
+  const { data, isLoading, error } = useRequests();
+  console.log(data);
+
   return (
-    <div className='w-full h-full'>
-      <h2 className='font-bold'>آخرین درخواست ها</h2>
-      {/* <div className='w-full h-full flex flex-col mt-4 overflow-y-auto'>
-         {data.map((request: any) => (
-            <RequestItem key={request.id}/>
-         ))}
-      </div> */}
+    <div className="w-full h-full">
+      <h2 className="font-bold">آخرین درخواست ها</h2>
+      {error && <p>خطا در دریافت اطلاعات درخواست ها</p>}
 
-      {/* <RequestChart /> */}
-      {/* <TelemetryChart /> */}
+      {isLoading && (
+        <div className="w-full h-full flex items-center justify-center">
+          <PuffLoader color="#3b82f6" size={45} />
+        </div>
+      )}
+
+      {data.length === 0 && (
+        <p className="mt-4 text-sm">درخواستی برای نمایش وجود ندارد.</p>
+      )}
+
+      {data && (
+        <div className="space-y-3">
+          {data.map((item: any, index: any) => (
+            <div key={item.key} className="w-full bg-white rounded-md p-3 flex items-center justify-between">
+              <p>{index + 1}</p>
+              <p>{item.tenant.name}</p>
+              <p>{item.requestTime}</p>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
-  )
-}
+  );
+};
 
-export default LastRequests
+export default LastRequests;
