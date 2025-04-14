@@ -61,12 +61,10 @@ const AddTenantForm = ({ onTenantAdded }: AddTenantProps) => {
     },
     onSuccess: () => {
       reset();
-      console.log();
       toast.success("سازمان جدید با موفقیت اضافه شد");
       onTenantAdded();
     },
     onError: (error) => {
-      console.log(error);
     },
   });
 
@@ -79,7 +77,6 @@ const AddTenantForm = ({ onTenantAdded }: AddTenantProps) => {
       ...data,
       tenantprofileId: data.tenantProfileId.value ? data.tenantProfileId.value : profilesOptions[0].value
     }
-    console.log(formattedData);
     addTenant(formattedData);
   };
 

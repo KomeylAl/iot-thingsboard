@@ -12,8 +12,6 @@ import { ClipLoader } from "react-spinners";
 
 const DashboardSettings = () => {
   const { data: userData } = useUser();
-  console.log(userData);
-
   const {
     data: syncDevicesData,
     isLoading: syncDevicesIsLoading,

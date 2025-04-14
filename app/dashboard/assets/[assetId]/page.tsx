@@ -12,6 +12,7 @@ import AssetAudits from "../../_components/AssetAudits";
 import AssetAlarms from "../../_components/AssetAlarms";
 import AssetEvents from "../../_components/AssetEvents";
 import EditAssetForm from "../../_components/EditAssetForm";
+import DeleteModal from "@/components/DeleteModal";
 
 interface Params {
   assetId: string;
@@ -27,7 +28,7 @@ const AssetPage = ({ params }: PageProps) => {
   const { assetId } = React.use<Params>(params);
   const { data, isLoading, error, refetch } = useAsset(assetId);
 
-  const { mutate: deleteDevice, isPending: isDeleting } = useDeleteAsset(
+  const { mutate: deleteAsset, isPending: isDeleting } = useDeleteAsset(
     assetId,
     () => {
       router.back();
@@ -35,6 +36,7 @@ const AssetPage = ({ params }: PageProps) => {
   );
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const toggleMpdal = () => setIsModalOpen(!isModalOpen);
 
   return (
@@ -52,7 +54,7 @@ const AssetPage = ({ params }: PageProps) => {
             </button>
             <button
               disabled={isDeleting}
-              onClick={() => deleteDevice()}
+              onClick={() => setIsDeleteModalOpen(true)}
               className={`py-2 px-4 bg-rose-500 text-white rounded-lg flex items-center ${
                 isDeleting && "bg-rose-300"
               }`}
@@ -97,6 +99,16 @@ const AssetPage = ({ params }: PageProps) => {
             setIsModalOpen(false);
             refetch();
           }}
+        />
+      </Popup>
+      <Popup
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+      >
+        <DeleteModal
+          deleteFunc={deleteAsset}
+          isDeleting={isDeleting}
+          onCancel={() => setIsDeleteModalOpen(false)}
         />
       </Popup>
     </div>

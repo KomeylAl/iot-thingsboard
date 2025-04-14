@@ -25,7 +25,6 @@ const TelemetryChart = () => {
 
   useEffect(() => {
     getTokenFromApi().then((token) => {
-      console.log(token);
       if (!token) return;
 
       const ws = new WebSocket(

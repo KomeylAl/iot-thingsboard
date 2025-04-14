@@ -46,12 +46,10 @@ const AddCustomerForm = ({ onCustomerAdded }: AddCustomerProps) => {
     },
     onSuccess: () => {
       reset();
-      console.log();
       toast.success("مشتری جدید با موفقیت اضافه شد");
       onCustomerAdded();
     },
     onError: (error) => {
-      console.log(error);
     },
   });
 

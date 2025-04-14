@@ -13,7 +13,6 @@ export default function Providers({ children }: { children: ReactNode }) {
     queryCache: new QueryCache({
       onError: (error) => {
         toast.error(error.message);
-        console.log(error);
       }
     }),
   });

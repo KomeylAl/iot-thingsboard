@@ -40,12 +40,10 @@ const AddRuleChainForm = ({ onRuleChainAdded }: AddRuleChainProps) => {
     },
     onSuccess: () => {
       reset();
-      console.log();
       toast.success("زنجیره جدید با موفقیت اضافه شد");
       onRuleChainAdded();
     },
     onError: (error) => {
-      console.log(error);
     },
   });
 

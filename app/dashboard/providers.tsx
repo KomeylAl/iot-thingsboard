@@ -13,7 +13,6 @@ export default function DashboardProviders({ children }: { children: ReactNode }
     queryCache: new QueryCache({
       onError: (error) => {
         toast.error(error.message);
-        console.log(error.message);
       },
     }),
   });

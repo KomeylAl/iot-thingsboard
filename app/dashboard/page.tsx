@@ -21,6 +21,7 @@ import {
 } from "recharts";
 import MainRequestsChart from "./_components/MainRequestsChart";
 import MainRequestList from "./_components/MainRequestList";
+import NotifIcon from "@/components/NotifIcon";
 
 export default function Home() {
   const {
@@ -34,7 +35,6 @@ export default function Home() {
     data: assetsData,
     isLoading: assetsLoading,
     error: assetsError,
-    refetch: refetchAssets,
   } = useAssets();
 
   const options =
@@ -65,6 +65,7 @@ export default function Home() {
             >
               <BiPlus size={24} />
             </button>
+            <NotifIcon />
           </div>
         </div>
 
@@ -149,7 +150,6 @@ export default function Home() {
               deviceId={deviceId}
               selectFn={(value: any) => {
                 setDeviceId(value);
-                console.log(value);
               }}
               selectOptions={options}
             />

@@ -3,10 +3,8 @@
 import { useDeviceProfiles } from "@/hooks/useProfiles";
 import { useUser } from "@/hooks/useUser";
 import * as yup from "yup";
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import ReactSelect from "react-select";
-import toast from "react-hot-toast";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useAddDevice } from "@/hooks/useDevices";
@@ -46,45 +44,11 @@ const AddDevice = ({ onDeviceAdded }: AddDeviceProps) => {
   const {
     register,
     handleSubmit,
-    reset,
     control,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: yupResolver(schema),
   });
-
-  const [isdLoading, setIsdLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    type: "",
-    label: "",
-    tenantId: "",
-    additionalInfo: {
-      location: "",
-      description: "",
-    },
-  });
-
-  // const handleSubmit = async () => {
-  //   if (!formData.name) {
-  //     toast.error("یک نام برای دستگاه انتخاب کنید");
-  //   } else {
-  //     setIsdLoading(true);
-  //     await axios
-  //       .post("/api/devices", formData)
-  //       .then(function (response) {
-  //         if (response.status === 201) {
-  //           toast.success("دستگاه با موفقیت افزوده شد");
-  //           onDeviceAdded();
-  //         }
-  //       })
-  //       .catch(function (error) {
-  //         toast.error("خطا در افزودن دستگاه");
-  //         console.log("ERR_ADD_DEVICE", error);
-  //       })
-  //       .finally(() => setIsdLoading(false));
-  //   }
-  // };
 
   const onSubmit = (data: any) => {
     const formattedData = {
@@ -94,7 +58,6 @@ const AddDevice = ({ onDeviceAdded }: AddDeviceProps) => {
         ? data.deviceProfileId.value
         : profilesOptions[0].value,
     };
-    console.log(formattedData);
     addDevice(formattedData);
   };
 
@@ -128,11 +91,6 @@ const AddDevice = ({ onDeviceAdded }: AddDeviceProps) => {
                 options={profilesOptions}
                 getOptionLabel={(option) => option.label}
                 getOptionValue={(option) => option.value}
-                value={
-                  profilesOptions.find(
-                    (option: any) => option.value === field.value
-                  ) || null
-                }
                 defaultValue={
                   profilesOptions.length > 0 ? profilesOptions[0] : null
                 }

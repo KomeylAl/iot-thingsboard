@@ -46,11 +46,8 @@ const EditAssetProfileForm = ({
       ...data,
       set_id: profileData.id.id,
     };
-    console.log(data);
     updateProfile(formattedData);
   };
-
-  console.log(errors);
 
   return (
     <div className="flex flex-col items-start gap-8">

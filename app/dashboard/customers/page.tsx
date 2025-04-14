@@ -2,7 +2,7 @@
 
 import Popup from "@/components/Popup";
 import SearchBar from "@/components/SearchBar";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { BiPlus } from "react-icons/bi";
 import Table from "@/app/dashboard/_components/Teble";
 import { PuffLoader } from "react-spinners";
@@ -10,12 +10,12 @@ import { useCustomers, useDeleteCustomer } from "@/hooks/useCustomers";
 import AddCustomerForm from "../_components/AddCustomerForm";
 import DeleteModal from "@/components/DeleteModal";
 import EditCustomerForm from "../_components/EditCustomerForm";
+import { debounce } from "lodash";
+import Header from "@/components/Header";
 
 const Customers = () => {
-  const { data, isLoading, error, refetch } = useCustomers(10, 0);
-  if (data) {
-    console.log(data);
-  }
+  const [searchText, setSearchText] = useState("");
+  const { data, isLoading, error, refetch } = useCustomers(10, 0, searchText);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const toggleMpdal = () => setIsModalOpen(!isModalOpen);
@@ -29,6 +29,18 @@ const Customers = () => {
     refetch();
   });
 
+  const debouncedSearch = useCallback(
+    debounce((text) => {
+      refetch();
+    }, 300),
+    [refetch]
+  );
+
+  const onSearchChange = (e: any) => {
+    setSearchText(e.target.value);
+    debouncedSearch(e.target.value);
+  };
+
   const columns = [
     { header: "نام", accessor: "name" },
     { header: "ایمیل", accessor: "email" },
@@ -40,9 +52,8 @@ const Customers = () => {
   return (
     <div className="p-6 lg:p-20 w-full h-screen flex flex-col items-center justify-between gap-6">
       <div className="w-full h-[15%] flex flex-col items-start justify-between">
-        <SearchBar onChange={() => {}}/>
-        <div className="flex items-center justify-between w-full">
-          <h1 className="text-xl lg:text-3xl font-bold">مشتری ها</h1>
+        <Header title="مشتریان" isShowSearch searchFn={onSearchChange}/>
+        <div className="flex items-center justify-end w-full">
           <button
             onClick={toggleMpdal}
             className="py-2 px-4 bg-blue-500 text-white rounded-lg flex items-center"

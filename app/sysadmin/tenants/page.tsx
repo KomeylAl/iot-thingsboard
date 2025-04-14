@@ -18,7 +18,6 @@ const columns = [
 
 const Tenants = () => {
   const { data, isLoading, error, refetch } = useTenants();
-  console.log(data);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const toggleMpdal = () => setIsModalOpen(!isModalOpen);
@@ -26,7 +25,7 @@ const Tenants = () => {
   return (
     <div className="p-6 lg:p-20 w-full h-screen flex flex-col items-center justify-between gap-6">
       <div className="w-full h-[15%] flex flex-col items-start justify-between">
-        <Header title="سازمان ها" isShowSearch />
+        <Header title="سازمان ها" isShowSearch searchFn={() => {}} />
         <div className="flex items-center justify-end w-full">
           <button
             onClick={toggleMpdal}

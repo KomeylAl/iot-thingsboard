@@ -2,20 +2,34 @@
 
 import Popup from "@/components/Popup";
 import SearchBar from "@/components/SearchBar";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { BiPlus } from "react-icons/bi";
 import AddDevice from "../_components/AddDevice";
 import Table from "@/app/dashboard/_components/Teble";
 import { PuffLoader } from "react-spinners";
 import { useAssets, useLocalAssets } from "@/hooks/useAssets";
 import AddAssetForm from "../_components/AddAssetForm";
+import { debounce } from "lodash";
+import Header from "@/components/Header";
 
 const Assets = () => {
-  const { data, isLoading, error, refetch } = useAssets(10, 0);
-  console.log(data);
+  const [searchText, setSearchText] = useState("");
+  const { data, isLoading, error, refetch } = useAssets(10, 0, searchText);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const toggleMpdal = () => setIsModalOpen(!isModalOpen);
+
+  const debouncedSearch = useCallback(
+    debounce((text) => {
+      refetch();
+    }, 300),
+    [refetch]
+  );
+
+  const onSearchChange = (e: any) => {
+    setSearchText(e.target.value);
+    debouncedSearch(e.target.value);
+  };
 
   const columns = [
     { header: "نام", accessor: "name" },
@@ -27,9 +41,8 @@ const Assets = () => {
   return (
     <div className="p-6 lg:p-20 w-full h-screen flex flex-col items-center justify-between gap-6">
       <div className="w-full h-[15%] flex flex-col items-start justify-between">
-        <SearchBar onChange={() => {}}/>
-        <div className="flex items-center justify-between w-full">
-          <h1 className="text-xl lg:text-3xl font-bold">دارایی ها</h1>
+        <Header title="دارایی ها" isShowSearch searchFn={onSearchChange}/>
+        <div className="flex items-center justify-end w-full">
           <button
             onClick={toggleMpdal}
             className="py-2 px-4 bg-blue-500 text-white rounded-lg flex items-center"
@@ -69,7 +82,7 @@ const Assets = () => {
       )}
 
       <Popup isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <AddAssetForm 
+        <AddAssetForm
           onAssetAdded={() => {
             setIsModalOpen(false);
             refetch();

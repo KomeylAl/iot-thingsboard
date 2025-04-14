@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import Table from "../../_components/Teble";
 import SearchBar from "@/components/SearchBar";
 import { BiPlus } from "react-icons/bi";
@@ -8,16 +8,31 @@ import { useDeviceProfiles } from "@/hooks/useProfiles";
 import { PuffLoader } from "react-spinners";
 import Popup from "@/components/Popup";
 import AddDeviceProfileForm from "../../_components/AddDeviceProfileForm";
+import { debounce } from "lodash";
+import Header from "@/components/Header";
 
 const DeviceProfiles = () => {
-  const { data, isLoading, error, refetch } = useDeviceProfiles(10, 0);
+  const [searchText, setSearchText] = useState("");
+  const { data, isLoading, error, refetch } = useDeviceProfiles(
+    10,
+    0,
+    searchText
+  );
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const toggleMpdal = () => setIsModalOpen(!isModalOpen);
 
-  if (data) {
-    console.log(data);
-  }
+  const debouncedSearch = useCallback(
+    debounce((text) => {
+      refetch();
+    }, 300),
+    [refetch]
+  );
+
+  const onSearchChange = (e: any) => {
+    setSearchText(e.target.value);
+    debouncedSearch(e.target.value);
+  };
 
   const columns = [
     { header: "نام", accessor: "name" },
@@ -30,9 +45,8 @@ const DeviceProfiles = () => {
   return (
     <div className="p-6 lg:p-20 w-full h-screen flex flex-col items-center justify-between gap-6">
       <div className="w-full h-[15%] flex flex-col items-start justify-between">
-        <SearchBar onChange={() => {}} />
-        <div className="flex items-center justify-between w-full">
-          <h1 className="text-xl lg:text-3xl font-bold">پروفایل دستگاه ها</h1>
+        <Header title="پروفایل دستگاه ها" isShowSearch searchFn={onSearchChange}/>
+        <div className="flex items-center justify-end w-full">
           <button
             onClick={toggleMpdal}
             className="py-2 px-4 bg-blue-500 text-white rounded-lg flex items-center"

@@ -6,7 +6,6 @@ import { PuffLoader } from "react-spinners";
 
 const LastRequests = () => {
   const { data, isLoading, error } = useRequests();
-  console.log(data);
 
   return (
     <div className="w-full h-full">

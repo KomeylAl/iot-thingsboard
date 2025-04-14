@@ -1,7 +1,7 @@
 "use client";
 
 import Popup from "@/components/Popup";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import Table from "../../_components/Teble";
 import SearchBar from "@/components/SearchBar";
 import { BiPlus } from "react-icons/bi";
@@ -10,9 +10,12 @@ import { PuffLoader } from "react-spinners";
 import EditAssetProfileForm from "../../_components/EditAssetProfileForm";
 import DeleteModal from "@/components/DeleteModal";
 import AddAssetProfileForm from "../../_components/AddAssetProfileForm";
+import { debounce } from "lodash";
+import Header from "@/components/Header";
 
 const AssetProfiles = () => {
-  const { data, isLoading, error, refetch } = useAssetProfiles(10, 0);
+  const [searchText, setSearchText] = useState("");
+  const { data, isLoading, error, refetch } = useAssetProfiles(10, 0, searchText);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -31,6 +34,18 @@ const AssetProfiles = () => {
     }
   );
 
+  const debouncedSearch = useCallback(
+    debounce((text) => {
+      refetch();
+    }, 300),
+    [refetch]
+  );
+
+  const onSearchChange = (e: any) => {
+    setSearchText(e.target.value);
+    debouncedSearch(e.target.value);
+  };
+
   const columns = [
     { header: "نام", accessor: "name" },
     { header: "توضیحات", accessor: "description" },
@@ -42,9 +57,8 @@ const AssetProfiles = () => {
   return (
     <div className="p-6 lg:p-20 w-full h-screen flex flex-col items-center justify-between gap-6">
       <div className="w-full h-[15%] flex flex-col items-start justify-between">
-        <SearchBar />
-        <div className="flex items-center justify-between w-full">
-          <h1 className="text-xl lg:text-3xl font-bold">پروفایل دارایی ها</h1>
+        <Header title="پروفایل دارایی ها" isShowSearch searchFn={onSearchChange}/>
+        <div className="flex items-center justify-end w-full">
           <button
             onClick={toggleMpdal}
             className="py-2 px-4 bg-blue-500 text-white rounded-lg flex items-center"
@@ -85,7 +99,7 @@ const AssetProfiles = () => {
         )}
       </div>
       <Popup isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <AddAssetProfileForm 
+        <AddAssetProfileForm
           onProfileEdited={() => {
             setIsModalOpen(false);
             refetch();

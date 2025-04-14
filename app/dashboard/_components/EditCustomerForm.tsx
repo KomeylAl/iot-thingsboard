@@ -58,7 +58,6 @@ const EditCustomerForm = ({
       ...data,
       set_id: customerData.id.id,
     };
-    console.log(formattedData);
     updateCustomer(formattedData);
   };
 

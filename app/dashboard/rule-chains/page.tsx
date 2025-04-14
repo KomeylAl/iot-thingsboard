@@ -3,16 +3,20 @@
 import Popup from "@/components/Popup";
 import SearchBar from "@/components/SearchBar";
 import { useDeleteRuleChain, useRuleChains } from "@/hooks/useRuleChains";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { BiPlus } from "react-icons/bi";
 import { PuffLoader } from "react-spinners";
 import Table from "../_components/Teble";
 import AddRuleChainForm from "../_components/AddRuleChainForm";
 import DeleteModal from "@/components/DeleteModal";
 import EditRuleChainForm from "../_components/EditRuleChainForm";
+import ChangeRuleChainForm from "../_components/ui/form/ChangeRuleChainFor";
+import { debounce } from "lodash";
+import Header from "@/components/Header";
 
 const RuleChains = () => {
-  const { data, isLoading, error, refetch } = useRuleChains(10, 0);
+  const [searchText, setSearchText] = useState("");
+  const { data, isLoading, error, refetch } = useRuleChains(10, 0, searchText);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const toggleMpdal = () => setIsModalOpen(!isModalOpen);
@@ -26,6 +30,18 @@ const RuleChains = () => {
     refetch();
   });
 
+  const debouncedSearch = useCallback(
+    debounce((text) => {
+      refetch();
+    }, 300),
+    [refetch]
+  );
+
+  const onSearchChange = (e: any) => {
+    setSearchText(e.target.value);
+    debouncedSearch(e.target.value);
+  };
+
   const columns = [
     { header: "نام", accessor: "name" },
     { header: "نوع", accessor: "type" },
@@ -37,9 +53,8 @@ const RuleChains = () => {
   return (
     <div className="p-6 lg:p-20 w-full h-screen flex flex-col items-center justify-between gap-6">
       <div className="w-full h-[15%] flex flex-col items-start justify-between">
-        <SearchBar />
-        <div className="flex items-center justify-between w-full">
-          <h1 className="text-xl lg:text-3xl font-bold">زنجیره قواعد</h1>
+        <Header title="زنجیره قواعد" isShowSearch searchFn={onSearchChange}/>
+        <div className="flex items-center justify-end w-full">
           <button
             onClick={toggleMpdal}
             className="py-2 px-4 bg-blue-500 text-white rounded-lg flex items-center"
@@ -65,8 +80,7 @@ const RuleChains = () => {
             columns={columns}
             data={data.data}
             RPP={10}
-            clickableRows={false}
-            getRowLink={() => ""}
+            getRowLink={(row) => `/dashboard/rule-chains/${row.id.id}`}
             onDeleteClicked={(row: any) => {
               setId(row.id.id);
               setIsDeleteModalOpen(true);

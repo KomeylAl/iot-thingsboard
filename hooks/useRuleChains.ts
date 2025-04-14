@@ -1,12 +1,16 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
-export function useRuleChains(pageSize: any = 1, page: any = 0) {
+export function useRuleChains(
+  pageSize: any = 1,
+  page: any = 0,
+  textSearch: string = ""
+) {
   return useQuery({
     queryKey: ["ruleChains"],
     queryFn: async () => {
       const res = await fetch(
-        `/api/rule-chains?pageSize=${pageSize}&page=${page}`
+        `/api/rule-chains?pageSize=${pageSize}&page=${page}&textSearch=${textSearch}`
       );
       if (!res.ok) {
         throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
@@ -40,13 +44,11 @@ export function useUpdateRuleChain(onRuleChainUpdated: () => void) {
       });
       if (!res.ok) {
         const data = await res.json();
-        console.log(data);
         throw new Error("مشکلی در ویرایش زنجیره پیش آمده!");
       }
     },
     onError(error) {
       toast.error(error.message);
-      console.log(error);
     },
     onSuccess: () => {
       toast.success("زنجیره با موفقیت ویرایش شد");
@@ -70,7 +72,6 @@ export function useDeleteRuleChain(
     },
     onError(error) {
       toast.error(error.message);
-      console.log(error);
     },
     onSuccess: () => {
       toast.success("زنجیره با موفقت حذف شد");

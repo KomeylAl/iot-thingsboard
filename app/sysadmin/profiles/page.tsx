@@ -3,15 +3,18 @@
 import Table from "@/app/dashboard/_components/Teble";
 import Popup from "@/components/Popup";
 import SearchBar from "@/components/SearchBar";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { BiPlus } from "react-icons/bi";
 import AddProfileForm from "../_components/AddProfileForm";
 import EditProfileForm from "../_components/EditProfileForm";
 import DeleteModal from "@/components/DeleteModal";
 import { useDeleteProfile, useTenantProfiles } from "@/hooks/useProfiles";
 import { PuffLoader } from "react-spinners";
+import { debounce } from "lodash";
+import Header from "@/components/Header";
 
 const Profiles = () => {
+  const [searchText, setSearchText] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -19,6 +22,23 @@ const Profiles = () => {
   const [profile, setProfile] = useState<any>({});
   const toggleMpdal = () => {
     setIsModalOpen(!isModalOpen);
+  };
+  const { data, isLoading, error, refetch } = useTenantProfiles(
+    10,
+    0,
+    searchText
+  );
+
+  const debouncedSearch = useCallback(
+    debounce((text) => {
+      refetch();
+    }, 300),
+    [refetch]
+  );
+
+  const onSearchChange = (e: any) => {
+    setSearchText(e.target.value);
+    debouncedSearch(e.target.value);
   };
 
   const columns = [
@@ -29,8 +49,6 @@ const Profiles = () => {
     { header: "حذف", accessor: "", type: "deleteButton" },
   ];
 
-  const { data, isLoading, error, refetch } = useTenantProfiles(10, 0);
-
   const { mutate: deleteProfile, isPending } = useDeleteProfile(id, () => {
     setIsDeleteModalOpen(false);
     refetch();
@@ -39,9 +57,8 @@ const Profiles = () => {
   return (
     <div className="p-6 lg:p-20 w-full h-screen flex flex-col items-center justify-between gap-6">
       <div className="w-full h-[15%] flex flex-col items-start justify-between">
-        <SearchBar onChange={() => {}}/>
-        <div className="flex items-center justify-between w-full">
-          <h1 className="text-xl lg:text-3xl font-bold">پروفایل سازمان ها</h1>
+        <Header title="پروفایل ها" isShowSearch searchFn={onSearchChange}/>
+        <div className="flex items-center justify-end w-full">
           <button
             onClick={toggleMpdal}
             className="py-2 px-4 bg-blue-500 text-white rounded-lg flex items-center"

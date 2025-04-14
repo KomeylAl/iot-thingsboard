@@ -69,7 +69,6 @@ const EditProfileForm = ({ profileData, onProfileEdited }: EditProfileProps) => 
       ...data,
       set_id: profileData.id.id,
    }
-    console.log(data);
     updateProfile(formattedData);
   };
 

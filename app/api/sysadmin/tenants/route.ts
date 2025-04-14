@@ -47,8 +47,6 @@ export async function POST(req: NextRequest, res: NextResponse) {
       tenantProfileId: { id: tenantprofileId, entityType: "TENANT_PROFILE" },
     });
 
-    console.log(sendData)
-
     const response = await fetch(`${process.env.THINGSBOARD_URL}/api/tenant`, {
       method: "POST",
       headers: {
@@ -60,7 +58,6 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
     if (!response.ok) {
       const data = await response.json();
-      console.log(data);
       return NextResponse.json(
         { message: "Error adding tenant" },
         { status: response.status }
@@ -68,8 +65,6 @@ export async function POST(req: NextRequest, res: NextResponse) {
     }
 
     const newTenant = await response.json();
-
-    console.log(newTenant)
 
     const tenant = await prisma.tenant.findUnique({
       where: { things_id: newTenant.id.id },

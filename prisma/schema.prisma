@@ -115,7 +115,7 @@ model Test {
 
 model TestRequests {
   id   Int   @id @default(autoincrement())
-  phone String @unique
+  phone String
   ip    String
   createdAt DateTime @default(now())
 }

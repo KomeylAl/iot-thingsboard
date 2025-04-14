@@ -87,7 +87,6 @@ export function useDeviceAlarms(
       );
       if (!res.ok) {
         const data = await res.json();
-        console.log(data);
         throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
       }
       return res.json();
@@ -108,7 +107,6 @@ export function useDeviceAudits(
       );
       if (!res.ok) {
         const data = await res.json();
-        console.log(data);
         throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
       }
       return res.json();
@@ -130,7 +128,6 @@ export function useDeviceEvents(
       );
       if (!res.ok) {
         const data = await res.json();
-        console.log(data);
         throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
       }
       return res.json();
@@ -147,13 +144,11 @@ export function useAddDevice(onDeviceAdded: () => void) {
       });
       if (!res.ok) {
         const data = await res.json();
-        console.log(data);
         throw new Error("مشکلی در افزودن دستگاه پیش آمده!");
       }
     },
     onError(error) {
       toast.error(error.message);
-      console.log(error);
     },
     onSuccess: () => {
       toast.success("دستگاه با موفقت افزوده شد");
@@ -174,7 +169,6 @@ export function useDeleteDevice(deviceId: string, onDeviceDeleted: () => void) {
     },
     onError(error) {
       toast.error(error.message);
-      console.log(error);
     },
     onSuccess: () => {
       toast.success("دستگاه با موفقت حذف شد");
@@ -192,13 +186,11 @@ export function useUpdateDevice(onDeviceUpdated: () => void) {
       });
       if (!res.ok) {
         const data = await res.json();
-        console.log(data);
         throw new Error("مشکلی در ویرایش دستگاه پیش آمده!");
       }
     },
     onError(error) {
       toast.error(error.message);
-      console.log(error);
     },
     onSuccess: () => {
       toast.success("دستگاه با موفقیت ویرایش حذف شد");

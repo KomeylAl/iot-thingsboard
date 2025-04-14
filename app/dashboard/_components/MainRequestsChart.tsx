@@ -27,7 +27,6 @@ const MainRequestsChart = ({
   deviceId,
 }: MainRequestsChartProps) => {
   const { data, isLoading, error, refetch } = useKeys(deviceId);
-  console.log(data);
 
   return (
     <div className="space-y-3">

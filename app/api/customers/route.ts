@@ -58,8 +58,6 @@ export async function POST(req: NextRequest, res: NextResponse) {
     );
 
     if (!response.ok) {
-      const data = await response.json();
-      console.log(data);
       return NextResponse.json(
         { message: "Error adding customer" },
         { status: response.status }
@@ -115,9 +113,11 @@ export async function GET(req: NextRequest) {
   const params = req.nextUrl.searchParams;
   const pageSize = params.get("pageSize") || 1;
   const page = params.get("page") || 0;
+  const textSearch = params.get("textSearch") || "";
+
   try {
     const response = await fetch(
-      `${process.env.THINGSBOARD_URL}/api/customers?pageSize=${pageSize}&page=${page}`,
+      `${process.env.THINGSBOARD_URL}/api/customers?pageSize=${pageSize}&page=${page}&textSearch=${textSearch}`,
       {
         method: "GET",
         headers: {
@@ -136,7 +136,7 @@ export async function GET(req: NextRequest) {
 
     const data = await response.json();
 
-    return NextResponse.json(data , { status: 200 });
+    return NextResponse.json(data, { status: 200 });
   } catch (error) {
     return NextResponse.json(
       { message: "Something went wrong" },

@@ -9,11 +9,10 @@ export async function POST(req: NextRequest) {
       label,
       type,
       additionalInfo: { description },
-      assetprofileId
+      assetprofileId,
     } = await req.json();
 
-    const id = set_id && {id: set_id,
-      entityType: "ASSET",};
+    const id = set_id && { id: set_id, entityType: "ASSET" };
 
     const sendData = JSON.stringify({
       id,
@@ -21,7 +20,7 @@ export async function POST(req: NextRequest) {
       label,
       type,
       additionalInfo: { description },
-      assetProfileId: { entityType: "ASSET_PROFILE", id: assetprofileId }
+      assetProfileId: { entityType: "ASSET_PROFILE", id: assetprofileId },
     });
 
     const response = await fetch(`${process.env.THINGSBOARD_URL}/api/asset`, {
@@ -30,16 +29,14 @@ export async function POST(req: NextRequest) {
         "Content-type": "application/json",
         Authorization: `Bearer ${token?.value}`,
       },
-      body: sendData
+      body: sendData,
     });
 
     if (!response.ok) {
-      const data = await response.json();
-      console.log(data);
       return NextResponse.json(
-         { message: "Error adding asset" },
-         { status: response.status }
-       );
+        { message: "Error adding asset" },
+        { status: response.status }
+      );
     }
 
     return NextResponse.json(
@@ -60,30 +57,31 @@ export async function GET(req: NextRequest) {
   const params = req.nextUrl.searchParams;
   const pageSize = params.get("pageSize") || 1;
   const page = params.get("page") || 0;
+  const textSearch = params.get("textSearch") || "";
 
   try {
-    const response = await fetch(`${process.env.THINGSBOARD_URL}/api/tenant/assets?pageSize=${pageSize}&page=${page}`, {
-      method: "GET",
-      headers: {
-        "Content-type": "application/json",
-        Authorization: `Bearer ${token?.value}`,
+    const response = await fetch(
+      `${process.env.THINGSBOARD_URL}/api/tenant/assets?pageSize=${pageSize}&page=${page}&textSearch=${textSearch}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${token?.value}`,
+        },
       }
-    });
+    );
 
     if (!response.ok) {
       return NextResponse.json(
-         { message: "Error getting assets" },
-         { status: response.status }
-       );
+        { message: "Error getting assets" },
+        { status: response.status }
+      );
     }
-    
+
     const data = await response.json();
 
-    return NextResponse.json(
-      data,
-      { status: 200 }
-    );
-  } catch(error) {
+    return NextResponse.json(data, { status: 200 });
+  } catch (error) {
     return NextResponse.json(
       { message: `Error geting assets - ${error}` },
       { status: 500 }

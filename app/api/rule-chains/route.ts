@@ -26,22 +26,22 @@ export async function POST(req: NextRequest, res: NextResponse) {
       additionalInfo: { description },
     });
 
-    console.log(sendData)
-
-    const response = await fetch(`${process.env.THINGSBOARD_URL}/api/ruleChain`, {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-        Authorization: `Bearer ${token?.value}`,
-      },
-      body: sendData,
-    });
+    const response = await fetch(
+      `${process.env.THINGSBOARD_URL}/api/ruleChain`,
+      {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${token?.value}`,
+        },
+        body: sendData,
+      }
+    );
 
     if (!response.ok) {
       const data = await response.json();
-      console.log(data);
       return NextResponse.json(
-        { message: "Error adding rule chain" },
+        { message: `Error adding rule chain: ${data}` },
         { status: response.status }
       );
     }
@@ -64,10 +64,11 @@ export async function GET(req: NextRequest) {
   const params = req.nextUrl.searchParams;
   const pageSize = params.get("pageSize") || 1;
   const page = params.get("page") || 0;
+  const textSearch = params.get("textSearch") || "";
 
   try {
     const response = await fetch(
-      `${process.env.THINGSBOARD_URL}/api/ruleChains?pageSize=${pageSize}&page=${page}`,
+      `${process.env.THINGSBOARD_URL}/api/ruleChains?pageSize=${pageSize}&page=${page}&textSearch=${textSearch}`,
       {
         method: "GET",
         headers: {

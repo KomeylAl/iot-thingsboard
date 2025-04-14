@@ -1,11 +1,17 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
-export function useAssets(pageSize: number = 1, page: number = 0) {
+export function useAssets(
+  pageSize: number = 1,
+  page: number = 0,
+  textSearch: string = ""
+) {
   return useQuery({
     queryKey: ["assets"],
     queryFn: async () => {
-      const res = await fetch(`/api/assets?pageSize=${pageSize}&page=${page}`);
+      const res = await fetch(
+        `/api/assets?pageSize=${pageSize}&page=${page}&textSearch=${textSearch}`
+      );
       if (!res.ok) {
         throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
       }
@@ -40,7 +46,6 @@ export function useAssetAlarms(
       );
       if (!res.ok) {
         const data = await res.json();
-        console.log(data);
         throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
       }
       return res.json();
@@ -61,7 +66,6 @@ export function useAssetAudits(
       );
       if (!res.ok) {
         const data = await res.json();
-        console.log(data);
         throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
       }
       return res.json();
@@ -83,7 +87,6 @@ export function useAssetEvents(
       );
       if (!res.ok) {
         const data = await res.json();
-        console.log(data);
         throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
       }
       return res.json();
@@ -103,7 +106,6 @@ export function useDeleteAsset(assetId: string, onAssetDeleted: () => void) {
     },
     onError(error) {
       toast.error(error.message);
-      console.log(error);
     },
     onSuccess: () => {
       toast.success("دارایی با موفقت حذف شد");
@@ -121,13 +123,11 @@ export function useUpdateAsset(onAssetUpdated: () => void) {
       });
       if (!res.ok) {
         const data = await res.json();
-        console.log(data);
         throw new Error("مشکلی در ویرایش دارایی پیش آمده!");
       }
     },
     onError(error) {
       toast.error(error.message);
-      console.log(error);
     },
     onSuccess: () => {
       toast.success("دارایی با موفقیت ویرایش حذف شد");
@@ -158,13 +158,11 @@ export function useAddAsset(onAssetAdded: () => void) {
       });
       if (!res.ok) {
         const data = await res.json();
-        console.log(data)
         throw new Error("مشکلی در افزودن دارایی پیش آمده!");
       }
     },
     onError(error) {
       toast.error(error.message);
-      console.log(error);
     },
     onSuccess: () => {
       toast.success("دارایی با موفقت افزوده شد");

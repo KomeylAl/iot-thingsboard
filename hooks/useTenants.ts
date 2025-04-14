@@ -1,11 +1,17 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
-export function useTenants() {
+export function useTenants(
+  page: number = 0,
+  pageSize: number = 1,
+  textSearch: string = ""
+) {
   return useQuery({
     queryKey: ["tenants"],
     queryFn: async () => {
-      const res = await fetch("/api/sysadmin/tenants");
+      const res = await fetch(
+        `/api/sysadmin/tenants?page=${page}&pageSize=${pageSize}&textSearch=${textSearch}`
+      );
       if (!res.ok) {
         throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
       }
@@ -52,7 +58,6 @@ export function useDeleteTenant(tenantId: string, onDeletedTenant: () => void) {
     },
     onError(error) {
       toast.error(error.message);
-      console.log(error);
     },
     onSuccess: () => {
       toast.success("سازمان با موفقت حذف شد");
@@ -69,14 +74,11 @@ export function useUpdateTenant(onTenantUpdated: () => void) {
         body: JSON.stringify(tenantData),
       });
       if (!res.ok) {
-        const data = await res.json();
-        console.log(data)
         throw new Error("مشکلی در ویرایش سازمان پیش آمده!");
       }
     },
     onError(error) {
       toast.error(error.message);
-      console.log(error);
     },
     onSuccess: () => {
       toast.success("سازمان با ویرایش حذف شد");

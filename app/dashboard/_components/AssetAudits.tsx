@@ -12,8 +12,6 @@ interface AssetAuditsProps {
 const AssetAudits = ({ assetId }: AssetAuditsProps) => {
   const { data, isLoading, error, refetch } = useAssetAudits(assetId, 10, 0);
 
-  console.log(data);
-
   const columns = [
     { header: "نام", accessor: "entityName" },
     { header: "نوع", accessor: "actionType" },

@@ -83,11 +83,6 @@ const AddAssetForm = ({ onAssetAdded }: AddAssetProps) => {
                 options={profilesOptions}
                 getOptionLabel={(option) => option.label}
                 getOptionValue={(option) => option.value}
-                value={
-                  profilesOptions.find(
-                    (option: any) => option.value === field.value
-                  ) || null
-                }
                 defaultValue={
                   profilesOptions.length > 0 ? profilesOptions[0] : null
                 }

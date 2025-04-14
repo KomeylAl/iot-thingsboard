@@ -5,9 +5,11 @@ export async function GET(req: NextRequest) {
   const params = req.nextUrl.searchParams;
   const pageSize = params.get("pageSize") || 1;
   const page = params.get("page") || 0;
+  const textSearch = params.get("textSearch") || "";
+  
   try {
     const response = await fetch(
-      `${process.env.THINGSBOARD_URL}/api/tenantProfiles?pageSize=${pageSize}&page=${page}`,
+      `${process.env.THINGSBOARD_URL}/api/tenantProfiles?pageSize=${pageSize}&page=${page}&textSearch=${textSearch}`,
       {
         method: "GET",
         headers: {
@@ -100,9 +102,8 @@ export async function POST(req: NextRequest) {
 
     if (!response.ok) {
       const data = await response.json();
-      console.log(data);
       return NextResponse.json(
-        { message: "Error adding profile" },
+        { message: `Error adding profile: ${data}` },
         { status: response.status }
       );
     }

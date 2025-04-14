@@ -57,7 +57,6 @@ const AddProfileForm = ({ onProfileAdded }: AddProfileProps) => {
   });
 
   const onSubmit = (data: any) => {
-    console.log(data);
      addProfile(data);
   };
 

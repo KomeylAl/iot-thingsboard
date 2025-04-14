@@ -1,11 +1,17 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
-export function useTenantProfiles(pageSize: number = 1, page: number = 0) {
+export function useTenantProfiles(
+  pageSize: number = 1,
+  page: number = 0,
+  textSearch: string = ""
+) {
   return useQuery({
     queryKey: ["tenantProfiles"],
     queryFn: async () => {
-      const res = await fetch(`/api/sysadmin/tenants/profiles?pageSize=${pageSize}&page=${page}`);
+      const res = await fetch(
+        `/api/sysadmin/tenants/profiles?pageSize=${pageSize}&page=${page}&textSearch=${textSearch}`
+      );
       if (!res.ok) {
         throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
       }
@@ -14,11 +20,17 @@ export function useTenantProfiles(pageSize: number = 1, page: number = 0) {
   });
 }
 
-export function useDeviceProfiles(pageSize: number = 1, page: number = 0) {
+export function useDeviceProfiles(
+  pageSize: number = 1,
+  page: number = 0,
+  textSearch: string = ""
+) {
   return useQuery({
     queryKey: ["deviceProfiles"],
     queryFn: async () => {
-      const res = await fetch(`/api/devices/profiles?pageSize=${pageSize}&page=${page}`);
+      const res = await fetch(
+        `/api/devices/profiles?pageSize=${pageSize}&page=${page}&textSearch=${textSearch}`
+      );
       if (!res.ok) {
         throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
       }
@@ -27,11 +39,17 @@ export function useDeviceProfiles(pageSize: number = 1, page: number = 0) {
   });
 }
 
-export function useAssetProfiles(pageSize: number = 1, page: number = 0) {
+export function useAssetProfiles(
+  pageSize: number = 1,
+  page: number = 0,
+  textSearch: string = ""
+) {
   return useQuery({
     queryKey: ["assetProfiles"],
     queryFn: async () => {
-      const res = await fetch(`/api/assets/profiles?pageSize=${pageSize}&page=${page}`);
+      const res = await fetch(
+        `/api/assets/profiles?pageSize=${pageSize}&page=${page}&textSearch=${textSearch}`
+      );
       if (!res.ok) {
         throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
       }
@@ -49,13 +67,11 @@ export function useStoreProfile(onProfileStored: () => void) {
       });
       if (!res.ok) {
         const data = await res.json();
-        console.log(data)
         throw new Error("مشکلی در افزودن پروفایل پیش آمده!");
       }
     },
     onError(error) {
       toast.error(error.message);
-      console.log(error);
     },
     onSuccess: () => {
       toast.success("پروفایل با موفقیت افزوده حذف شد");
@@ -73,13 +89,11 @@ export function useUpdateProfile(onProfileStored: () => void) {
       });
       if (!res.ok) {
         const data = await res.json();
-        console.log(data)
         throw new Error("مشکلی در ویرایش پروفایل پیش آمده!");
       }
     },
     onError(error) {
       toast.error(error.message);
-      console.log(error);
     },
     onSuccess: () => {
       toast.success("پروفایل با موفقیت ویرایش شد");
@@ -88,7 +102,10 @@ export function useUpdateProfile(onProfileStored: () => void) {
   });
 }
 
-export function useDeleteProfile(profileId: string, onDeletedProfile: () => void) {
+export function useDeleteProfile(
+  profileId: string,
+  onDeletedProfile: () => void
+) {
   return useMutation({
     mutationFn: async () => {
       const res = await fetch(`/api/sysadmin/tenants/profiles/${profileId}`, {
@@ -100,7 +117,6 @@ export function useDeleteProfile(profileId: string, onDeletedProfile: () => void
     },
     onError(error) {
       toast.error(error.message);
-      console.log(error);
     },
     onSuccess: () => {
       toast.success("پروفایل با موفقت حذف شد");
@@ -118,13 +134,11 @@ export function useStoreAssetsProfile(onProfileStored: () => void) {
       });
       if (!res.ok) {
         const data = await res.json();
-        console.log(data)
         throw new Error("مشکلی در افزودن پروفایل پیش آمده!");
       }
     },
     onError(error) {
       toast.error(error.message);
-      console.log(error);
     },
     onSuccess: () => {
       toast.success("پروفایل با موفقست افزوده حذف شد");
@@ -142,13 +156,11 @@ export function useUpdateAssetsProfile(onProfileStored: () => void) {
       });
       if (!res.ok) {
         const data = await res.json();
-        console.log(data)
         throw new Error("مشکلی در ویرایش پروفایل پیش آمده!");
       }
     },
     onError(error) {
       toast.error(error.message);
-      console.log(error);
     },
     onSuccess: () => {
       toast.success("پروفایل با موفقیت ویرایش حذف شد");
@@ -157,7 +169,10 @@ export function useUpdateAssetsProfile(onProfileStored: () => void) {
   });
 }
 
-export function useDeleteAssetsProfile(profileId: string, onDeletedProfile: () => void) {
+export function useDeleteAssetsProfile(
+  profileId: string,
+  onDeletedProfile: () => void
+) {
   return useMutation({
     mutationFn: async () => {
       const res = await fetch(`/api/assets/profiles/${profileId}`, {
@@ -169,7 +184,6 @@ export function useDeleteAssetsProfile(profileId: string, onDeletedProfile: () =
     },
     onError(error) {
       toast.error(error.message);
-      console.log(error);
     },
     onSuccess: () => {
       toast.success("پروفایل با موفقت حذف شد");

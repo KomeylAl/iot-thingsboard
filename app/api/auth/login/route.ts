@@ -21,10 +21,7 @@ export async function POST(req: NextRequest) {
     }
 
     const data = await response.json();
-
-    // console.log(data.token);
     const userInfo = await getUserInfo(data.token);
-    // console.log(userInfo);
 
     if (userInfo.authority !== "TENANT_ADMIN" && userInfo.authority !== "SYS_ADMIN") {
       return NextResponse.json(

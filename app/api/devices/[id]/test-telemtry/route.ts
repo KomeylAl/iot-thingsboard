@@ -6,9 +6,7 @@ export async function GET(
 ) {
   const token = req.cookies.get("token");
   const { id } = await params;
-  const searchParams = req.nextUrl.searchParams;
   const temperature = (Math.random() * (30 - 20) + 20).toFixed(2);
-  console.log(temperature);
 
   try {
     const tokenResponse = await fetch(

@@ -7,8 +7,6 @@ export function useSyncDevices() {
     queryFn: async () => {
       const res = await fetch("/api/syncronization/devices");
       if (!res.ok) {
-        const data = await res.json();
-        console.log(data);
         throw new Error("خطا در همگام سازی اطلاعات دستگاه ها");
       }
       toast.success("عملیات موفقت آمیز بود");
@@ -26,8 +24,6 @@ export function useSyncCustomers(tenantId: string) {
         `/api/syncronization/customers?tenantId=${tenantId}`
       );
       if (!res.ok) {
-        const data = await res.json();
-        console.log(data);
         throw new Error("خطا در همگام سازی اطلاعات مشتریان");
       }
       toast.success("عملیات موفقت آمیز بود");
@@ -45,8 +41,6 @@ export function useSyncAssets(tenantId: string) {
         `/api/syncronization/assets?tenantId=${tenantId}`
       );
       if (!res.ok) {
-        const data = await res.json();
-        console.log(data);
         throw new Error("خطا در همگام سازی اطلاعات دارایی ها");
       }
       toast.success("عملیات موفقت آمیز بود");
@@ -62,8 +56,6 @@ export function useSyncTenants() {
     queryFn: async () => {
       const res = await fetch("/api/syncronization/tenants");
       if (!res.ok) {
-        const data = await res.json();
-        console.log(data);
         throw new Error("خطا در همگام سازی اطلاعات سازمان ها");
       }
       toast.success("عملیات موفقت آمیز بود");
@@ -79,8 +71,6 @@ export function useSyncTenantProfiles() {
     queryFn: async () => {
       const res = await fetch("/api/syncronization/profiles/tenants");
       if (!res.ok) {
-        const data = await res.json();
-        console.log(data);
         throw new Error("خطا در همگام سازی اطلاعات پروفایل ها");
       }
       toast.success("عملیات موفقت آمیز بود");
@@ -96,8 +86,6 @@ export function useSyncLogs() {
     queryFn: async () => {
       const res = await fetch("/api/syncronization/logs");
       if (!res.ok) {
-        const data = await res.json();
-        console.log(data);
         throw new Error("خطا در دریافت اطلاعات لاگ ها");
       }
       return res.json();

@@ -28,8 +28,6 @@ const DeletePlan = ({ id, onCanceled, onPlanDeleted }: DeletePlanProps) => {
     enabled: false,
   });
 
-  console.log(error);
-
   return (
     <div className="w-96">
       <p>برای حذف این مورد اطمینان دارید؟</p>

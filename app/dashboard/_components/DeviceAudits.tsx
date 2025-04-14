@@ -12,8 +12,6 @@ interface DeviceAuditsProps {
 const DeviceAudits = ({ deviceId }: DeviceAuditsProps) => {
   const { data, isLoading, error, refetch } = useDeviceAudits(deviceId, 10, 0);
 
-  console.log(data);
-
   const columns = [
     { header: "نام", accessor: "entityName" },
     { header: "نوع", accessor: "actionType" },

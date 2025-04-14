@@ -37,8 +37,6 @@ const AddAssetProfileForm = ({ onProfileEdited }: AddAssetProfileProps) => {
     addProfile(data);
   };
 
-  console.log(errors);
-
   return (
     <div className="flex flex-col items-start gap-8">
       <h1 className="font-bold text-xl">افزودن پروفایل</h1>

@@ -57,14 +57,12 @@ const EditDeviceForm = ({ deviceData, onDeviceUpdated }: EditDeviceProps) => {
   }, [deviceData, reset]);
 
   const onSubmit = (data: any) => {
-    console.log(data.deviceProfileId)
     const formattedData = {
       ...data,
       deviceprofileId: data.deviceProfileId.value ? data.deviceProfileId.value : deviceData.deviceProfileId.id,
       tenantid: data.tenantId.id,
       set_id: deviceData.id.id
     };
-    console.log(formattedData);
     updateDevice(formattedData);
   };
 
@@ -73,7 +71,6 @@ const EditDeviceForm = ({ deviceData, onDeviceUpdated }: EditDeviceProps) => {
       <h1 className="font-bold text-xl">ویرایش دستگاه</h1>
       <form
         onSubmit={(e) => {
-          console.log("Form is being submitted..."); // تست شماره 1
           handleSubmit(onSubmit)(e);
         }}
         className="flex flex-col gap-3 w-72 md:w-96"
@@ -98,11 +95,14 @@ const EditDeviceForm = ({ deviceData, onDeviceUpdated }: EditDeviceProps) => {
                 {...field}
                 placeholder="پروفایل دستگاه"
                 options={profilesOptions}
-                getOptionLabel={(option) => option.label}
-                getOptionValue={(option) => option.value}
                 value={
                   profilesOptions.find(
-                    (option: any) => option.value === field.value
+                    (option: any) => option.value === field.value?.id
+                  )
+                }
+                defaultValue={  
+                  profilesOptions.find(
+                    (option: any) => option.value === field.value?.id
                   ) || null
                 }
               />

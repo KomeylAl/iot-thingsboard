@@ -19,7 +19,6 @@ export async function GET(req: NextRequest) {
 
     if (!response.ok) {
       const data = await response.json();
-      console.log(data);
       return NextResponse.json(
         { message: `Error marking noti: ${data}` },
         { status: response.status }
@@ -27,7 +26,7 @@ export async function GET(req: NextRequest) {
     }
     return NextResponse.json({ message: "Notif marked successfully" }, { status: 200 });
   } catch (error: any) {
-    console.log(error);
+    console.log(error.message);
     return NextResponse.json(
       { message: `Error marking notif: ${error.message}` },
       { status: 500 }

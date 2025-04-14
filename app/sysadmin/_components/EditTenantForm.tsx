@@ -69,7 +69,6 @@ const EditTenantForm = ({ tenantData, onTenantUpdated }: EditTenantProps) => {
       tenantprofileId: data.tenantProfileId.value ? data.tenantProfileId.value : tenantData.tenantProfileId.id,
       set_id: tenantData.id.id
     };
-    console.log(formattedData)
     updateTenant(formattedData);
   };
 

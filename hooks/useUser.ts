@@ -38,7 +38,6 @@ export function useSyncTenantUsers(tenantId: string) {
       const res = await fetch(`/api/syncronization/tenants/${tenantId}/users`);
       if (!res.ok) {
         const data = await res.json();
-        console.log(data);
         throw new Error("خطا در همگام سازی کاربران")
       }
       toast.success("عملیات موفقیت آمیز بود")
@@ -58,16 +57,13 @@ export function useAddUser(tenantId: string) {
       });
       if (!res.ok) {
         const data = await res.json();
-        console.log(data)
         throw new Error("مشکلی در افزودن پیش آمده!");
       }
     },
     onError(error) {
       toast.error(error.message);
-      console.log(error);
     },
     onSuccess: (response) => {
-      console.log(response);
       toast.success("کاربر با موفقیت افزوده شد");
     },
   });

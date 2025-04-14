@@ -24,7 +24,6 @@ export async function GET(req: NextRequest) {
     }
 
     const data = await response.json();
-    console.log(data);
     const tbTenants = data.data.map((t: any) => ({
       things_id: t.id.id,
       name: t.name,

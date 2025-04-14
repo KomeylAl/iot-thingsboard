@@ -34,7 +34,7 @@ const AdminDashboard = () => {
   return (
     <div className="p-6 lg:p-20 w-full min-h-screen flex flex-col">
       {/* هدر */}
-      <Header title="داشبورد مدیریت" isShowSearch={false} />
+      <Header title="داشبورد مدیریت" isShowSearch={false} searchFn={() => {}} />
 
       {/* محتوای اصلی */}
       <div className="flex-1 flex flex-col lg:flex-row gap-6 mt-6 overflow-hidden">

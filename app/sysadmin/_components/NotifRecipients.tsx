@@ -11,10 +11,6 @@ const NotifRecipients = () => {
 
   const { data, isLoading, error, refetch } = useNotifRecipients(10, 0);
 
-  if (data) {
-    console.log(data);
-  }
-
   return (
     <div className="w-full h-full">
       {error && (
