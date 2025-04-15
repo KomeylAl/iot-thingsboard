@@ -14,3 +14,14 @@ export type RuleNodeInstance = {
 export type RuleChainEditorState = {
   nodes: RuleNodeInstance[];
 };
+
+export interface RuleNode {
+  id: string;
+  type: NodeType;
+  name: string;
+  config: any;
+  connectedTo?: {
+    targetNodeId: string;
+    label: string;
+  };
+}

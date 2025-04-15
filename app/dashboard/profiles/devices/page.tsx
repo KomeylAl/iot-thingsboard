@@ -48,7 +48,7 @@ const DeviceProfiles = () => {
         <Header title="پروفایل دستگاه ها" isShowSearch searchFn={onSearchChange}/>
         <div className="flex items-center justify-end w-full">
           <button
-            onClick={toggleMpdal}
+            onClick={() => {}}
             className="py-2 px-4 bg-blue-500 text-white rounded-lg flex items-center"
           >
             <BiPlus size={24} /> افزودن پروفایل جدید

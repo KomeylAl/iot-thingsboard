@@ -31,14 +31,21 @@ const MainRequestsChart = ({
   return (
     <div className="space-y-3">
       <p className="text-lg">نمودار درخواست های دستگاه</p>
+      <div className="flex items-center gap-3">
       <Select
         placeholder="انتخاب دستگاه"
+        className="w-full"
         options={selectOptions}
         onChange={(option: any) => {
           selectFn(option.value);
           refetch();
         }}
       />
+      <Select
+        placeholder="انتخاب کلید"
+        className="w-full"
+      />
+      </div>
       <div className="w-full h-full flex items-center justify-center">
         {!deviceId ? (
           <p>لطفا یک دستگاه انتخاب کنید.</p>

@@ -79,3 +79,16 @@ export function useDeleteRuleChain(
     },
   });
 }
+
+export function useRuleChainMetadata(ruleChainId: string) {
+  return useQuery({
+    queryKey: ["ruleChainMetadata"],
+    queryFn: async () => {
+      const res = await fetch(`/api/rule-chains/${ruleChainId}/metadata`);
+      if (!res.ok) {
+        throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
+      }
+      return res.json();
+    },
+  });
+}

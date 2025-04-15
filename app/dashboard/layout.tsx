@@ -16,7 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fa">
-      <body className="bg-gray-100">
+      <body className="bg-gray-100 h-screen">
         <Toaster />
         <DashboardProviders>
           <SideBar />
