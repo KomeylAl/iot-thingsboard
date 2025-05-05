@@ -47,12 +47,13 @@ export async function POST(
   const token = req.cookies.get("token");
   const { id } = await params;
 
-  const { setId, phone, email, firstName, lastName } = await req.json();
+  const { setId, phone, email, firstName, lastName, password } =
+    await req.json();
   const userId = setId && setId;
 
   try {
     const response = await fetch(
-      `${process.env.THINGSBOARD_URL}/api/user`,
+      `${process.env.THINGSBOARD_URL}/api/user?sendActivationMail=false`,
       {
         method: "POST",
         headers: {
@@ -60,7 +61,6 @@ export async function POST(
           Authorization: `Bearer ${token?.value}`,
         },
         body: JSON.stringify({
-          
           tenantId: { id, entityType: "TENANT" },
           phone,
           email,
@@ -71,17 +71,64 @@ export async function POST(
       }
     );
 
-    const data = await response.json();
     if (!response.ok) {
+      const data = await response.json();
+      return NextResponse.json({ message: data }, { status: response.status });
+    }
+
+    const data = await response.json();
+
+    const activeResponse = await fetch(
+      `${process.env.THINGSBOARD_URL}/api/user/${data.id.id}/activationLink`,
+      {
+        method: "GET",
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${token?.value}`,
+        },
+      }
+    );
+
+    if (!activeResponse.ok) {
+      const data = await activeResponse.json();
       return NextResponse.json(
         { message: data },
-        { status: response.status }
+        { status: activeResponse.status }
       );
     }
 
+    const activeLinkData = await activeResponse.text();
+    const activationToken = activeLinkData.split("=")[1];
 
-    return NextResponse.json(data, { status: 200 });
+    const activateResponse = await fetch(
+      `${process.env.THINGSBOARD_URL}/api/noauth/activate`,
+      {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${token?.value}`,
+        },
+        body: JSON.stringify({
+          activateToken: activationToken,
+          password,
+        }),
+      }
+    );
+
+    if (!activateResponse.ok) {
+      const data = await activateResponse.json();
+      return NextResponse.json(
+        { message: data },
+        { status: activateResponse.status }
+      );
+    }
+
+    return NextResponse.json(
+      { message: "User added successfuly" },
+      { status: 200 }
+    );
   } catch (error: any) {
+    console.log(error.message);
     return NextResponse.json(
       { message: "Something went wrong" },
       { status: 500 }

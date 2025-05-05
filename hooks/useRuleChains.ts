@@ -92,3 +92,24 @@ export function useRuleChainMetadata(ruleChainId: string) {
     },
   });
 }
+
+export function useUpdateRuleChainMetadata(ruleChainId: string) {
+  return useMutation({
+    mutationFn: async (metadata: any) => {
+      const res = await fetch(`/api/rule-chains/${ruleChainId}`, {
+        method: "POST",
+        body: JSON.stringify(metadata),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error("مشکلی در ذخیره تغییرات پیش آمده!");
+      }
+    },
+    onError(error) {
+      toast.error(error.message);
+    },
+    onSuccess: () => {
+      toast.success("تغییرات با موفقیت ذخیره شد");
+    },
+  });
+}

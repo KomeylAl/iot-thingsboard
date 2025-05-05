@@ -47,7 +47,7 @@ export function useSyncTenantUsers(tenantId: string) {
   });
 }
 
-export function useAddUser(tenantId: string) {
+export function useAddUser(tenantId: string, onUserAdded: () => void) {
   return useMutation({
     mutationKey: ['addUser'],
     mutationFn: async function(userData) {
@@ -65,6 +65,7 @@ export function useAddUser(tenantId: string) {
     },
     onSuccess: (response) => {
       toast.success("کاربر با موفقیت افزوده شد");
+      onUserAdded();
     },
   });
 }

@@ -15,7 +15,7 @@ const Popup = ({ isOpen, children, onClose }: PopupProps) => {
          className='text-white top-10 right-10 fixed cursor-pointer z-20'
          onClick={onClose}
       />
-      <div className={`p-8 bg-white rounded-lg transform ${isOpen ? "scale-100" : "scale-95"} transition-all duration-300 ease-in-out`}>
+      <div className={`max-h-screen p-8 bg-white rounded-lg transform ${isOpen ? "scale-100" : "scale-95"} transition-all duration-300 ease-in-out overflow-y-scroll`}>
          {children}
       </div>
     </div>

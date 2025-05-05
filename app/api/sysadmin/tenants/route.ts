@@ -111,17 +111,28 @@ export async function GET(req: NextRequest, res: NextResponse) {
   const params = req.nextUrl.searchParams;
   const pageSize = params.get("pageSize") || 1;
   const page = params.get("page") || 0;
+  const textSearch = params.get("textSearch") || "";
+
   try {
-    const newLocalTenants = await prisma.tenant.findMany({
-      orderBy: { createdAt: "desc" },
-      include: { plan: true },
-    });
-    const data = {
-      data: newLocalTenants,
-      totalPages: 0,
-      totalElements: newLocalTenants.length,
-      hasNext: false,
-    };
+    const response = await fetch(
+      `${process.env.THINGSBOARD_URL}/api/tenants?pageSize=${pageSize}&page=${page}&textSearch=${textSearch}&sortProperty=createdTime&sortOrder=DESC`,
+      {
+        method: "GET",
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${token?.value}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      return NextResponse.json(
+        { message: "Error getting tenants" },
+        { status: response.status }
+      );
+    }
+
+    const data = await response.json();
 
     return NextResponse.json(data, { status: 200 });
   } catch (error) {

@@ -10,6 +10,7 @@ const schema = yup.object({
   firstName: yup.string().required("نام الزامی است"),
   lastName: yup.string().required("نام خانوادگی الزامی است"),
   phone: yup.string().optional(),
+  password: yup.string().required(),
   email: yup.string().required().email("ایمیل معتبر نیست").optional(),
 });
 
@@ -19,7 +20,7 @@ interface AddUserProps {
 }
 
 const AddUserForm = ({ onUserAdded, tenantId }: AddUserProps) => {
-  const { mutate: addUser, isPending } = useAddUser(tenantId);
+  const { mutate: addUser, isPending } = useAddUser(tenantId, onUserAdded);
 
   const {
     register,
@@ -71,6 +72,13 @@ const AddUserForm = ({ onUserAdded, tenantId }: AddUserProps) => {
           {...register("phone")}
           className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
           placeholder="تلفن"
+        />
+
+        <input
+          {...register("password")}
+          type="password"
+          className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
+          placeholder="رمز عبور*"
         />
 
         <button

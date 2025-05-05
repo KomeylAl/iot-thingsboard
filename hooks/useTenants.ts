@@ -2,8 +2,8 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
 export function useTenants(
-  page: number = 0,
   pageSize: number = 1,
+  page: number = 0,
   textSearch: string = ""
 ) {
   return useQuery({

@@ -26,10 +26,10 @@ const schema = yup.object({
   maxEmails: yup.number().optional().default(0),
   smsEnabled: yup.boolean().optional().default(false),
   maxSms: yup.number().optional().default(0),
-  limit1: yup.number().required("تعداد پیام در بازه اول الزامی است").min(1),
-  interval1: yup.number().required("زمان بازه اول الزامی است").min(1),
-  limit2: yup.number().required("تعداد پیام در بازه دوم الزامی است").min(1),
-  interval2: yup.number().required("زمان بازه دوم الزامی است").min(1),
+  limit1: yup.number().optional().min(1),
+  interval1: yup.number().optional().min(1),
+  limit2: yup.number().optional().min(1),
+  interval2: yup.number().optional().min(1),
 
   default: yup.bool(),
 });
@@ -57,7 +57,7 @@ const AddProfileForm = ({ onProfileAdded }: AddProfileProps) => {
   });
 
   const onSubmit = (data: any) => {
-     addProfile(data);
+    addProfile(data);
   };
 
   return (

@@ -27,10 +27,10 @@ const schema = yup.object({
   maxEmails: yup.number().optional().default(0),
   smsEnabled: yup.boolean().optional().default(false),
   maxSms: yup.number().optional().default(0),
-  limit1: yup.number().required("تعداد پیام در بازه اول الزامی است").min(1),
-  interval1: yup.number().required("زمان بازه اول الزامی است").min(1),
-  limit2: yup.number().required("تعداد پیام در بازه دوم الزامی است").min(1),
-  interval2: yup.number().required("زمان بازه دوم الزامی است").min(1),
+  limit1: yup.number().optional().min(1),
+  interval1: yup.number().optional().min(1),
+  limit2: yup.number().optional().min(1),
+  interval2: yup.number().optional().min(1),
 
   default: yup.bool(),
 });
@@ -40,7 +40,10 @@ interface EditProfileProps {
   onProfileEdited: () => void;
 }
 
-const EditProfileForm = ({ profileData, onProfileEdited }: EditProfileProps) => {
+const EditProfileForm = ({
+  profileData,
+  onProfileEdited,
+}: EditProfileProps) => {
   const { mutate: updateProfile, isPending } = useUpdateProfile(() => {
     onProfileEdited();
   });
@@ -59,16 +62,16 @@ const EditProfileForm = ({ profileData, onProfileEdited }: EditProfileProps) => 
   });
 
   useEffect(() => {
-   if(profileData) {
+    if (profileData) {
       reset(transformToFormValues(profileData));
-   }
-  }, [profileData, reset])
+    }
+  }, [profileData, reset]);
 
   const onSubmit = (data: any) => {
-   const formattedData = {
+    const formattedData = {
       ...data,
       set_id: profileData.id.id,
-   }
+    };
     updateProfile(formattedData);
   };
 

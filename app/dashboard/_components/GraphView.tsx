@@ -1,30 +1,35 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import ReactFlow, {
   Background,
   Controls,
   MiniMap,
   addEdge,
-  applyNodeChanges,
-  applyEdgeChanges,
   Connection,
-  Edge,
   Node,
-  NodeChange,
-  EdgeChange,
   useNodesState,
   useEdgesState,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { v4 as uuidv4 } from "uuid";
-import { createFinalJson, CustomNode, generateRuleChainJson, willCreateLoop } from "@/lib/utils"; // فرض بر اینکه داریم
+import {
+  CustomNode,
+  prepareRuleChainForServer,
+  willCreateLoop,
+} from "@/lib/utils"; // فرض بر اینکه داریم
 import toast from "react-hot-toast";
 import Popup from "@/components/Popup";
 import ChangeRuleChainForm from "./ui/form/ChangeRuleChainFor";
-import { useRuleChainMetadata } from "@/hooks/useRuleChains";
+import { useRuleChainMetadata, useUpdateRuleChainMetadata } from "@/hooks/useRuleChains";
 import { RuleNode } from "@/lib/types";
 import { NodeType, nodeTypeConfigs } from "./ui/form/nodeTypes";
+import ContextMenu from "./ContextMenu";
+import { GoPlus } from "react-icons/go";
+import { IoHelpSharp } from "react-icons/io5";
+import { IoCheckmarkOutline } from "react-icons/io5";
+import { useModal } from "@/hooks/useModal";
+import { PuffLoader } from "react-spinners";
 
 const initialNodes: Node[] = [
   {
@@ -42,10 +47,42 @@ interface NodeGraphEditorProps {
 export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const ref = useRef<HTMLDivElement>(null);
+  const [menu, setMenu]: any = useState(null);
+
+  const onNodeContextMenu = useCallback(
+    (event: any, node: any) => {
+      event.preventDefault();
+
+      if (node?.data?.label === "Start Node" || node?.data?.label === "Start") {
+        // اگه Start Node بود اصلا کاری نکن
+        return;
+      }
+
+      if (!ref.current) return;
+
+      const pane = ref.current.getBoundingClientRect();
+
+      setMenu({
+        id: node.id,
+        name: node.data.label,
+        top: event.clientY < pane.height - 200 && event.clientY,
+        left: event.clientX < pane.width - 200 && event.clientX,
+        right: event.clientX >= pane.width - 200 && pane.width - event.clientX,
+        bottom:
+          event.clientY >= pane.height - 200 && pane.height - event.clientY,
+      });
+    },
+    [setMenu]
+  );
+
+  const onPaneClick = useCallback(() => setMenu(null), [setMenu]);
 
   const [newNodes, setNewNodes] = useState<CustomNode[]>([]);
 
   const { data: metadata } = useRuleChainMetadata(ruleChainId);
+
+  console.log(metadata);
 
   useEffect(() => {
     const fetchAndParse = async () => {
@@ -55,6 +92,13 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
           type: "input",
           position: { x: 50, y: 50 },
           data: { label: "Start" },
+          draggable: false,
+          deletable: false,
+          style: {
+            backgroundColor: "#0094e3", // آبی تیره (tailwind: bg-blue-600)
+            color: "white",
+            border: "1px solid #ffffff",
+          },
         },
         ...metadata.nodes.map((node: any) => ({
           id: node.id.id,
@@ -77,7 +121,7 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
           target: metadata.nodes[metadata.firstNodeIndex].id.id,
           type: "default",
           animated: true,
-          label: "start",
+          label: "",
         },
         ...metadata.connections.map((conn: any) => ({
           id: `e${metadata.nodes[conn.fromIndex].id.id}-${
@@ -180,27 +224,51 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
     setIsModalOpen(false); // مودال بسته بشه
   };
 
+  const { mutate: saveMetadata, isPending } = useUpdateRuleChainMetadata(ruleChainId);
+
   const handleEditClick = () => {
     // const updatedJson = createFinalJson(newNodes, [], metadata);
     // console.log(JSON.stringify(updatedJson, null, 2));
-    toast.error("خطا در برقراری ارتباط با سرور")
+    // toast.error("خطا در برقراری ارتباط با سرور");
+    // const finalJson = createFinalJson(nodes, edges, metadata);
+    const finalJson = prepareRuleChainForServer(nodes, edges, ruleChainId);
+    const finalData = {
+      ruleChainId: metadata.ruleChainId,
+      firstNodeIndex: metadata.firstNodeIndex,
+      version: metadata.version,
+      nodes: finalJson.metaData.nodes,
+      connections: finalJson.metaData.connections,
+      ruleChainConnections: finalJson.ruleChainConnections
+    };
+    // console.log(finalData);
+    saveMetadata(finalData);
   };
 
+  const { isOpen, openModal, closeModal } = useModal();
+
   return (
-    <div className="w-full h-full relative">
-      <div className="w-full flex items-center gap-4 h-20 absolute">
+    <div className="w-full h-full relative" ref={ref}>
+      <div className="w-full flex items-center gap-4 h-20 absolute pr-6">
+        <button
+          onClick={openModal}
+          className="w-12 h-12 rounded-full flex items-center justify-center z-10 top-2 left-2 bg-blue-500 text-white"
+        >
+          <IoHelpSharp size={20} />
+        </button>
+
         <button
           onClick={() => setIsModalOpen(true)}
-          className=" z-10 top-2 left-2 bg-blue-600 text-white px-4 py-1 rounded"
+          className="w-12 h-12 rounded-full flex items-center justify-center z-10 top-2 left-2 bg-rose-500 text-white"
         >
-          افزودن نود جدید
+          <GoPlus size={20} />
         </button>
 
         <button
           onClick={handleEditClick}
-          className=" z-10 top-2 left-2 bg-rose-600 text-white px-4 py-1 rounded"
+          disabled={isPending}
+          className={`w-12 h-12 rounded-full flex items-center justify-center z-10 top-2 left-2 text-white ${isPending ? "cursor-not-allowed bg-amber-300" : "bg-amber-500"}`}
         >
-          ویرایش
+          {isPending ? <PuffLoader color="#ffffff" size={30}/> : <IoCheckmarkOutline size={20} />}
         </button>
       </div>
 
@@ -212,6 +280,8 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
         onConnect={onConnect}
         fitView
         className="absolute inset-0"
+        onPaneClick={onPaneClick}
+        onNodeContextMenu={onNodeContextMenu}
         onNodeClick={(e: any, node: any) => {
           toast.success(`node: ${node.data.label}`);
         }}
@@ -219,15 +289,33 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
         <MiniMap />
         <Controls />
         <Background />
+        {menu && <ContextMenu onClick={onPaneClick} {...menu} />}
       </ReactFlow>
       <Popup
         isOpen={isModalOpen}
         onClose={() => {
           setIsModalOpen(false);
-          addNewNode();
+          // addNewNode();
         }}
       >
         <ChangeRuleChainForm onSubmit={handleAddNode} />
+      </Popup>
+      <Popup isOpen={isOpen} onClose={closeModal}>
+        <div className="w-full rounded-md bg-white p-4 flex flex-col items-start space-y-4">
+          <h2 className="text-lg font-semibold">
+            راهنمای استفاده از گراف زنجیره قواعد:
+          </h2>
+          <p>1- از دکمه (+) برای افزودن نود های جدید استفاده کنید.</p>
+          <p>2- از دکمه (تیک) برای ذخیره تغییرات استفاده کنید.</p>
+          <p>
+            3- در فرم افزودن نود میتوانید تنظیمات مخصوص هر نود را تعیین کنید.
+          </p>
+          <p>
+            4- با کلیک راست روی نود ها و اتصالات میتوانید آنهارا ویرایش یا حذف
+            کنید.
+          </p>
+          <p>5- نود شروع غیر قابل حذف یا ویرایش می باشد.</p>
+        </div>
       </Popup>
     </div>
   );

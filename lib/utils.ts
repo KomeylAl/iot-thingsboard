@@ -125,48 +125,210 @@ interface FinalConnection {
   type: string;
 }
 
-export function createFinalJson(
-  customNodes: CustomNode[],
-  customConnections: CustomConnection[],
-  originalJson: any
-): any {
-  const nodeIdToIndex: Record<string, number> = {};
-  const finalNodes: FinalNode[] = customNodes.map((node, index) => {
-    nodeIdToIndex[node.id] = index;
+// export function createFinalJson(
+//   customNodes: CustomNode[],
+//   customConnections: CustomConnection[],
+//   originalJson: any
+// ): any {
+//   const nodeIdToIndex: Record<string, number> = {};
+//   const finalNodes: FinalNode[] = customNodes.map((node, index) => {
+//     nodeIdToIndex[node.id] = index;
 
-    const config = nodeTypeConfigs[node.type];
-    const configuration: Record<string, any> = {};
-    config.fields.forEach(field => {
-      configuration[field.name] = field.default ?? null;
-    });
+//     const config = nodeTypeConfigs[node.type];
+//     const configuration: Record<string, any> = {};
+//     config.fields.forEach(field => {
+//       configuration[field.name] = field.default ?? null;
+//     });
 
-    return {
-      id: node.id,
-      name: node.name,
-      type: node.type,
-      configuration,
-      additionalInfo: {
-        layoutX: node.position.x,
-        layoutY: node.position.y,
-      },
-      ruleChainId: originalJson.ruleChainId,
-      configurationVersion: 0,
-      singletonMode: false,
-      queueName: null,
-      debugSettings: null,
-      externalId: null,
-    };
+//     return {
+//       id: node.id,
+//       name: node.name,
+//       type: node.type,
+//       configuration,
+//       additionalInfo: {
+//         layoutX: node.position.x,
+//         layoutY: node.position.y,
+//       },
+//       ruleChainId: originalJson.ruleChainId,
+//       configurationVersion: 0,
+//       singletonMode: false,
+//       queueName: null,
+//       debugSettings: null,
+//       externalId: null,
+//     };
+//   });
+
+//   const finalConnections: FinalConnection[] = customConnections.map(conn => ({
+//     fromIndex: nodeIdToIndex[conn.from],
+//     toIndex: nodeIdToIndex[conn.to],
+//     type: conn.relationType,
+//   }));
+
+//   return {
+//     ...originalJson,
+//     nodes: finalNodes,
+//     connections: finalConnections,
+//   };
+// }
+
+
+// export function createFinalJsonFromEditor(
+//   nodes: Node[],
+//   edges: Edge[],
+//   originalJson: any
+// ): any {
+//   const finalNodes: any[] = [];
+//   const nodeIdToIndex: Record<string, number> = {};
+
+//   nodes.forEach((node, index) => {
+//     const raw = node.data?.raw;
+//     const isExisting = raw && raw.id;
+
+//     const finalNode = isExisting
+//       ? {
+//           ...raw, // نود از سمت سرور
+//           additionalInfo: {
+//             ...(raw.additionalInfo || {}),
+//             layoutX: node.position.x,
+//             layoutY: node.position.y,
+//           },
+//         }
+//       : {
+//           ruleChainId: originalJson.ruleChainId,
+//           type: node.data?.raw?.type || "org.thingsboard.rule.engine.filter.TbJsFilterNode", // یا هر مقدار پیش‌فرضی
+//           name: node.data?.label || "New Node",
+//           debugSettings: null,
+//           singletonMode: false,
+//           queueName: null,
+//           configurationVersion: 0,
+//           externalId: null,
+//           configuration: {}, // اگه نیاز هست از config پیش‌فرض بساز
+//           additionalInfo: {
+//             description: "",
+//             layoutX: node.position.x,
+//             layoutY: node.position.y,
+//           },
+//         };
+
+//     nodeIdToIndex[node.id] = index;
+//     finalNodes.push(finalNode);
+//   });
+
+//   const finalConnections = edges.map((edge) => ({
+//     fromIndex: nodeIdToIndex[edge.source],
+//     toIndex: nodeIdToIndex[edge.target],
+//     type: edge.label || "default",
+//   }));
+
+//   const firstRealNodeIndex = nodes.findIndex((n) => n.id !== "start-node");
+
+//   return {
+//     ...originalJson,
+//     firstNodeIndex: firstRealNodeIndex !== -1 ? firstRealNodeIndex : 0,
+//     nodes: finalNodes,
+//     connections: finalConnections,
+//     ruleChainConnections: null,
+//   };
+// }
+
+
+import { Node as FlowNode, Edge as FlowEdge } from 'reactflow';
+
+type NodeData = {
+  label: string;
+  raw?: any;
+};
+
+type Node = FlowNode<NodeData>;
+type Edge = FlowEdge;
+
+type PreparedRuleChain = {
+  metaData: {
+    firstNodeIndex: number;
+    nodes: any[];
+    connections: {
+      fromIndex: number;
+      toIndex: number;
+      type: string;
+    }[];
+  };
+  ruleChainConnections: any[]; // اختیاری
+};
+
+export function prepareRuleChainForServer(
+  nodes: Node[],
+  edges: Edge[],
+  ruleChainId: string
+): PreparedRuleChain {
+  const filteredNodes = nodes.filter((node) => node.id !== 'start-node');
+  const nodeIndexMap = new Map<string, number>(); // mapping node.id => index in filteredNodes
+
+  const preparedNodes = filteredNodes.map((node, index) => {
+    nodeIndexMap.set(node.id, index);
+
+    const raw = node.data.raw;
+
+    if (raw) {
+      return {
+        ...raw,
+        additionalInfo: {
+          ...raw.additionalInfo,
+          layoutX: node.position.x,
+          layoutY: node.position.y,
+        },
+      };
+    } else {
+      return {
+        ruleChainId: {
+          entityType: 'RULE_CHAIN',
+          id: ruleChainId,
+        },
+        type: 'org.thingsboard.rule.engine.filter.TbDeviceTypeSwitchNode',
+        name: node.data.label,
+        debugSettings: null,
+        singletonMode: false,
+        queueName: null,
+        configurationVersion: 0,
+        externalId: null,
+        configuration: {},
+        additionalInfo: {
+          description: '',
+          layoutX: node.position.x,
+          layoutY: node.position.y,
+        },
+      };
+    }
   });
 
-  const finalConnections: FinalConnection[] = customConnections.map(conn => ({
-    fromIndex: nodeIdToIndex[conn.from],
-    toIndex: nodeIdToIndex[conn.to],
-    type: conn.relationType,
-  }));
+  const preparedConnections = edges
+  .filter((edge) => edge.source !== 'start-node')
+  .map((edge) => {
+    const fromIndex = nodeIndexMap.get(edge.source);
+    const toIndex = nodeIndexMap.get(edge.target);
+    return {
+      fromIndex,
+      toIndex,
+      type: typeof edge.label === 'string' ? edge.label : 'Success',
+    };
+  })
+  .filter(
+    (conn): conn is { fromIndex: number; toIndex: number; type: string } =>
+      typeof conn.fromIndex === 'number' &&
+      typeof conn.toIndex === 'number' &&
+      typeof conn.type === 'string'
+  );
 
-  return {
-    ...originalJson,
-    nodes: finalNodes,
-    connections: finalConnections,
+  const firstNodeId = edges.find((e) => e.source === 'start-node')?.target;
+  const firstNodeIndex = nodeIndexMap.get(firstNodeId ?? '') ?? 0;
+
+  const result: PreparedRuleChain = {
+    metaData: {
+      firstNodeIndex,
+      nodes: preparedNodes,
+      connections: preparedConnections,
+    },
+    ruleChainConnections: [],
   };
+
+  return result;
 }

@@ -8,6 +8,7 @@ import React, { useState } from "react";
 import { BiPlus } from "react-icons/bi";
 import { PuffLoader } from "react-spinners";
 import AddUserForm from "./AddUserForm";
+import { useModal } from "@/hooks/useModal";
 
 interface TenantUsersProps {
   tenantId: string;
@@ -18,6 +19,12 @@ const TenantUsers = ({ tenantId }: TenantUsersProps) => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const toggleModal = () => setIsModalOpen(!isModalOpen);
+
+  const {
+    isOpen: isAddAdminOpen,
+    openModal: openAddAdmin,
+    closeModal: closeAddAdmin,
+  } = useModal();
 
   const columns = [
     { header: "نام", accessor: "firstName" },
@@ -44,6 +51,14 @@ const TenantUsers = ({ tenantId }: TenantUsersProps) => {
       {data && (
         <div className="w-full h-full flex-1 items-center">
           <div className="w-full h-full bg-white rounded-md p-6">
+            <div className="w-full">
+              <button
+                onClick={openAddAdmin}
+                className="px-4 py-2 bg-blue-500 rounded-lg text-white mb-3"
+              >
+                افزودن کاربر
+              </button>
+            </div>
             <Table
               columns={columns}
               data={data.data}
@@ -54,11 +69,15 @@ const TenantUsers = ({ tenantId }: TenantUsersProps) => {
           </div>
         </div>
       )}
-      <Popup isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-         <AddUserForm tenantId={tenantId} onUserAdded={() => {
-            setIsModalOpen(false);
+
+      <Popup isOpen={isAddAdminOpen} onClose={closeAddAdmin}>
+        <AddUserForm
+          tenantId={tenantId}
+          onUserAdded={() => {
+            closeAddAdmin();
             refetch();
-         }} />
+          }}
+        />
       </Popup>
     </div>
   );
