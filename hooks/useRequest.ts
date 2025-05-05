@@ -4,7 +4,7 @@ export function useRequests() {
   return useQuery({
     queryKey: ["requests"],
     queryFn: async () => {
-      const res = await fetch("/api/sysadmin/requests");
+      const res = await fetch("/api/requests");
       return res.json();
     },
     initialData: [],

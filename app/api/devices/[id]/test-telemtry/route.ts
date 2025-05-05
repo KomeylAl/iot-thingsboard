@@ -1,3 +1,4 @@
+import prisma from "@/utils/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
@@ -6,6 +7,8 @@ export async function GET(
 ) {
   const token = req.cookies.get("token");
   const { id } = await params;
+  const searchParams = req.nextUrl.searchParams;
+  const tenantId = searchParams.get("tenantId");
   const temperature = (Math.random() * (30 - 20) + 20).toFixed(2);
 
   try {
@@ -47,6 +50,23 @@ export async function GET(
         { status: response.status }
       );
     }
+
+    const tenant = await prisma.tenant.findUnique({
+      where: { things_id: tenantId! },
+    });
+
+    const device = await prisma.device.findUnique({
+      where: { things_id: id },
+    });
+
+    await prisma.request.create({
+      data: {
+        requestType: "telemetry",
+        status: "success",
+        deviceId: device!.id,
+        tenantId: tenant!.id,
+      },
+    });
 
     return NextResponse.json(
       { message: "Data sent successfully" },

@@ -6,9 +6,10 @@ import { PuffLoader } from "react-spinners";
 
 const LastRequests = () => {
   const { data, isLoading, error } = useRequests();
+  console.log(data);
 
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full space-y-3">
       <h2 className="font-bold">آخرین درخواست ها</h2>
       {error && <p>خطا در دریافت اطلاعات درخواست ها</p>}
 
@@ -25,10 +26,10 @@ const LastRequests = () => {
       {data && (
         <div className="space-y-3">
           {data.map((item: any, index: any) => (
-            <div key={item.key} className="w-full bg-white rounded-md p-3 flex items-center justify-between">
-              <p>{index + 1}</p>
+            <div key={index} className="w-full bg-white rounded-md p-3 flex items-center justify-between">
+              <p className="text-blue-500">{index + 1}</p>
               <p>{item.tenant.name}</p>
-              <p>{item.requestTime}</p>
+              <p>{item.device.name}</p>
             </div>
           ))}
         </div>

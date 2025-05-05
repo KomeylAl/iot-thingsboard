@@ -14,6 +14,7 @@ import DeviceAudits from "../../_components/DeviceAudits";
 import DeviceEvents from "../../_components/DeviceEvents";
 import EditDeviceForm from "../../_components/EditDeviceForm";
 import DeleteModal from "@/components/DeleteModal";
+import { useUser } from "@/hooks/useUser";
 
 interface Params {
   deviceId: string;
@@ -29,12 +30,13 @@ const DevicePage = ({ params }: PageProps) => {
   const { deviceId } = React.use<Params>(params);
   const { data, isLoading, error, refetch } = useDevice(deviceId);
   const { data: serverData } = useDevice(deviceId);
+  const { data: user } = useUser();
   const {
     data: testData,
     isLoading: testLoading,
     error: testError,
     refetch: testRefetch,
-  } = useTestDevice(deviceId);
+  } = useTestDevice(deviceId, user?.data.tenantId.id);
   const { mutate: deleteDevice, isPending: isDeleting } = useDeleteDevice(
     deviceId,
     () => {
@@ -119,12 +121,15 @@ const DevicePage = ({ params }: PageProps) => {
           }}
         />
       </Popup>
-      <Popup isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)}>
-          <DeleteModal 
-            deleteFunc={deleteDevice}
-            isDeleting={isDeleting}
-            onCancel={() => setIsDeleteModalOpen(false)}
-          />
+      <Popup
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+      >
+        <DeleteModal
+          deleteFunc={deleteDevice}
+          isDeleting={isDeleting}
+          onCancel={() => setIsDeleteModalOpen(false)}
+        />
       </Popup>
     </div>
   );

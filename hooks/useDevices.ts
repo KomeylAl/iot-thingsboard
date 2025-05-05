@@ -59,11 +59,11 @@ export function useDevice(deviceId: string) {
   });
 }
 
-export function useTestDevice(deviceId: string) {
+export function useTestDevice(deviceId: string, tenantId: string) {
   return useQuery({
     queryKey: ["testDevice"],
     queryFn: async () => {
-      const res = await fetch(`/api/devices/${deviceId}/test-telemtry`);
+      const res = await fetch(`/api/devices/${deviceId}/test-telemtry?tenantId=${tenantId}`);
       if (!res.ok) {
         throw new Error("مشکلی در ارسال اطلاعات پیش آمده!");
       }
