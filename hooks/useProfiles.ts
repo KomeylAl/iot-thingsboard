@@ -125,6 +125,72 @@ export function useDeleteProfile(
   });
 }
 
+export function useStoreDevicesProfile(onProfileStored: () => void) {
+  return useMutation({
+    mutationFn: async (profileData: any) => {
+      const res = await fetch("/api/devices/profiles", {
+        method: "POST",
+        body: JSON.stringify(profileData),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error("مشکلی در افزودن پروفایل پیش آمده!");
+      }
+    },
+    onError(error) {
+      toast.error(error.message);
+    },
+    onSuccess: () => {
+      toast.success("پروفایل با موفقست افزوده حذف شد");
+      onProfileStored();
+    },
+  });
+}
+
+export function useUpdateDevicesProfile(onProfileStored: () => void) {
+  return useMutation({
+    mutationFn: async (profileData: any) => {
+      const res = await fetch("/api/devices/profiles", {
+        method: "POST",
+        body: JSON.stringify(profileData),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error("مشکلی در ویرایش پروفایل پیش آمده!");
+      }
+    },
+    onError(error) {
+      toast.error(error.message);
+    },
+    onSuccess: () => {
+      toast.success("پروفایل با موفقیت ویرایش حذف شد");
+      onProfileStored();
+    },
+  });
+}
+
+export function useDeleteDevicesProfile(
+  onDeletedProfile: () => void
+) {
+  return useMutation({
+    mutationFn: async (profileId: string) => {
+      const res = await fetch(`/api/devices/profiles/${profileId}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        throw new Error("مشکلی در حذف پروفایل پیش آمده!");
+      }
+    },
+    onError(error) {
+      toast.error(error.message);
+    },
+    onSuccess: () => {
+      toast.success("پروفایل با موفقت حذف شد");
+      onDeletedProfile();
+    },
+  });
+}
+
 export function useStoreAssetsProfile(onProfileStored: () => void) {
   return useMutation({
     mutationFn: async (profileData: any) => {

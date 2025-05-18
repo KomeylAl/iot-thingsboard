@@ -14,10 +14,11 @@ export function willCreateLoop(
   edges: any[]
 ): boolean {
   const graph: Record<string, string[]> = {};
+  console.log(edges)
 
   nodes.forEach((node) => (graph[node.id] = []));
   edges.forEach((edge) => {
-    graph[edge.source].push(edge.target);
+    graph[edge.source]!.push(edge.target);
   });
 
   graph[fromId].push(toId);
@@ -256,18 +257,21 @@ type PreparedRuleChain = {
 };
 
 export function prepareRuleChainForServer(
-  nodes: Node[],
+  nodes: any,
   edges: Edge[],
   ruleChainId: string
 ): PreparedRuleChain {
-  const filteredNodes = nodes.filter((node) => node.id !== 'start-node');
+
+  const filteredNodes = nodes.filter((node: any) => node.id !== 'start-node');
   const nodeIndexMap = new Map<string, number>(); // mapping node.id => index in filteredNodes
 
-  const preparedNodes = filteredNodes.map((node, index) => {
+  console.log(filteredNodes)
+
+  const preparedNodes = filteredNodes.map((node: any, index: any) => {
     nodeIndexMap.set(node.id, index);
 
     const raw = node.data.raw;
-
+    
     if (raw) {
       return {
         ...raw,
@@ -283,7 +287,7 @@ export function prepareRuleChainForServer(
           entityType: 'RULE_CHAIN',
           id: ruleChainId,
         },
-        type: 'org.thingsboard.rule.engine.filter.TbDeviceTypeSwitchNode',
+        type: node.data.type,
         name: node.data.label,
         debugSettings: null,
         singletonMode: false,
@@ -299,6 +303,8 @@ export function prepareRuleChainForServer(
       };
     }
   });
+
+  // console.log(preparedNodes)
 
   const preparedConnections = edges
   .filter((edge) => edge.source !== 'start-node')

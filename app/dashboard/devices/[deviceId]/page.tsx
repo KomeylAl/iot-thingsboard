@@ -1,20 +1,26 @@
 "use client";
 
 import { Tab, Tabs } from "@/components/Tabs";
-import { useDeleteDevice, useDevice, useTestDevice } from "@/hooks/useDevices";
+import {
+  useDeleteDevice,
+  useDevice,
+  useDeviceAlarms,
+  useTestDevice,
+} from "@/hooks/useDevices";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { BiPencil } from "react-icons/bi";
 import { MdDelete } from "react-icons/md";
 import { PuffLoader } from "react-spinners";
 import Popup from "@/components/Popup";
-import DeviceAlarms from "../../_components/DeviceAlarms";
 import DeviceTelemetry from "../../_components/DeviceTelemetry";
 import DeviceAudits from "../../_components/DeviceAudits";
 import DeviceEvents from "../../_components/DeviceEvents";
 import EditDeviceForm from "../../_components/EditDeviceForm";
 import DeleteModal from "@/components/DeleteModal";
 import { useUser } from "@/hooks/useUser";
+import { alarmColumns } from "@/utils/columns";
+import EntityTable from "@/components/ui/EntityTable";
 
 interface Params {
   deviceId: string;
@@ -29,14 +35,19 @@ const DevicePage = ({ params }: PageProps) => {
 
   const { deviceId } = React.use<Params>(params);
   const { data, isLoading, error, refetch } = useDevice(deviceId);
+
+  const {
+    data: alarmsData,
+    isLoading: alarmsLoading,
+    error: alarmsError,
+  } = useDeviceAlarms(deviceId, 10, 0);
+
   const { data: serverData } = useDevice(deviceId);
   const { data: user } = useUser();
-  const {
-    data: testData,
-    isLoading: testLoading,
-    error: testError,
-    refetch: testRefetch,
-  } = useTestDevice(deviceId, user?.data.tenantId.id);
+  const { isLoading: testLoading, refetch: testRefetch } = useTestDevice(
+    deviceId,
+    user?.data.tenantId.id
+  );
   const { mutate: deleteDevice, isPending: isDeleting } = useDeleteDevice(
     deviceId,
     () => {
@@ -98,7 +109,13 @@ const DevicePage = ({ params }: PageProps) => {
         {data && (
           <Tabs>
             <Tab label="هشدار ها" defaultTab>
-              <DeviceAlarms deviceId={deviceId} />
+              <EntityTable
+                columns={alarmColumns}
+                data={alarmsData}
+                error={alarmsError}
+                isLoading={alarmsLoading}
+                onPageChange={() => {}}
+              />
             </Tab>
             <Tab label="آخرین سنجش">
               <DeviceTelemetry deviceId={deviceId} />

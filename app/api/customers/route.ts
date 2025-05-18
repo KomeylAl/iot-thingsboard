@@ -117,7 +117,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const response = await fetch(
-      `${process.env.THINGSBOARD_URL}/api/customers?pageSize=${pageSize}&page=${page}&textSearch=${textSearch}`,
+      `${process.env.THINGSBOARD_URL}/api/customers?pageSize=${pageSize}&page=${page}&textSearch=${textSearch}&sortProperty=createdTime&sortOrder=DESC`,
       {
         method: "GET",
         headers: {

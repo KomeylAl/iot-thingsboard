@@ -9,9 +9,7 @@ interface ChangeRuleChainFormProps {
 export default function ChangeRuleChainForm({
   onSubmit,
 }: ChangeRuleChainFormProps) {
-  const [nodeType, setNodeType] = useState<NodeType>(
-    "org.thingsboard.rule.engine.filter.TbDeviceTypeSwitchNode"
-  );
+  const [nodeType, setNodeType] = useState<NodeType>("org.thingsboard.rule.engine.action.TbAssignToCustomerNode");
 
   const [config, setConfig] = useState<Record<string, any>>({});
 

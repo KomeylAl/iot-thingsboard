@@ -30,13 +30,13 @@ const SideBar = () => {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   return (
-    <div>
+    <div className="">
       <div className="fixed top-7 right-7 z-0 p-2 bg-white rounded-md flex items-center">
         <button onClick={toggleMenu} className="text-center p-0">
           <BiMenu size={30} />
         </button>
       </div>
-      <div className="w-56 h-screen rounded-bl-3xl rounded-tl-3xl bg-white hidden lg:flex flex-col items-center justify-between shadow-lg fixed py-10">
+      <div className="w-56 h-screen overflow-y-auto no-scrollbar rounded-bl-3xl rounded-tl-3xl bg-white hidden lg:flex flex-col items-center justify-between gap-6 shadow-lg fixed py-10">
         <div>
           <Image src="/images/lotos.png" alt="lotos" width={100} height={100} />
           <div className="flex items-center gap-2 mt-5">
@@ -54,7 +54,7 @@ const SideBar = () => {
         </button>
       </div>
       <div
-        className={`fixed top-0 right-0 z-10 lg:hidden h-screen w-56 bg-white flex flex-col items-center justify-center gap-10 shadow-lg transform ${
+        className={`fixed inset-0 overflow-y-auto z-10 lg:hidden h-screen w-56 bg-white flex flex-col items-center justify-center gap-10 shadow-lg transform ${
           isMenuOpen ? "translate-x-0" : "translate-x-full"
         } transition-transform duration-300 ease-in-out`}
       >
@@ -63,8 +63,14 @@ const SideBar = () => {
             <BiArrowToRight size={30} />
           </button>
         </div>
-        <div>
-          <Image src="/images/lotos.png" alt="lotos" width={100} height={100} />
+        <div className="flex flex-col items-center justify-center">
+          <Image
+            src="/images/lotos.png"
+            alt="lotos"
+            width={100}
+            height={100}
+            className="w-12"
+          />
           <div className="flex items-center gap-2 mt-5">
             {!data?.data.firstName
               ? "name"

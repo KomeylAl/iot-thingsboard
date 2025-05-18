@@ -1,16 +1,15 @@
-"use client";
-
-import { useRuleChains } from "@/hooks/useRuleChains";
-import { yupResolver } from "@hookform/resolvers/yup";
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import ReactSelect from "react-select";
 import { useQueues } from "@/hooks/useQueues";
-import { useStoreDevicesProfile } from "@/hooks/useProfiles";
+import { useRuleChains } from "@/hooks/useRuleChains";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useUpdateDevicesProfile } from "@/hooks/useProfiles";
 
-interface AddDeviceProfileFormProps {
-  onProfileAdded: () => void;
+interface EditDeviceProfileFormProps {
+  profileData: any;
+  onProfileEditted: () => void;
 }
 
 const schema = yup.object({
@@ -24,7 +23,10 @@ const schema = yup.object({
   }),
 });
 
-const AddDeviceProfileForm = ({ onProfileAdded }: AddDeviceProfileFormProps) => {
+const EditDeviceProfileForm = ({
+  profileData,
+  onProfileEditted,
+}: EditDeviceProfileFormProps) => {
   const { data, isLoading, error } = useRuleChains(100, 0);
   const {
     data: queues,
@@ -32,8 +34,8 @@ const AddDeviceProfileForm = ({ onProfileAdded }: AddDeviceProfileFormProps) => 
     error: queuesError,
   } = useQueues(100, 0);
 
-  const { mutate: addDeviceProfile, isPending } = useStoreDevicesProfile(
-    () => onProfileAdded()
+  const { mutate: updateProfile, isPending } = useUpdateDevicesProfile(() =>
+    onProfileEditted()
   );
 
   const ruleChainOptions =
@@ -56,24 +58,30 @@ const AddDeviceProfileForm = ({ onProfileAdded }: AddDeviceProfileFormProps) => 
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: yupResolver(schema),
+    defaultValues: {},
   });
 
-  console.log(errors);
+  useEffect(() => {
+    if (profileData) {
+      reset(profileData);
+    }
+  }, [profileData, reset]);
 
   const onSubmit = (data: any) => {
     const formattedData = {
       ...data,
+      set_id: profileData.id.id,
       defaultQueueName: data.defaultQueueName.label ?? "",
       defaultRuleChainId: data.defaultRuleChainId.value
         ? data.defaultRuleChainId.value
         : ruleChainOptions[0].value,
     };
-    addDeviceProfile(formattedData);
+    updateProfile(formattedData);
   };
 
   return (
     <div className="flex flex-col items-start gap-8 w-96 overflow-hidden">
-      <h1 className="font-bold text-xl">افزودن پروفایل دستگاه</h1>
+      <h1 className="font-bold text-xl">ویرایش پروفایل دستگاه</h1>
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col gap-3 w-72 md:w-96"
@@ -98,10 +106,15 @@ const AddDeviceProfileForm = ({ onProfileAdded }: AddDeviceProfileFormProps) => 
                 className=""
                 placeholder="زنجیره قائده"
                 options={ruleChainOptions}
-                getOptionLabel={(option) => option.label}
-                getOptionValue={(option) => option.value}
-                defaultValue={
-                  ruleChainOptions.length > 0 ? ruleChainOptions[0] : null
+                value={
+                  ruleChainOptions.find(
+                    (option: any) => option.value === field.value?.id
+                  )
+                }
+                defaultValue={  
+                  ruleChainOptions.find(
+                    (option: any) => option.value === field.value?.id
+                  ) || null
                 }
               />
             )}
@@ -125,10 +138,15 @@ const AddDeviceProfileForm = ({ onProfileAdded }: AddDeviceProfileFormProps) => 
                 className=""
                 placeholder="صف"
                 options={queuesOptions}
-                getOptionLabel={(option) => option.label}
-                getOptionValue={(option) => option.value}
-                defaultValue={
-                  queuesOptions.length > 0 ? queuesOptions[0] : null
+                value={
+                  queuesOptions.find(
+                    (option: any) => option.value === field.value
+                  )
+                }
+                defaultValue={  
+                  queuesOptions.find(
+                    (option: any) => option.value === field.value
+                  ) || null
                 }
               />
             )}
@@ -146,11 +164,11 @@ const AddDeviceProfileForm = ({ onProfileAdded }: AddDeviceProfileFormProps) => 
           disabled={isPending || isSubmitting}
           className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg"
         >
-          {isPending || isSubmitting ? "⏳ در حال افزودن..." : "افزودن پروفایل"}
+          {isPending || isSubmitting ? "⏳ در حال ویرایش..." : "ویرایش پروفایل"}
         </button>
       </form>
     </div>
   );
 };
 
-export default AddDeviceProfileForm;
+export default EditDeviceProfileForm;

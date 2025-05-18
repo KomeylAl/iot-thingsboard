@@ -13,11 +13,11 @@ export async function POST(req: NextRequest) {
       deviceprofileId,
       additionalInfo: { location, description },
     } = await req.json();
-    
+
     const tenant = await prisma.tenant.findUnique({
-      where: { things_id: tenantid }
+      where: { things_id: tenantid },
     });
-    
+
     if (!tenant) {
       return NextResponse.json(
         { message: "No Tenant Found." },
@@ -25,17 +25,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const id = set_id && {id: set_id,
-      entityType: "DEVICE",}
+    const id = set_id && { id: set_id, entityType: "DEVICE" };
 
-      const sendData = JSON.stringify({
-        id,
-        name,
-        label,
-        type,
-        deviceProfileId: { id: deviceprofileId, entityType: "DEVICE_PROFILE" },
-        additionalInfo: { location, description },
-      });
+    const sendData = JSON.stringify({
+      id,
+      name,
+      label,
+      type,
+      deviceProfileId: { id: deviceprofileId, entityType: "DEVICE_PROFILE" },
+      additionalInfo: { location, description },
+    });
 
     const response = await fetch(`${process.env.THINGSBOARD_URL}/api/device`, {
       method: "POST",
@@ -56,7 +55,7 @@ export async function POST(req: NextRequest) {
     const data = await response.json();
 
     const device = await prisma.device.findUnique({
-      where: { things_id: data.id.id }
+      where: { things_id: data.id.id },
     });
 
     if (!device) {
@@ -100,7 +99,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const response = await fetch(
-      `${process.env.THINGSBOARD_URL}/api/tenant/devices?pageSize=${pageSize}&page=${page}`,
+      `${process.env.THINGSBOARD_URL}/api/tenant/devices?pageSize=${pageSize}&page=${page}&sortProperty=createdTime&sortOrder=DESC`,
       {
         method: "GET",
         headers: {

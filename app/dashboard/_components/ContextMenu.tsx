@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import { FaTrash } from 'react-icons/fa';
 import { useReactFlow } from 'reactflow';
 
 interface ContextMenuProps extends React.HTMLAttributes<HTMLDivElement> {

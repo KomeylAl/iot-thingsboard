@@ -4,7 +4,7 @@
 
 @layer base {
   @font-face {
-    font-family: 'Sans';
+    font-family: "Sans";
     src: url(/fonts/sans.ttf);
   }
   :root {
@@ -100,6 +100,15 @@ body {
 * {
   scrollbar-width: thin; /* اندازه‌ی باریک اسکرول */
   scrollbar-color: #3b82f6 #f1f1f1; /* رنگ اسکرول و پس‌زمینه */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 @layer base {

@@ -1,5 +1,5 @@
 // nodeTypeConfigs.ts
-export type FieldType = 'string' | 'number' | 'boolean' | 'json';
+export type FieldType = "string" | "number" | "boolean" | "json";
 
 export type Field = {
   name: string;
@@ -20,175 +20,316 @@ export type NodeConfig = {
 };
 
 export type NodeType =
-  | 'org.thingsboard.rule.engine.input.InputNode'
-  | 'org.thingsboard.rule.engine.telemetry.TbSaveTimeseriesNode'
-  | 'org.thingsboard.rule.engine.telemetry.TbSaveAttributesNode'
-  | 'org.thingsboard.rule.engine.filter.TbCheckRelationNode'
-  | 'org.thingsboard.rule.engine.filter.TbDeviceTypeSwitchNode'
-  | 'org.thingsboard.rule.engine.script.TbJsFilterNode'
-  | 'org.thingsboard.rule.engine.script.TbTransformMsgNode'
-  | 'org.thingsboard.rule.engine.rpc.TbSendRpcRequestNode'
-  | 'org.thingsboard.rule.engine.rest.TbRestApiCallNode'
-  | 'org.thingsboard.rule.engine.action.TbSendEmailNode'
-  | 'org.thingsboard.rule.engine.action.TbSendSlackMessageNode'
-  | 'org.thingsboard.rule.engine.mqtt.TbSendMqttRequestNode'
-  | 'org.thingsboard.rule.engine.debug.TbLogNode'
-  | 'org.thingsboard.rule.engine.delay.TbMsgDelayNode'
-  | 'org.thingsboard.rule.engine.filter.TbSwitchNode'
-  | 'org.thingsboard.rule.engine.originator.TbOriginatorTelemetryNode';
+  | "org.thingsboard.rule.engine.filter.TbCheckAlarmStatusNode"
+  | "org.thingsboard.rule.engine.filter.TbCheckMessageNode"
+  | "org.thingsboard.rule.engine.filter.TbCheckRelationNode"
+  | "org.thingsboard.rule.engine.filter.TbMsgTypeFilterNode"
+  | "org.thingsboard.rule.engine.filter.TbJsFilterNode"
+  | "org.thingsboard.rule.engine.filter.TbJsSwitchNode"
+  | "org.thingsboard.rule.engine.mail.TbMsgToEmailNode"
+  | "org.thingsboard.rule.engine.transform.TbTransformMsgNode"
+  | "org.thingsboard.rule.engine.action.TbAssignToCustomerNode"
+  | "org.thingsboard.rule.engine.action.TbCreateAlarmNode"
+  | "org.thingsboard.rule.engine.action.TbClearAlarmNode"
+  | "org.thingsboard.rule.engine.action.TbCreateRelationNode"
+  | "org.thingsboard.rule.engine.action.TbDeleteRelationNode"
+  | "org.thingsboard.rule.engine.delay.TbMsgDelayNode"
+  | "org.thingsboard.rule.engine.mail.TbSendEmailNode"
+  | "org.thingsboard.rule.engine.notification.TbNotificationNode"
+  | "org.thingsboard.rule.engine.sms.TbSendSmsNode"
+  | "org.thingsboard.rule.engine.mqtt.TbMqttNode"
+  | "org.thingsboard.rule.engine.flow.TbRuleChainInputNode";
 
 export const nodeTypeConfigs: Record<NodeType, NodeConfig> = {
-  "org.thingsboard.rule.engine.input.InputNode": {
-    label: "Start Node",
-    fields: [],
-    relations: []
-  },
-  "org.thingsboard.rule.engine.telemetry.TbSaveTimeseriesNode": {
-    label: "Save Timeseries",
+
+  "org.thingsboard.rule.engine.filter.TbCheckAlarmStatusNode": {
+    label: "Alarm status",
     fields: [
-      { name: "defaultTTL", label: "Default TTL", type: "number", default: 0 }
+      { name: "defaultTTL", label: "Default TTL", type: "number", default: 0 },
     ],
-    relations: [{ name: "Success", label: "Success" }]
+    relations: [
+      { name: "Failure", label: "Failure" },
+      { name: "False", label: "False" },
+      { name: "True", label: "True" },
+    ],
   },
 
-  "org.thingsboard.rule.engine.telemetry.TbSaveAttributesNode": {
-    label: "Save Attributes",
+  "org.thingsboard.rule.engine.filter.TbCheckMessageNode": {
+    label: "Check Fields Presence",
     fields: [
-      { name: "scope", label: "Scope", type: "string", default: "SERVER_SCOPE" }
+      {
+        name: "scope",
+        label: "Scope",
+        type: "string",
+        default: "SERVER_SCOPE",
+      },
     ],
-    relations: [{ name: "Success", label: "Success" }]
+    relations: [
+      { name: "Failure", label: "Failure" },
+      { name: "False", label: "False" },
+      { name: "True", label: "True" },
+    ],
   },
 
   "org.thingsboard.rule.engine.filter.TbCheckRelationNode": {
-    label: "Check Relation",
+    label: "Check Relation Presence",
     fields: [
-      { name: "relationType", label: "Relation Type", type: "string", default: "Contains" },
-      { name: "entityType", label: "Entity Type", type: "string", default: "DEVICE" }
+      {
+        name: "relationType",
+        label: "Relation Type",
+        type: "string",
+        default: "Contains",
+      },
+      {
+        name: "entityType",
+        label: "Entity Type",
+        type: "string",
+        default: "DEVICE",
+      },
     ],
     relations: [
       { name: "True", label: "True" },
-      { name: "False", label: "False" }
-    ]
+      { name: "False", label: "False" },
+      { name: "Failure", label: "Failure" },
+    ],
   },
 
-  "org.thingsboard.rule.engine.filter.TbDeviceTypeSwitchNode": {
-    label: "Device Type Switch",
+  "org.thingsboard.rule.engine.filter.TbMsgTypeFilterNode": {
+    label: "Message Type Filter",
     fields: [
-      { name: "switchCases", label: "Switch Cases (JSON)", type: "json", default: {} }
+      {
+        name: "switchCases",
+        label: "Switch Cases (JSON)",
+        type: "json",
+        default: {},
+      },
     ],
     relations: [
-      { name: "default", label: "Default" },
-      { name: "typeA", label: "Type A" },
-      { name: "typeB", label: "Type B" }
-    ]
+      { name: "True", label: "True" },
+      { name: "False", label: "False" },
+      { name: "Failure", label: "Failure" },
+    ],
   },
 
-  "org.thingsboard.rule.engine.script.TbJsFilterNode": {
+  "org.thingsboard.rule.engine.filter.TbJsFilterNode": {
     label: "Script Filter",
     fields: [
-      { name: "script", label: "JavaScript Function", type: "string", default: "return msg.value > 10;" }
+      {
+        name: "script",
+        label: "JavaScript Function",
+        type: "string",
+        default: "return msg.value > 10;",
+      },
     ],
     relations: [
       { name: "True", label: "True" },
-      { name: "False", label: "False" }
-    ]
-  },
-
-  "org.thingsboard.rule.engine.script.TbTransformMsgNode": {
-    label: "Script Transformation",
-    fields: [
-      { name: "script", label: "Transform Script", type: "string", default: "msg.value = msg.value * 2; return msg;" }
+      { name: "False", label: "False" },
+      { name: "Failure", label: "Failure" },
     ],
-    relations: [{ name: "Success", label: "Success" }]
   },
 
-  "org.thingsboard.rule.engine.rpc.TbSendRpcRequestNode": {
-    label: "RPC Request",
+  "org.thingsboard.rule.engine.filter.TbJsSwitchNode": {
+    label: "Switch Filter",
+    fields: [
+      {
+        name: "script",
+        label: "Transform Script",
+        type: "string",
+        default: "msg.value = msg.value * 2; return msg;",
+      },
+    ],
+    relations: [{ name: "Failure", label: "Failure" }],
+  },
+
+  "org.thingsboard.rule.engine.mail.TbMsgToEmailNode": {
+    label: "To Email",
     fields: [
       { name: "rpcCommand", label: "RPC Command", type: "string", default: "" },
-      { name: "persist", label: "Persist", type: "boolean", default: true }
+      { name: "persist", label: "Persist", type: "boolean", default: true },
     ],
     relations: [
       { name: "Success", label: "Success" },
-      { name: "Failure", label: "Failure" }
-    ]
+      { name: "Failure", label: "Failure" },
+    ],
   },
 
-  "org.thingsboard.rule.engine.rest.TbRestApiCallNode": {
-    label: "REST API Call",
+  "org.thingsboard.rule.engine.transform.TbTransformMsgNode": {
+    label: "Transfer Script",
     fields: [
-      { name: "restEndpointUrl", label: "Endpoint URL", type: "string", default: "" },
-      { name: "httpMethod", label: "HTTP Method", type: "string", default: "POST" }
+      {
+        name: "restEndpointUrl",
+        label: "Endpoint URL",
+        type: "string",
+        default: "",
+      },
+      {
+        name: "httpMethod",
+        label: "HTTP Method",
+        type: "string",
+        default: "POST",
+      },
     ],
     relations: [
       { name: "Success", label: "Success" },
-      { name: "Failure", label: "Failure" }
-    ]
+      { name: "Failure", label: "Failure" },
+    ],
   },
 
-  "org.thingsboard.rule.engine.action.TbSendEmailNode": {
-    label: "Send Email",
+  "org.thingsboard.rule.engine.action.TbAssignToCustomerNode": {
+    label: "Assign To Customer",
     fields: [
       { name: "to", label: "To", type: "string", default: "" },
       { name: "subject", label: "Subject", type: "string", default: "" },
-      { name: "body", label: "Body", type: "string", default: "" }
+      { name: "body", label: "Body", type: "string", default: "" },
     ],
-    relations: [{ name: "Success", label: "Success" }]
+    relations: [
+      { name: "Success", label: "Success" },
+      { name: "Failure", label: "Failure" },
+    ],
   },
 
-  "org.thingsboard.rule.engine.action.TbSendSlackMessageNode": {
-    label: "Send Slack Message",
+  "org.thingsboard.rule.engine.action.TbCreateAlarmNode": {
+    label: "Create Alarm",
     fields: [
       { name: "webhookUrl", label: "Webhook URL", type: "string", default: "" },
-      { name: "message", label: "Message", type: "string", default: "" }
+      { name: "message", label: "Message", type: "string", default: "" },
     ],
-    relations: [{ name: "Success", label: "Success" }]
+    relations: [
+      { name: "Created", label: "Created" },
+      { name: "Failure", label: "Failure" },
+      { name: "False", label: "False" },
+      { name: "Updated", label: "Updated" },
+    ],
   },
 
-  "org.thingsboard.rule.engine.mqtt.TbSendMqttRequestNode": {
-    label: "Send MQTT",
+  "org.thingsboard.rule.engine.action.TbClearAlarmNode": {
+    label: "Create Alarm",
+    fields: [
+      { name: "webhookUrl", label: "Webhook URL", type: "string", default: "" },
+      { name: "message", label: "Message", type: "string", default: "" },
+    ],
+    relations: [
+      { name: "Cleared", label: "Cleared" },
+      { name: "Failure", label: "Failure" },
+      { name: "False", label: "False" },
+    ],
+  },
+
+  "org.thingsboard.rule.engine.action.TbCreateRelationNode": {
+    label: "Create Relation",
     fields: [
       { name: "topic", label: "Topic", type: "string", default: "" },
-      { name: "qos", label: "QoS", type: "number", default: 0 }
+      { name: "qos", label: "QoS", type: "number", default: 0 },
     ],
-    relations: [{ name: "Success", label: "Success" }]
+    relations: [
+      { name: "Success", label: "Success" },
+      { name: "Failure", label: "Failure" },
+    ],
   },
 
-  "org.thingsboard.rule.engine.debug.TbLogNode": {
-    label: "Log",
+  "org.thingsboard.rule.engine.action.TbDeleteRelationNode": {
+    label: "Delete Relation",
     fields: [
       { name: "logLevel", label: "Log Level", type: "string", default: "INFO" },
-      { name: "msgPattern", label: "Message Pattern", type: "string", default: "${msg}" }
+      {
+        name: "msgPattern",
+        label: "Message Pattern",
+        type: "string",
+        default: "${msg}",
+      },
     ],
-    relations: [{ name: "Success", label: "Success" }]
+    relations: [
+      { name: "Success", label: "Success" },
+      { name: "Failure", label: "Failure" },
+    ],
   },
 
   "org.thingsboard.rule.engine.delay.TbMsgDelayNode": {
     label: "Delay",
     fields: [
-      { name: "delayInMs", label: "Delay (ms)", type: "number", default: 1000 }
-    ],
-    relations: [{ name: "Success", label: "Success" }]
-  },
-
-  "org.thingsboard.rule.engine.filter.TbSwitchNode": {
-    label: "Switch",
-    fields: [
-      { name: "switchExpression", label: "Switch Expression", type: "string", default: "" },
-      { name: "cases", label: "Cases (JSON)", type: "json", default: {} }
+      { name: "delayInMs", label: "Delay (ms)", type: "number", default: 1000 },
     ],
     relations: [
-      { name: "default", label: "Default" },
-      { name: "case1", label: "Case 1" },
-      { name: "case2", label: "Case 2" }
-    ]
+      { name: "Success", label: "Success" },
+      { name: "Failure", label: "Failure" },
+    ],
   },
 
-  "org.thingsboard.rule.engine.originator.TbOriginatorTelemetryNode": {
-    label: "Originator Telemetry",
+  "org.thingsboard.rule.engine.mail.TbSendEmailNode": {
+    label: "Send Email",
     fields: [
-      { name: "telemetry", label: "Telemetry Keys", type: "string", default: "" }
+      {
+        name: "switchExpression",
+        label: "Switch Expression",
+        type: "string",
+        default: "",
+      },
+      { name: "cases", label: "Cases (JSON)", type: "json", default: {} },
     ],
-    relations: [{ name: "Success", label: "Success" }]
+    relations: [
+      { name: "Success", label: "Success" },
+      { name: "Failure", label: "Failure" },
+    ],
+  },
+
+  "org.thingsboard.rule.engine.notification.TbNotificationNode": {
+    label: "Send Notification",
+    fields: [
+      {
+        name: "telemetry",
+        label: "Telemetry Keys",
+        type: "string",
+        default: "",
+      },
+    ],
+    relations: [
+      { name: "Success", label: "Success" },
+      { name: "Failure", label: "Failure" },
+    ],
+  },
+
+  "org.thingsboard.rule.engine.sms.TbSendSmsNode": {
+    label: "Send Sms",
+    fields: [
+      {
+        name: "telemetry",
+        label: "Telemetry Keys",
+        type: "string",
+        default: "",
+      },
+    ],
+    relations: [
+      { name: "Success", label: "Success" },
+      { name: "Failure", label: "Failure" },
+    ],
+  },
+
+  "org.thingsboard.rule.engine.mqtt.TbMqttNode": {
+    label: "MQTT",
+    fields: [
+      {
+        name: "telemetry",
+        label: "Telemetry Keys",
+        type: "string",
+        default: "",
+      },
+    ],
+    relations: [
+      { name: "Success", label: "Success" },
+      { name: "Failure", label: "Failure" },
+    ],
+  },
+
+  "org.thingsboard.rule.engine.flow.TbRuleChainInputNode": {
+    label: "Rule Chain",
+    fields: [
+      {
+        name: "telemetry",
+        label: "Telemetry Keys",
+        type: "string",
+        default: "",
+      },
+    ],
+    relations: [],
   },
 };

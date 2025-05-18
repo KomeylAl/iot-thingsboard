@@ -47,11 +47,11 @@ const links = [
     title: "مشتریان",
     href: "/dashboard/customers",
   },
-  // {
-  //   id: "dashboards",
-  //   title: "داشبورد ها",
-  //   href: "/dashboard/dashboards",
-  // },
+  {
+    id: "notifications",
+    title: "اعلانات",
+    href: "/dashboard/notifications",
+  },
   {
     id: "alarms",
     title: "هشدار ها",

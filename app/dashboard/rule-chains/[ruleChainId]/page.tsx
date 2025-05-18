@@ -33,16 +33,14 @@ const RuleChainPage = ({ params }: PageProps) => {
   const [nodes, setNodes] = useState<RuleNode[]>([
     {
       id: uuidv4(),
-      type: "org.thingsboard.rule.engine.input.InputNode",
+      type: "org.thingsboard.rule.engine.action.TbAssignToCustomerNode",
       name: "Input",
       config: {},
     },
   ]);
 
   const [showAddForm, setShowAddForm] = useState(false);
-  const [newNodeType, setNewNodeType] = useState<NodeType>(
-    "org.thingsboard.rule.engine.filter.TbDeviceTypeSwitchNode"
-  );
+  const [newNodeType, setNewNodeType] = useState<NodeType>("org.thingsboard.rule.engine.action.TbAssignToCustomerNode");
   const [newNodeConfig, setNewNodeConfig] = useState({});
 
   const handleAddNode = () => {

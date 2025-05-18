@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { transformTelemetryData } from "./convert";
-import Table from "@/app/dashboard/_components/Teble";
 import toast from "react-hot-toast";
 import { PuffLoader } from "react-spinners";
+import Table from "@/components/Table";
 
 const getTokenFromApi = async () => {
   const res = await fetch("/api/token");
@@ -18,7 +18,7 @@ const TelemetryDevices = ({ deviceId }: { deviceId: string }) => {
     { header: "نوع", accessor: "type" },
     { header: "شدت", accessor: "label" },
     { header: "وضعیت", accessor: "status" },
-    { header: "زمان ایجاد", accessor: "createdAtTime" }, // فیلد زمان
+    { header: "زمان ایجاد", accessor: "createdAtTime" },
   ];
 
   const [data, setData] = useState<any>([]);
@@ -95,14 +95,7 @@ const TelemetryDevices = ({ deviceId }: { deviceId: string }) => {
         </div>
       )}
 
-      {data && (
-        <Table
-          columns={columns}
-          data={data}
-          RPP={10}
-          getRowLink={(row: any) => `/dashboard/alarms/${row.id?.id}`}
-        />
-      )}
+      {data && <Table columns={columns} data={data} />}
     </div>
   );
 };

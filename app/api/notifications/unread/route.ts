@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const response = await fetch(
-      `${process.env.THINGSBOARD_URL}/api/notifications?pageSize=${pageSize}&page=${page}&unreadOnly=true`,
+      `${process.env.THINGSBOARD_URL}/api/notifications?pageSize=${pageSize}&page=${page}&unreadOnly=true&sortProperty=createdTime&sortOrder=DESC`,
       {
         method: "GET",
         headers: {

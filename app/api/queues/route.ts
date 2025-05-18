@@ -5,10 +5,11 @@ export async function GET(req: NextRequest) {
   const params = req.nextUrl.searchParams;
   const pageSize = params.get("pageSize") || 1;
   const page = params.get("page") || 0;
+  const textSearch = params.get("textSearch") || "";
 
   try {
     const response = await fetch(
-      `${process.env.THINGSBOARD_URL}/api/notifications?pageSize=${pageSize}&page=${page}&sortProperty=createdTime&sortOrder=DESC`,
+      `${process.env.THINGSBOARD_URL}/api/queues?serviceType=TB-RULE-ENGINE&&pageSize=${pageSize}&page=${page}&textSearch=${textSearch}`,
       {
         method: "GET",
         headers: {
@@ -20,7 +21,7 @@ export async function GET(req: NextRequest) {
 
     if (!response.ok) {
       return NextResponse.json(
-        { message: "Error getting devices" },
+        { message: "Error getting queues" },
         { status: response.status }
       );
     }
@@ -30,7 +31,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(data, { status: 200 });
   } catch (error: any) {
     return NextResponse.json(
-      { message: `Error geting devices: ${error.message}` },
+      { message: `Error geting queues: ${error.message}` },
       { status: 500 }
     );
   }

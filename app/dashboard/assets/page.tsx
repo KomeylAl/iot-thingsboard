@@ -1,10 +1,8 @@
 "use client";
 
 import Popup from "@/components/Popup";
-import SearchBar from "@/components/SearchBar";
 import React, { useCallback, useState } from "react";
 import { BiPlus } from "react-icons/bi";
-import AddDevice from "../_components/AddDevice";
 import Table from "@/app/dashboard/_components/Teble";
 import { PuffLoader } from "react-spinners";
 import { useAssets, useLocalAssets } from "@/hooks/useAssets";

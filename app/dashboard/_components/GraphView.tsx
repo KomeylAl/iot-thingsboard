@@ -10,6 +10,7 @@ import ReactFlow, {
   Node,
   useNodesState,
   useEdgesState,
+  MarkerType,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { v4 as uuidv4 } from "uuid";
@@ -17,11 +18,14 @@ import {
   CustomNode,
   prepareRuleChainForServer,
   willCreateLoop,
-} from "@/lib/utils"; // فرض بر اینکه داریم
+} from "@/lib/utils";
 import toast from "react-hot-toast";
 import Popup from "@/components/Popup";
 import ChangeRuleChainForm from "./ui/form/ChangeRuleChainFor";
-import { useRuleChainMetadata, useUpdateRuleChainMetadata } from "@/hooks/useRuleChains";
+import {
+  useRuleChainMetadata,
+  useUpdateRuleChainMetadata,
+} from "@/hooks/useRuleChains";
 import { RuleNode } from "@/lib/types";
 import { NodeType, nodeTypeConfigs } from "./ui/form/nodeTypes";
 import ContextMenu from "./ContextMenu";
@@ -49,6 +53,14 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const ref = useRef<HTMLDivElement>(null);
   const [menu, setMenu]: any = useState(null);
+  const [edgeId, setEdgeId] = useState<string>("");
+  const [connections, setConnections] = useState<Array<Object>>([]);
+
+  const {
+    isOpen: edgeOpen,
+    openModal: openEdge,
+    closeModal: closeEdge,
+  } = useModal();
 
   const onNodeContextMenu = useCallback(
     (event: any, node: any) => {
@@ -76,13 +88,24 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
     [setMenu]
   );
 
-  const onPaneClick = useCallback(() => setMenu(null), [setMenu]);
+  const onEdgeContextMenu = useCallback((event: any, edge: any) => {
+    event.preventDefault();
+
+    if (edge.source === "start-node") return;
+
+    setEdgeId(edge.id);
+    openEdge();
+  }, []);
+
+  const onPaneClick = useCallback(() => {
+    setMenu(null);
+  }, [setMenu]);
 
   const [newNodes, setNewNodes] = useState<CustomNode[]>([]);
 
   const { data: metadata } = useRuleChainMetadata(ruleChainId);
-
-  console.log(metadata);
+  // console.log(metadata)
+  console.log("Nodes" + nodes);
 
   useEffect(() => {
     const fetchAndParse = async () => {
@@ -114,12 +137,12 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
         })),
       ];
 
-      const parsedEdges = [
-        metadata.firstNodeIndex && {
-          id: `e-start-node-${metadata.nodes[metadata.firstNodeIndex].id.id}`,
+      const parsedEdges = metadata.connections !== null ? [
+        metadata.firstNodeIndex !== null && {
+          id: `e-start-node`,
           source: "start-node",
           target: metadata.nodes[metadata.firstNodeIndex].id.id,
-          type: "default",
+          type: "floating",
           animated: true,
           label: "",
         },
@@ -129,11 +152,11 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
           }`,
           source: metadata.nodes[conn.fromIndex].id.id,
           target: metadata.nodes[conn.toIndex].id.id,
-          type: "default",
+          type: "floating",
           animated: true,
           label: conn.type,
         })),
-      ];
+      ] : [];
 
       setNodes(parsedNodes);
       setEdges(parsedEdges);
@@ -144,24 +167,37 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
     }
   }, [metadata]);
 
+  // console.log(nodes);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const onConnect = useCallback(
     (params: Connection) => {
+      // console.log(params);
       const from = params.source!;
       const to = params.target!;
 
-      if (willCreateLoop(from, to, nodes, edges)) {
-        toast.error("اتصال ایجاد شده باعث حلقه می‌شود!");
-        return;
-      }
+      // if (willCreateLoop(from, to, nodes, edges)) {
+      //   toast.error("اتصال ایجاد شده باعث حلقه می‌شود!");
+      //   return;
+      // }
 
+      console.log(from);
+
+      const node = nodes.filter((node) => node.id === from && node);
+      console.log(node)
+      // const nodeType = Object.entries(nodeTypeConfigs).filter((n) => n[0] === node[0].data.raw.type)
+      // console.log(nodeType)
+
+      // setConnections(nodeType[0][1].relations)
+
+      
       setEdges((eds) =>
         addEdge(
           {
             ...params,
             animated: true,
-            label: "label", // بعداً قابل ویرایش
+            label: params.source === "start-node" ? "" : "label",
             style: { stroke: "#4f46e5" },
           },
           eds
@@ -198,7 +234,9 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
         },
         data: {
           label: nodeTypeConfigs[type]?.label || "Custom Node",
-          type,
+          row: {
+            type,
+          },
           config,
         },
       },
@@ -224,7 +262,8 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
     setIsModalOpen(false); // مودال بسته بشه
   };
 
-  const { mutate: saveMetadata, isPending } = useUpdateRuleChainMetadata(ruleChainId);
+  const { mutate: saveMetadata, isPending } =
+    useUpdateRuleChainMetadata(ruleChainId);
 
   const handleEditClick = () => {
     // const updatedJson = createFinalJson(newNodes, [], metadata);
@@ -238,13 +277,23 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
       version: metadata.version,
       nodes: finalJson.metaData.nodes,
       connections: finalJson.metaData.connections,
-      ruleChainConnections: finalJson.ruleChainConnections
+      ruleChainConnections: finalJson.ruleChainConnections,
     };
     // console.log(finalData);
     saveMetadata(finalData);
   };
 
   const { isOpen, openModal, closeModal } = useModal();
+
+  const deleteEdge = useCallback(
+    (event: any) => {
+      event.preventDefault();
+
+      setEdges((edges) => edges.filter((edge) => edge.id !== edgeId));
+      closeEdge();
+    },
+    [edgeId]
+  );
 
   return (
     <div className="w-full h-full relative" ref={ref}>
@@ -266,13 +315,20 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
         <button
           onClick={handleEditClick}
           disabled={isPending}
-          className={`w-12 h-12 rounded-full flex items-center justify-center z-10 top-2 left-2 text-white ${isPending ? "cursor-not-allowed bg-amber-300" : "bg-amber-500"}`}
+          className={`w-12 h-12 rounded-full flex items-center justify-center z-10 top-2 left-2 text-white ${
+            isPending ? "cursor-not-allowed bg-amber-300" : "bg-amber-500"
+          }`}
         >
-          {isPending ? <PuffLoader color="#ffffff" size={30}/> : <IoCheckmarkOutline size={20} />}
+          {isPending ? (
+            <PuffLoader color="#ffffff" size={30} />
+          ) : (
+            <IoCheckmarkOutline size={20} />
+          )}
         </button>
       </div>
 
       <ReactFlow
+        ref={ref}
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
@@ -281,10 +337,8 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
         fitView
         className="absolute inset-0"
         onPaneClick={onPaneClick}
-        onNodeContextMenu={onNodeContextMenu}
-        onNodeClick={(e: any, node: any) => {
-          toast.success(`node: ${node.data.label}`);
-        }}
+        onNodeClick={onNodeContextMenu}
+        onEdgeClick={onEdgeContextMenu}
       >
         <MiniMap />
         <Controls />
@@ -311,10 +365,36 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
             3- در فرم افزودن نود میتوانید تنظیمات مخصوص هر نود را تعیین کنید.
           </p>
           <p>
-            4- با کلیک راست روی نود ها و اتصالات میتوانید آنهارا ویرایش یا حذف
-            کنید.
+            4- با کلیک روی نود ها و اتصالات میتوانید آنهارا ویرایش یا حذف کنید.
           </p>
           <p>5- نود شروع غیر قابل حذف یا ویرایش می باشد.</p>
+        </div>
+      </Popup>
+      <Popup isOpen={edgeOpen} onClose={closeEdge}>
+        <div className="min-w-[600px] rounded-md bg-white p-4 flex flex-col items-start space-y-4">
+          <h2 className="text-lg font-semibold">ویرایش یا حذف اتصال</h2>
+          <div className="w-full flex items-center gap-4">
+            <select
+              name=""
+              id=""
+              className="w-full flex-1 px-4 py-2 rounded-lg border border-gray-300"
+              onChange={(event: any) => {
+                const edge = edges.filter((edge) => edge.id === edgeId);
+                edge[0].label = event.target.value;
+                // console.log(edge)
+                // setEdgeLabel(event.target.value);
+                closeEdge();
+              }}
+            >
+              {connections.map((con: any, index: number) => (<option key={index} value={con.label}>{con.label}</option>))}
+            </select>
+            <button
+              onClick={deleteEdge}
+              className="bg-rose-600 rounded-lg px-4 py-3 w-40 text-white"
+            >
+              حذف اتصال
+            </button>
+          </div>
         </div>
       </Popup>
     </div>

@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Table from "./Teble";
 import { PuffLoader } from "react-spinners";
 import { useDeviceEvents } from "@/hooks/useDevices";
 import { useUser } from "@/hooks/useUser";
+import Table from "@/components/Table";
 
 interface DeviceEventsProps {
   deviceId: string;
@@ -18,7 +18,7 @@ const DeviceEvents = ({ deviceId }: DeviceEventsProps) => {
     if (userData) {
       setTenantId(userData.data.tenantId.id);
     }
-  }, []);
+  }, [userData]);
 
   const { data, isLoading, error, refetch } = useDeviceEvents(
     deviceId,
@@ -48,13 +48,7 @@ const DeviceEvents = ({ deviceId }: DeviceEventsProps) => {
 
       {data && (
         <div className="w-full h-[85%]">
-          <Table
-            columns={columns}
-            data={data.data}
-            RPP={10}
-            clickableRows={false}
-            getRowLink={(row: any) => `/dashboard/alarms/${row.id.id}`}
-          />
+          <Table columns={columns} data={data.data} />
         </div>
       )}
     </div>

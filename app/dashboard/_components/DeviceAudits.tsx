@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import Table from "./Teble";
 import { PuffLoader } from "react-spinners";
 import { useDeviceAudits } from "@/hooks/useDevices";
+import Table from "@/components/Table";
 
 interface DeviceAuditsProps {
   deviceId: string;
@@ -36,9 +36,6 @@ const DeviceAudits = ({ deviceId }: DeviceAuditsProps) => {
           <Table
             columns={columns}
             data={data.data}
-            RPP={10}
-            clickableRows={false}
-            getRowLink={(row: any) => `/dashboard/alarms/${row.id.id}`}
           />
         </div>
       )}

@@ -4,7 +4,6 @@ import Popup from "@/components/Popup";
 import SearchBar from "@/components/SearchBar";
 import React, { useCallback, useState } from "react";
 import { BiPlus } from "react-icons/bi";
-import Table from "@/app/dashboard/_components/Teble";
 import { PuffLoader } from "react-spinners";
 import { useCustomers, useDeleteCustomer } from "@/hooks/useCustomers";
 import AddCustomerForm from "../_components/AddCustomerForm";
@@ -12,6 +11,8 @@ import DeleteModal from "@/components/DeleteModal";
 import EditCustomerForm from "../_components/EditCustomerForm";
 import { debounce } from "lodash";
 import Header from "@/components/Header";
+import Table from "@/components/Table";
+import Link from "next/link";
 
 const Customers = () => {
   const [searchText, setSearchText] = useState("");
@@ -42,17 +43,26 @@ const Customers = () => {
   };
 
   const columns = [
-    { header: "نام", accessor: "name" },
+    {
+      header: "نام",
+      accessor: (item: any) => (
+        <Link
+          className="hover:text-blue-500"
+          href={`/dashboard/customers/${item.id.id}`}
+        >
+          {item.name}
+        </Link>
+      ),
+    },
     { header: "ایمیل", accessor: "email" },
+    { header: "تلفن", accessor: "phone" },
     { header: "زمان ایجاد", accessor: "createdTime" },
-    { header: "ویرایش", accessor: "", type: "editButton" },
-    { header: "حذف", accessor: "", type: "deleteButton" },
   ];
 
   return (
-    <div className="p-6 lg:p-20 w-full h-screen flex flex-col items-center justify-between gap-6">
+    <div className="p-6 lg:p-20 w-full h-screen flex flex-col items-center gap-6">
       <div className="w-full h-[15%] flex flex-col items-start justify-between">
-        <Header title="مشتریان" isShowSearch searchFn={onSearchChange}/>
+        <Header title="مشتریان" isShowSearch searchFn={onSearchChange} />
         <div className="flex items-center justify-end w-full">
           <button
             onClick={toggleMpdal}
@@ -81,25 +91,7 @@ const Customers = () => {
         </div>
       )}
 
-      {data && (
-        <div className="w-full h-[85%]">
-          <Table
-            columns={columns}
-            data={data.data}
-            RPP={10}
-            clickableRows={false}
-            getRowLink={(row: any) => ``}
-            onDeleteClicked={(row: any) => {
-              setId(row.id.id);
-              setIsDeleteModalOpen(true);
-            }}
-            onEditClicked={(row: any) => {
-              setCustomer(row);
-              setIsEditModalOpen(true);
-            }}
-          />
-        </div>
-      )}
+      {data && <Table columns={columns} data={data.data} />}
 
       <Popup isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <AddCustomerForm
