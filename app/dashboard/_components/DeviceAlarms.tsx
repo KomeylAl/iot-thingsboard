@@ -2,7 +2,6 @@
 
 import React from "react";
 import Table from "./Teble";
-import SearchBar from "@/components/SearchBar";
 import { PuffLoader } from "react-spinners";
 import { useDeviceAlarms } from "@/hooks/useDevices";
 
