@@ -80,11 +80,11 @@ export function useSyncTenantProfiles() {
   });
 }
 
-export function useSyncLogs() {
+export function useSyncLogs(page: number = 0, pageSize: number = 10) {
   return useQuery({
-    queryKey: ["syncLogs"],
+    queryKey: ["syncLogs", page, pageSize],
     queryFn: async () => {
-      const res = await fetch("/api/syncronization/logs");
+      const res = await fetch(`/api/syncronization/logs?page=${page}&pageSize=${pageSize}`);
       if (!res.ok) {
         throw new Error("خطا در دریافت اطلاعات لاگ ها");
       }

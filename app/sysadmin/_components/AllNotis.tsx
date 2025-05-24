@@ -1,16 +1,23 @@
-import Table from "@/app/dashboard/_components/Teble";
+import Table from "@/components/Table";
 import { useNotifs } from "@/hooks/useNotifs";
-import React from "react";
+import { convertISOToJalali } from "@/utils/convert";
+import React, { useState } from "react";
 import { PuffLoader } from "react-spinners";
 
 const AllNotifs = () => {
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+
   const columns = [
     { header: "وضعیت", accessor: "status" },
     { header: "متن", accessor: "text" },
-    { header: "زمان ایجاد", accessor: "createdTime" },
+    {
+      header: "زمان ایجاد",
+      accessor: (item: any) => convertISOToJalali(item.createdTime),
+    },
   ];
 
-  const { data, isLoading, error, refetch } = useNotifs(10, 0);
+  const { data, isLoading, error, refetch } = useNotifs(pageSize, page);
 
   return (
     <div className="w-full h-full">
@@ -30,9 +37,10 @@ const AllNotifs = () => {
         <Table
           columns={columns}
           data={data.data}
-          RPP={10}
-          getRowLink={(row: any) => ``}
-          clickableRows={false}
+          pageSize={pageSize}
+          totalItems={data.totalElements}
+          currentPage={page + 1}
+          onPageChange={(newPage) => setPage(newPage - 1)}
         />
       )}
     </div>

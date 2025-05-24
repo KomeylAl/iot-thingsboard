@@ -96,10 +96,11 @@ export async function GET(req: NextRequest) {
   const params = req.nextUrl.searchParams;
   const pageSize = params.get("pageSize") || 1;
   const page = params.get("page") || 0;
+  const textSearch = params.get("textSearch") || "";
 
   try {
     const response = await fetch(
-      `${process.env.THINGSBOARD_URL}/api/tenant/devices?pageSize=${pageSize}&page=${page}&sortProperty=createdTime&sortOrder=DESC`,
+      `${process.env.THINGSBOARD_URL}/api/tenant/devices?pageSize=${pageSize}&page=${page}&textSearch=${textSearch}&sortProperty=createdTime&sortOrder=DESC`,
       {
         method: "GET",
         headers: {

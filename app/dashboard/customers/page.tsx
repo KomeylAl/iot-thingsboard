@@ -1,34 +1,29 @@
 "use client";
 
 import Popup from "@/components/Popup";
-import SearchBar from "@/components/SearchBar";
 import React, { useCallback, useState } from "react";
 import { BiPlus } from "react-icons/bi";
 import { PuffLoader } from "react-spinners";
-import { useCustomers, useDeleteCustomer } from "@/hooks/useCustomers";
+import { useCustomers } from "@/hooks/useCustomers";
 import AddCustomerForm from "../_components/AddCustomerForm";
-import DeleteModal from "@/components/DeleteModal";
-import EditCustomerForm from "../_components/EditCustomerForm";
 import { debounce } from "lodash";
 import Header from "@/components/Header";
 import Table from "@/components/Table";
 import Link from "next/link";
+import { convertISOToJalali } from "@/utils/convert";
+import { useModal } from "@/hooks/useModal";
 
 const Customers = () => {
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
   const [searchText, setSearchText] = useState("");
-  const { data, isLoading, error, refetch } = useCustomers(10, 0, searchText);
+  const { data, isLoading, error, refetch } = useCustomers(
+    page,
+    pageSize,
+    searchText
+  );
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const toggleMpdal = () => setIsModalOpen(!isModalOpen);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [id, setId] = useState("");
-  const [customer, setCustomer] = useState<any>({});
-
-  const { mutate: deleteCustomer, isPending } = useDeleteCustomer(id, () => {
-    setIsDeleteModalOpen(false);
-    refetch();
-  });
+  const { isOpen, openModal, closeModal } = useModal();
 
   const debouncedSearch = useCallback(
     debounce((text) => {
@@ -56,68 +51,53 @@ const Customers = () => {
     },
     { header: "ایمیل", accessor: "email" },
     { header: "تلفن", accessor: "phone" },
-    { header: "زمان ایجاد", accessor: "createdTime" },
+    {
+      header: "زمان ایجاد",
+      accessor: (item: any) => convertISOToJalali(item.createdTime),
+    },
   ];
 
   return (
-    <div className="p-6 lg:p-20 w-full h-screen flex flex-col items-center gap-6">
-      <div className="w-full h-[15%] flex flex-col items-start justify-between">
-        <Header title="مشتریان" isShowSearch searchFn={onSearchChange} />
-        <div className="flex items-center justify-end w-full">
+    <div className="w-full h-screen">
+      <Header isShowSearch searchFn={onSearchChange} />
+
+      <div className="w-full h-fullp-6 lg:p-12 space-y-6">
+        <div className="flex items-center justify-between w-full">
+          <h1 className="text-xl lg:text-2xl font-bold">مشتریان</h1>
           <button
-            onClick={toggleMpdal}
+            onClick={openModal}
             className="py-2 px-4 bg-blue-500 text-white rounded-lg flex items-center"
           >
             <BiPlus size={24} /> افزودن مشتری جدید
           </button>
         </div>
+
+        {error && <p>خطا در دریافت اطلاعات </p>}
+
+        {isLoading && (
+          <div className="w-full h-full flex items-center justify-center">
+            <PuffLoader color="#3b82f6" />
+          </div>
+        )}
+
+        {data && (
+          <Table
+            columns={columns}
+            data={data.data}
+            pageSize={page}
+            totalItems={data.totalElements}
+            currentPage={page + 1}
+            onPageChange={(newPage) => setPage(newPage - 1)}
+          />
+        )}
       </div>
 
-      {error && (
-        <div className="w-full h-full flex items-center justify-center">
-          <p>خطا در دریافت اطلاعات مشتری ها</p>
-        </div>
-      )}
-
-      {isLoading && (
-        <div className="w-full h-full flex items-center justify-center">
-          <PuffLoader color="#3b82f6" />
-        </div>
-      )}
-
-      {!data && !isLoading && !error && (
-        <div className="w-full h-full flex items-center justify-center">
-          <p>مشتری ای برای نمایش وجود ندارد!</p>
-        </div>
-      )}
-
-      {data && <Table columns={columns} data={data.data} />}
-
-      <Popup isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+      <Popup isOpen={isOpen} onClose={openModal}>
         <AddCustomerForm
           onCustomerAdded={() => {
-            setIsModalOpen(false);
+            closeModal();
             refetch();
           }}
-        />
-      </Popup>
-      <Popup isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}>
-        <EditCustomerForm
-          customerData={customer}
-          onCustomerUpdated={() => {
-            setIsEditModalOpen(false);
-            refetch();
-          }}
-        />
-      </Popup>
-      <Popup
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-      >
-        <DeleteModal
-          onCancel={() => setIsDeleteModalOpen(false)}
-          deleteFunc={() => deleteCustomer()}
-          isDeleting={isPending}
         />
       </Popup>
     </div>

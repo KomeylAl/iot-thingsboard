@@ -120,7 +120,7 @@ function Table<T>({
               ))}
               {showActions && (
                 <td className="px-6 py-4 text-sm text-gray-800 space-x-2">
-                  <Button variant="ghost" size="sm" onClick={() => openModal()}>
+                  <Button variant="ghost" size="sm" onClick={() => onEdit(row)}>
                     <Pencil className="w-4 h-4 text-blue-500" />
                   </Button>
                   <Button

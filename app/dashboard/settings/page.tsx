@@ -1,5 +1,6 @@
 "use client";
 
+import Header from "@/components/Header";
 import {
   useSyncAssets,
   useSyncCustomers,
@@ -12,36 +13,22 @@ import { ClipLoader } from "react-spinners";
 
 const DashboardSettings = () => {
   const { data: userData } = useUser();
-  const {
-    data: syncDevicesData,
-    isLoading: syncDevicesIsLoading,
-    error: syncDevicesError,
-    refetch: syncDevicesRefetch,
-  } = useSyncDevices();
+  const { isLoading: syncDevicesIsLoading, refetch: syncDevicesRefetch } =
+    useSyncDevices();
 
-  const {
-    data: syncCustomersData,
-    isLoading: syncCustomersIsLoading,
-    error: syncCustomersError,
-    refetch: syncCustomersRefetch,
-  } = useSyncCustomers(userData && userData.data.tenantId.id);
+  const { isLoading: syncCustomersIsLoading, refetch: syncCustomersRefetch } =
+    useSyncCustomers(userData && userData.data.tenantId.id);
 
-  const {
-    data: syncAssetsData,
-    isLoading: syncAssetsIsLoading,
-    error: syncAssetsError,
-    refetch: syncAssetsRefetch,
-  } = useSyncAssets(userData && userData.data.tenantId.id);
+  const { isLoading: syncAssetsIsLoading, refetch: syncAssetsRefetch } =
+    useSyncAssets(userData && userData.data.tenantId.id);
 
   return (
-    <div className="p-6 lg:p-20 w-full h-screen flex flex-col items-center justify-between gap-6">
-      <div className="w-full h-[15%] flex flex-col items-start justify-between">
-        <div className="flex items-center justify-between w-full">
-          <h1 className="text-xl lg:text-3xl font-bold">تنظیمات</h1>
-        </div>
-      </div>
-      <div className="w-full h-[85%]">
-        <div className="w-full h-[50%]">
+    <div className="w-full h-screen">
+      <Header isShowSearch={false} searchFn={() => {}} />
+
+      <div className="w-full h-fullp-6 lg:p-12 space-y-6">
+        <h1 className="text-xl lg:text-2xl font-bold">تنظیمات</h1>
+        <div className="w-full">
           <h2>همگام سازی</h2>
           <div className="w-full md:w-[50%] h-full flex flex-col gap-3 mt-4">
             <div className="w-full p-3 bg-white rounded-md flex items-center justify-between">

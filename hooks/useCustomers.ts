@@ -2,12 +2,12 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
 export function useCustomers(
-  pageSize: number = 1,
   page: number = 0,
+  pageSize: number = 1,
   textSearch: string = ""
 ) {
   return useQuery({
-    queryKey: ["customers"],
+    queryKey: ["customers", page, pageSize],
     queryFn: async () => {
       const res = await fetch(
         `/api/customers?pageSize=${pageSize}&page=${page}&textSearch=${textSearch}`

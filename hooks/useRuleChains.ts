@@ -2,12 +2,12 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
 export function useRuleChains(
-  pageSize: any = 1,
   page: any = 0,
+  pageSize: any = 1,
   textSearch: string = ""
 ) {
   return useQuery({
-    queryKey: ["ruleChains"],
+    queryKey: ["ruleChains", page, pageSize],
     queryFn: async () => {
       const res = await fetch(
         `/api/rule-chains?pageSize=${pageSize}&page=${page}&textSearch=${textSearch}`
@@ -57,12 +57,9 @@ export function useUpdateRuleChain(onRuleChainUpdated: () => void) {
   });
 }
 
-export function useDeleteRuleChain(
-  ruleChainId: string,
-  onDeletedRuleChain: () => void
-) {
+export function useDeleteRuleChain(onDeletedRuleChain: () => void) {
   return useMutation({
-    mutationFn: async () => {
+    mutationFn: async (ruleChainId: string) => {
       const res = await fetch(`/api/rule-chains/${ruleChainId}`, {
         method: "DELETE",
       });

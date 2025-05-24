@@ -1,5 +1,7 @@
 "use client";
 
+import Header from "@/components/Header";
+import Table from "@/components/Table";
 import {
   useSyncLogs,
   useSyncTenantProfiles,
@@ -7,12 +9,15 @@ import {
 } from "@/hooks/useSync";
 import { convertISOToJalali } from "@/utils/convert";
 import axios from "axios";
-import React from "react";
+import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { FaArrowLeft } from "react-icons/fa";
 import { ClipLoader, PuffLoader } from "react-spinners";
 
 const Settings = () => {
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
   const {
     data: syncTenantsData,
     isLoading: syncTenantsLoading,
@@ -32,19 +37,26 @@ const Settings = () => {
     isLoading: syncLogsLoading,
     error: syncLogsError,
     refetch: syncLogsRefetch,
-  } = useSyncLogs();
+  } = useSyncLogs(page, pageSize);
+
+  const columns = [
+    { header: "موجودیت", accessor: "entity" },
+    { header: "وضعیت", accessor: "status" },
+    {
+      header: "زمان ایجاد",
+      accessor: (item: any) => convertISOToJalali(item.timestamp),
+    },
+  ];
 
   return (
-    <div className="p-6 lg:p-20 w-full h-screen flex flex-col items-center justify-between gap-6">
-      <div className="w-full h-[15%] flex flex-col items-start justify-between">
-        <div className="flex items-center justify-between w-full">
-          <h1 className="text-xl lg:text-3xl font-bold">تنظیمات</h1>
-        </div>
-      </div>
-      <div className="w-full h-[85%]">
-        <div className="w-full h-[50%]">
+    <div className="w-full h-screen">
+      <Header isShowSearch={false} searchFn={() => {}} />
+
+      <div className="w-full h-fullp-6 lg:p-12 space-y-6">
+        <h1 className="text-xl lg:text-2xl font-bold">تنظیمات</h1>
+        <div className="w-full">
           <h2>همگام سازی</h2>
-          <div className="w-full md:w-[50%] h-full flex flex-col gap-3 mt-4">
+          <div className="w-full h-full flex gap-3 mt-4">
             <div className="w-full p-3 bg-white rounded-md flex items-center justify-between">
               <p>همگام سازی اطلاعات سازمان ها</p>
               <button
@@ -79,27 +91,25 @@ const Settings = () => {
             </div>
           </div>
         </div>
-        <div className="w-full h-[50%]">
+        <div className="w-full">
           <h2>آخرین همگام سازی ها</h2>
-          <div className="w-full md:w-[50%] h-full rounded-md mt-4 overflow-auto">
+          <div className="w-full h-full rounded-md mt-4 overflow-auto">
             {syncLogsLoading && (
               <div className="w-full h-full flex items-center justify-center">
                 <PuffLoader color="#3b82f6" />
               </div>
             )}
             {syncLogsError && <p>خطا در دریافت اطلاعات لاگ ها</p>}
-            {syncLogsData &&
-              syncLogsData.map((log: any, index: any) => (
-                <div
-                  key={log.id}
-                  className="w-full bg-white rounded-md p-4 flex items-center justify-between mt-2"
-                >
-                  <p className="text-blue-500">{index + 1}</p>
-                  <p className="">{log.entity}</p>
-                  <p className="">{log.status}</p>
-                  <p className="">{convertISOToJalali(log.timestamp)}</p>
-                </div>
-              ))}
+            {syncLogsData && (
+              <Table
+                columns={columns}
+                data={syncLogsData.data}
+                pageSize={pageSize}
+                totalItems={syncLogsData.pagination.total}
+                currentPage={page}
+                onPageChange={(newPage) => setPage(newPage)}
+              />
+            )}
           </div>
         </div>
       </div>

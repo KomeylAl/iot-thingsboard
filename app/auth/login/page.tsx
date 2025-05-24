@@ -1,5 +1,6 @@
 "use client";
 
+import { useUser } from "@/context/UserContext";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -8,6 +9,9 @@ import toast from "react-hot-toast";
 import { ClipLoader } from "react-spinners";
 
 const Login = () => {
+
+  const { setUser } = useUser();
+
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -22,6 +26,7 @@ const Login = () => {
       .post("/api/auth/login", formData)
       .then(function (response) {
         if (response.status === 200) {
+          setUser(response.data);
           router.replace("/dashboard");
           toast.success("با موفقیت وارد شدید. لطفا کمی صبر کنید");
         }

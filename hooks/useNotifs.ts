@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 
 export function useNotifs(pageSize: number = 1, page: number = 0) {
   return useQuery({
-    queryKey: ["notifs"],
+    queryKey: ["notifs", page, pageSize],
     queryFn: async () => {
       const res = await fetch(
         `/api/notifications?pageSize=${pageSize}&page=${page}`
@@ -31,7 +31,7 @@ export function useUnreadNotifsCount() {
 
 export function useUnreadNotifs(pageSize: number = 1, page: number = 0) {
   return useQuery({
-    queryKey: ["unreadNotifs"],
+    queryKey: ["unreadNotifs", page, pageSize],
     queryFn: async () => {
       const res = await fetch(
         `/api/notifications/unread?pageSize=${pageSize}&page=${page}`
@@ -46,7 +46,7 @@ export function useUnreadNotifs(pageSize: number = 1, page: number = 0) {
 
 export function useNotifRecipients(pageSize: number = 1, page: number = 0) {
   return useQuery({
-    queryKey: ["notifRecipients"],
+    queryKey: ["notifRecipients", page, pageSize],
     queryFn: async () => {
       const res = await fetch(
         `/api/notifications/recipients?pageSize=${pageSize}&page=${page}`

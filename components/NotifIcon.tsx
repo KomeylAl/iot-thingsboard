@@ -18,7 +18,7 @@ const NotifIcon = () => {
         {data !== 0 && (
           <div className="w-1 h-1 p-1 rounded-full bg-rose-500 text-white absolute top-0 right-0 text-[10px]" />
         )}
-        <CiBellOn size={35} />
+        <CiBellOn className="text-gray-600 dark:text-white" size={20} />
       </div>
       <Popup isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <UnreadNotifsList />

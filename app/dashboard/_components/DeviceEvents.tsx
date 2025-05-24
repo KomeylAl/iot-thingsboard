@@ -20,7 +20,7 @@ const DeviceEvents = ({ deviceId }: DeviceEventsProps) => {
     }
   }, [userData]);
 
-  const { data, isLoading, error, refetch } = useDeviceEvents(
+  const { data, isLoading, error } = useDeviceEvents(
     deviceId,
     tenantId,
     10,

@@ -1,32 +1,48 @@
 "use client";
 
 import Popup from "@/components/Popup";
-import SearchBar from "@/components/SearchBar";
 import { useDeleteRuleChain, useRuleChains } from "@/hooks/useRuleChains";
 import React, { useCallback, useState } from "react";
 import { BiPlus } from "react-icons/bi";
 import { PuffLoader } from "react-spinners";
-import Table from "../_components/Teble";
 import AddRuleChainForm from "../_components/AddRuleChainForm";
 import DeleteModal from "@/components/DeleteModal";
 import EditRuleChainForm from "../_components/EditRuleChainForm";
-import ChangeRuleChainForm from "../_components/ui/form/ChangeRuleChainFor";
 import { debounce } from "lodash";
 import Header from "@/components/Header";
+import { useModal } from "@/hooks/useModal";
+import { convertISOToJalali } from "@/utils/convert";
+import Table from "@/components/Table";
 
 const RuleChains = () => {
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
   const [searchText, setSearchText] = useState("");
-  const { data, isLoading, error, refetch } = useRuleChains(10, 0, searchText);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const toggleMpdal = () => setIsModalOpen(!isModalOpen);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const { data, isLoading, error, refetch } = useRuleChains(
+    page,
+    pageSize,
+    searchText
+  );
   const [id, setId] = useState("");
   const [ruleChain, setRuleChain] = useState<any>({});
 
-  const { mutate: deleteRuleChain, isPending } = useDeleteRuleChain(id, () => {
-    setIsDeleteModalOpen(false);
+  const { isOpen, openModal, closeModal } = useModal();
+
+  const {
+    isOpen: deleteOpen,
+    openModal: openDelete,
+    closeModal: closeDelete,
+  } = useModal();
+
+  const {
+    isOpen: editOpen,
+    openModal: openEdit,
+    closeModal: closeEdit,
+  } = useModal();
+
+  const { mutate: deleteRuleChain, isPending } = useDeleteRuleChain(() => {
+    closeDelete();
     refetch();
   });
 
@@ -45,80 +61,80 @@ const RuleChains = () => {
   const columns = [
     { header: "نام", accessor: "name" },
     { header: "نوع", accessor: "type" },
-    { header: "تاریخ ایجاد", accessor: "createdTime" },
-    { header: "ویرایش", accessor: "", type: "editButton" },
-    { header: "حذف", accessor: "", type: "deleteButton" },
+    {
+      header: "زمان ایجاد",
+      accessor: (item: any) => convertISOToJalali(item.createdTime),
+    },
   ];
 
   return (
-    <div className="p-6 lg:p-20 w-full h-screen flex flex-col items-center justify-between gap-6">
-      <div className="w-full h-[15%] flex flex-col items-start justify-between">
-        <Header title="زنجیره قواعد" isShowSearch searchFn={onSearchChange}/>
-        <div className="flex items-center justify-end w-full">
+    <div className="w-full h-screen">
+      <Header isShowSearch searchFn={onSearchChange} />
+
+      <div className="w-full h-fullp-6 lg:p-12 space-y-6">
+        <div className="flex items-center justify-between w-full">
+          <h1 className="text-xl lg:text-2xl font-bold">زنجیره های قواعد</h1>
           <button
-            onClick={toggleMpdal}
+            onClick={openModal}
             className="py-2 px-4 bg-blue-500 text-white rounded-lg flex items-center"
           >
             <BiPlus size={24} /> افزودن زنجیره جدید
           </button>
         </div>
-      </div>
 
-      {error && <p>خطا در دریافت اطلاعات زنجیره ها</p>}
+        {error && <p>خطا در دریافت اطلاعات </p>}
 
-      {isLoading && (
-        <div className="w-full h-full flex items-center justify-center">
-          <PuffLoader color="#3b82f6" />
-        </div>
-      )}
+        {isLoading && (
+          <div className="w-full h-full flex items-center justify-center">
+            <PuffLoader color="#3b82f6" />
+          </div>
+        )}
 
-      {!data && !isLoading && <p>زنجیره ای برای نمایش وجود ندارد!</p>}
-
-      {data && (
-        <div className="w-full h-[85%]">
+        {data && (
           <Table
             columns={columns}
             data={data.data}
-            RPP={10}
-            getRowLink={(row) => `/dashboard/rule-chains/${row.id.id}`}
-            onDeleteClicked={(row: any) => {
-              setId(row.id.id);
-              setIsDeleteModalOpen(true);
+            pageSize={page}
+            totalItems={data.totalElements}
+            currentPage={page + 1}
+            onPageChange={(newPage) => setPage(newPage - 1)}
+            showActions
+            onEdit={(item: any) => {
+              setRuleChain(item);
+              openEdit();
             }}
-            onEditClicked={(row: any) => {
-              setRuleChain(row);
-              setIsEditModalOpen(true);
+            onDelete={(item: any) => {
+              setId(item.id.id);
+              openDelete();
             }}
           />
-        </div>
-      )}
+        )}
+      </div>
 
-      <Popup isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+      <Popup isOpen={isOpen} onClose={openModal}>
         <AddRuleChainForm
           onRuleChainAdded={() => {
-            setIsModalOpen(false);
+            closeModal();
             refetch();
           }}
         />
       </Popup>
 
-      <Popup isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}>
+      <Popup isOpen={deleteOpen} onClose={closeDelete}>
+        <DeleteModal
+          deleteFunc={() => deleteRuleChain(id)}
+          isDeleting={isPending}
+          onCancel={closeDelete}
+        />
+      </Popup>
+
+      <Popup isOpen={editOpen} onClose={closeEdit}>
         <EditRuleChainForm
           ruleChainData={ruleChain}
           onRuleChainUpdated={() => {
-            setIsEditModalOpen(false);
+            closeEdit();
             refetch();
           }}
-        />
-      </Popup>
-      <Popup
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-      >
-        <DeleteModal
-          onCancel={() => setIsDeleteModalOpen(false)}
-          deleteFunc={() => deleteRuleChain()}
-          isDeleting={isPending}
         />
       </Popup>
     </div>

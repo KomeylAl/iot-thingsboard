@@ -10,7 +10,7 @@ import { PuffLoader } from "react-spinners";
 import Header from "@/components/Header";
 import { debounce } from "lodash";
 import Link from "next/link";
-import EntityTable from "@/components/ui/EntityTable";
+import { useModal } from "@/hooks/useModal";
 
 const columns = [
   {
@@ -30,7 +30,7 @@ const columns = [
 ];
 
 const Tenants = () => {
-  const [page, setPage] = useState(0); // API page از 0 شروع میشه
+  const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [searchText, setSearchText] = useState("");
   const { data, isLoading, error, refetch } = useTenants(
@@ -51,37 +51,46 @@ const Tenants = () => {
     debouncedSearch(e.target.value);
   };
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const toggleMpdal = () => setIsModalOpen(!isModalOpen);
+  const { isOpen, openModal, closeModal } = useModal();
 
   return (
-    <div className="p-6 lg:p-20 w-full h-screen flex flex-col items-center gap-6">
-      <div className="w-full h-[15%] flex flex-col items-start justify-between">
-        <Header title="سازمان ها" isShowSearch searchFn={onSearchChange} />
-        <div className="flex items-center justify-end w-full">
+    <div className="w-full h-screen">
+      <Header isShowSearch searchFn={onSearchChange} />
+
+      <div className="w-full h-full p-6 lg:p-12 space-y-6">
+        <div className="flex items-center justify-between w-full">
+          <h1 className="text-xl lg:text-2xl font-bold">سازمان ها</h1>
           <button
-            onClick={toggleMpdal}
+            onClick={openModal}
             className="py-2 px-4 bg-blue-500 text-white rounded-lg flex items-center"
           >
             <BiPlus size={24} /> افزودن سازمان جدید
           </button>
         </div>
+
+        {error && <p>خطا در دریافت اطلاعات </p>}
+
+        {isLoading && (
+          <div className="w-full h-full flex items-center justify-center">
+            <PuffLoader color="#3b82f6" />
+          </div>
+        )}
+
+        {data && (
+          <Table
+            columns={columns}
+            data={data.data}
+            pageSize={pageSize}
+            totalItems={data.totalElements}
+            currentPage={page + 1}
+            onPageChange={(newPage) => setPage(newPage - 1)}
+          />
+        )}
       </div>
-      <div className="w-full h-full">
-        <EntityTable
-          columns={columns}
-          data={data}
-          error={error}
-          isLoading={isLoading}
-          page={page}
-          pageSize={pageSize}
-          onPageChange={(newPage) => setPage(newPage - 1)}
-        />
-      </div>
-      <Popup isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+      <Popup isOpen={isOpen} onClose={closeModal}>
         <AddTenantForm
           onTenantAdded={() => {
-            setIsModalOpen(false);
+            closeModal();
             refetch();
           }}
         />

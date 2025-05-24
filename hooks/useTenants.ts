@@ -7,7 +7,7 @@ export function useTenants(
   textSearch: string = ""
 ) {
   return useQuery({
-    queryKey: ["tenants", page, pageSize, textSearch],
+    queryKey: ["tenants", page, pageSize],
     queryFn: async () => {
       const res = await fetch(
         `/api/sysadmin/tenants?page=${page}&pageSize=${pageSize}&textSearch=${textSearch}`

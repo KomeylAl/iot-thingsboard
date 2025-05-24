@@ -32,11 +32,13 @@ const AdminDashboard = () => {
   const [isAddProfileOpen, setIsAddProfileOpen] = useState(false);
 
   return (
-    <div className="p-6 lg:p-20 w-full min-h-screen flex flex-col">
+    <div className="w-full min-h-screen flex flex-col">
       {/* هدر */}
-      <Header title="داشبورد مدیریت" isShowSearch={false} searchFn={() => {}} />
+      <Header isShowSearch={false} searchFn={() => {}} />
 
       {/* محتوای اصلی */}
+      <div className="p-6 lg:p-12 space-y-6">
+      <h1 className="text-xl lg:text-2xl font-bold">داشبورد مدیریت</h1>
       <div className="flex-1 flex flex-col lg:flex-row gap-6 mt-6 overflow-hidden">
         {/* بخش اصلی چپ */}
         <div className="w-full lg:w-[65%] flex flex-col gap-5">
@@ -113,6 +115,7 @@ const AdminDashboard = () => {
         <div className="w-full lg:w-[35%] p-8 overflow-auto">
           <LastRequests />
         </div>
+      </div>
       </div>
 
       {/* مودال */}

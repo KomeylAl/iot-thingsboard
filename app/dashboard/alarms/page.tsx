@@ -1,16 +1,22 @@
 "use client";
 
-import SearchBar from "@/components/SearchBar";
 import React, { useCallback, useState } from "react";
-import Table from "@/app/dashboard/_components/Teble";
 import { PuffLoader } from "react-spinners";
 import { useAlarms } from "@/hooks/useAlarms";
 import { debounce } from "lodash";
 import Header from "@/components/Header";
+import { convertISOToJalali } from "@/utils/convert";
+import Table from "@/components/Table";
 
 const Alarms = () => {
+  const [page, setPage] = useState(0);
+  const [pageSize] = useState(10);
   const [searchText, setSearchText] = useState("");
-  const { data, isLoading, error, refetch } = useAlarms(10, 0, searchText);
+  const { data, isLoading, error, refetch } = useAlarms(
+    pageSize,
+    page,
+    searchText
+  );
 
   const debouncedSearch = useCallback(
     debounce((text) => {
@@ -29,35 +35,40 @@ const Alarms = () => {
     { header: "نوع", accessor: "type" },
     { header: "شدت", accessor: "label" },
     { header: "وضعیت", accessor: "status" },
-    { header: "زمان ایجاد", accessor: "status" },
+    {
+      header: "زمان ایجاد",
+      accessor: (item: any) => convertISOToJalali(item.createdTime),
+    },
   ];
 
   return (
-    <div className="p-6 lg:p-20 w-full h-screen flex flex-col items-center justify-between gap-6">
-      <div className="w-full h-[15%] flex flex-col items-start justify-between">
-        <Header title="هشدار ها" isShowSearch searchFn={onSearchChange}/>
-      </div>
+    <div className="w-full h-screen">
+      <Header isShowSearch searchFn={onSearchChange} />
 
-      {error && <p>خطا در دریافت اطلاعات هشدار ها</p>}
+      <div className="w-full h-fullp-6 lg:p-12 space-y-6">
+        <h1 className="text-xl lg:text-2xl font-bold">اعلانات</h1>
 
-      {isLoading && (
-        <div className="w-full h-full flex items-center justify-center">
-          <PuffLoader color="#3b82f6" />
-        </div>
-      )}
+        {error && <p>خطا در دریافت اطلاعات هشدار ها</p>}
 
-      {!data && !isLoading && <p>هشداری برای نمایش وجود ندارد!</p>}
+        {isLoading && (
+          <div className="w-full h-full flex items-center justify-center">
+            <PuffLoader color="#3b82f6" />
+          </div>
+        )}
 
-      {data && (
-        <div className="w-full h-[85%]">
+        {!data && !isLoading && <p>هشداری برای نمایش وجود ندارد!</p>}
+
+        {data && (
           <Table
             columns={columns}
             data={data.data}
-            RPP={10}
-            getRowLink={(row: any) => `/dashboard/alarms/${row.id.id}`}
+            pageSize={pageSize}
+            totalItems={data.totalElements}
+            currentPage={page + 1}
+            onPageChange={(newPage) => setPage(newPage - 1)}
           />
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

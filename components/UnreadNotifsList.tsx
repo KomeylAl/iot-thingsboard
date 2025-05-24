@@ -34,11 +34,9 @@ const UnreadNotifsList = () => {
       )}
 
       {data && (
-        <div className="w-96 flex flex-col items-center gap-4">
-          <div className="w-full flex items-center justify-between">
-            <p>اعلان ها</p>
+        <div className="w-[320px] flex flex-col items-center gap-4">
             <button
-              className="text-blue-500"
+              className="text-blue-500 text-center"
               onClick={() => {
                 markRefetch();
                 refetch();
@@ -47,7 +45,6 @@ const UnreadNotifsList = () => {
               {markLoading && <PuffLoader color="#3b82f6" size={20} />}
               {!markLoading && <p>علامت زدن همه به عنوان خانده شده</p>}
             </button>
-          </div>
           <div className="w-full h-[1px] bg-gray-200" />
           <div className="w-full space-y-3">
             {data.data.map((notif: any) => (

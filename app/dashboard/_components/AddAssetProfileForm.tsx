@@ -16,12 +16,12 @@ const schema = yup.object({
 });
 
 interface AddAssetProfileProps {
-  onProfileEdited: () => void;
+  onProfileAdded: () => void;
 }
 
-const AddAssetProfileForm = ({ onProfileEdited }: AddAssetProfileProps) => {
+const AddAssetProfileForm = ({ onProfileAdded }: AddAssetProfileProps) => {
   const { mutate: addProfile, isPending } = useStoreAssetsProfile(() => {
-    onProfileEdited();
+    onProfileAdded();
   });
 
   const {

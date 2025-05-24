@@ -7,7 +7,7 @@ export function useTenantProfiles(
   textSearch: string = ""
 ) {
   return useQuery({
-    queryKey: ["tenantProfiles"],
+    queryKey: ["tenantProfiles", page, pageSize],
     queryFn: async () => {
       const res = await fetch(
         `/api/sysadmin/tenants/profiles?pageSize=${pageSize}&page=${page}&textSearch=${textSearch}`
@@ -21,12 +21,12 @@ export function useTenantProfiles(
 }
 
 export function useDeviceProfiles(
-  pageSize: number = 1,
   page: number = 0,
+  pageSize: number = 1,
   textSearch: string = ""
 ) {
   return useQuery({
-    queryKey: ["deviceProfiles"],
+    queryKey: ["deviceProfiles", page, pageSize],
     queryFn: async () => {
       const res = await fetch(
         `/api/devices/profiles?pageSize=${pageSize}&page=${page}&textSearch=${textSearch}`
@@ -40,12 +40,12 @@ export function useDeviceProfiles(
 }
 
 export function useAssetProfiles(
-  pageSize: number = 1,
   page: number = 0,
+  pageSize: number = 1,
   textSearch: string = ""
 ) {
   return useQuery({
-    queryKey: ["assetProfiles"],
+    queryKey: ["assetProfiles", page, pageSize],
     queryFn: async () => {
       const res = await fetch(
         `/api/assets/profiles?pageSize=${pageSize}&page=${page}&textSearch=${textSearch}`
@@ -169,9 +169,7 @@ export function useUpdateDevicesProfile(onProfileStored: () => void) {
   });
 }
 
-export function useDeleteDevicesProfile(
-  onDeletedProfile: () => void
-) {
+export function useDeleteDevicesProfile(onDeletedProfile: () => void) {
   return useMutation({
     mutationFn: async (profileId: string) => {
       const res = await fetch(`/api/devices/profiles/${profileId}`, {
@@ -235,12 +233,9 @@ export function useUpdateAssetsProfile(onProfileStored: () => void) {
   });
 }
 
-export function useDeleteAssetsProfile(
-  profileId: string,
-  onDeletedProfile: () => void
-) {
+export function useDeleteAssetsProfile(onDeletedProfile: () => void) {
   return useMutation({
-    mutationFn: async () => {
+    mutationFn: async (profileId: string) => {
       const res = await fetch(`/api/assets/profiles/${profileId}`, {
         method: "DELETE",
       });

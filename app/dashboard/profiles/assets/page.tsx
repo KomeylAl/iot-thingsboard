@@ -2,8 +2,6 @@
 
 import Popup from "@/components/Popup";
 import React, { useCallback, useState } from "react";
-import Table from "../../_components/Teble";
-import SearchBar from "@/components/SearchBar";
 import { BiPlus } from "react-icons/bi";
 import { useAssetProfiles, useDeleteAssetsProfile } from "@/hooks/useProfiles";
 import { PuffLoader } from "react-spinners";
@@ -12,27 +10,37 @@ import DeleteModal from "@/components/DeleteModal";
 import AddAssetProfileForm from "../../_components/AddAssetProfileForm";
 import { debounce } from "lodash";
 import Header from "@/components/Header";
+import { convertISOToJalali } from "@/utils/convert";
+import { useModal } from "@/hooks/useModal";
+import Table from "@/components/Table";
 
 const AssetProfiles = () => {
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
   const [searchText, setSearchText] = useState("");
-  const { data, isLoading, error, refetch } = useAssetProfiles(10, 0, searchText);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [id, setId] = useState("");
-  const [profile, setProfile] = useState<any>({});
-  const toggleMpdal = () => {
-    setIsModalOpen(!isModalOpen);
-  };
-
-  const { mutate: deleteProfile, isPending } = useDeleteAssetsProfile(
-    id,
-    () => {
-      setIsDeleteModalOpen(false);
-      refetch();
-    }
+  const { data, isLoading, error, refetch } = useAssetProfiles(
+    page,
+    pageSize,
+    searchText
   );
+
+  const [profileId, setProfileId] = useState<string>("");
+  const [profile, setProfile] = useState<any>({});
+
+  const { isOpen, openModal, closeModal } = useModal();
+
+  const {
+    isOpen: deleteOpen,
+    openModal: openDelete,
+    closeModal: closeDelete,
+  } = useModal();
+
+  const {
+    isOpen: editOpen,
+    openModal: openEdit,
+    closeModal: closeEdit,
+  } = useModal();
 
   const debouncedSearch = useCallback(
     debounce((text) => {
@@ -49,30 +57,34 @@ const AssetProfiles = () => {
   const columns = [
     { header: "نام", accessor: "name" },
     { header: "توضیحات", accessor: "description" },
-    { header: "زمان ایجاد", accessor: "createdTime" },
-    { header: "ویرایش", accessor: "editButton", type: "editButton" },
-    { header: "حذف", accessor: "deleteButton", type: "deleteButton" },
+    {
+      header: "زمان ایجاد",
+      accessor: (item: any) => convertISOToJalali(item.createdTime),
+    },
   ];
 
+  const { mutate: deleteProfile, isPending: isDeleting } =
+    useDeleteAssetsProfile(() => {
+      closeDelete();
+      refetch();
+    });
+
   return (
-    <div className="p-6 lg:p-20 w-full h-screen flex flex-col items-center justify-between gap-6">
-      <div className="w-full h-[15%] flex flex-col items-start justify-between">
-        <Header title="پروفایل دارایی ها" isShowSearch searchFn={onSearchChange}/>
-        <div className="flex items-center justify-end w-full">
+    <div className="w-full h-screen">
+      <Header isShowSearch searchFn={onSearchChange} />
+
+      <div className="w-full h-fullp-6 lg:p-12 space-y-6">
+        <div className="flex items-center justify-between w-full">
+          <h1 className="text-xl lg:text-2xl font-bold">پروفایل دارایی ها</h1>
           <button
-            onClick={toggleMpdal}
+            onClick={openModal}
             className="py-2 px-4 bg-blue-500 text-white rounded-lg flex items-center"
           >
             <BiPlus size={24} /> افزودن پروفایل جدید
           </button>
         </div>
-      </div>
-      <div className="w-full h-[85%]">
-        {error && (
-          <div className="w-full h-full flex items-center justify-center">
-            <p style={{ color: "red" }}>خطا در دریافت اطلاعات پروفایل ها</p>
-          </div>
-        )}
+
+        {error && <p>خطا در دریافت اطلاعات </p>}
 
         {isLoading && (
           <div className="w-full h-full flex items-center justify-center">
@@ -84,42 +96,47 @@ const AssetProfiles = () => {
           <Table
             columns={columns}
             data={data.data}
-            RPP={10}
-            clickableRows={false}
-            getRowLink={(row: any) => `/sysadmin/profiles/${row.id.id}`}
-            onDeleteClicked={(row: any) => {
-              setId(row.id.id);
-              setIsDeleteModalOpen(true);
+            pageSize={page}
+            totalItems={data.totalElements}
+            currentPage={page + 1}
+            onPageChange={(newPage) => setPage(newPage - 1)}
+            showActions
+            onEdit={(item: any) => {
+              setProfile(item);
+              openEdit();
             }}
-            onEditClicked={(row: any) => {
-              setProfile(row);
-              setIsEditModalOpen(true);
+            onDelete={(item: any) => {
+              setProfileId(item.id.id);
+              openDelete();
             }}
           />
         )}
       </div>
-      <Popup isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+
+      <Popup isOpen={isOpen} onClose={openModal}>
         <AddAssetProfileForm
-          onProfileEdited={() => {
-            setIsModalOpen(false);
+          onProfileAdded={() => {
+            closeModal();
             refetch();
           }}
         />
       </Popup>
-      <Popup isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}>
-        <EditAssetProfileForm
-          profileData={profile}
-          onProfileEdited={() => setIsEditModalOpen(false)}
+
+      <Popup isOpen={deleteOpen} onClose={closeDelete}>
+        <DeleteModal
+          deleteFunc={() => deleteProfile(profileId)}
+          isDeleting={isDeleting}
+          onCancel={closeDelete}
         />
       </Popup>
-      <Popup
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-      >
-        <DeleteModal
-          onCancel={() => setIsDeleteModalOpen(false)}
-          deleteFunc={() => deleteProfile()}
-          isDeleting={isPending}
+
+      <Popup isOpen={editOpen} onClose={closeEdit}>
+        <EditAssetProfileForm
+          profileData={profile}
+          onProfileEdited={() => {
+            closeEdit();
+            refetch();
+          }}
         />
       </Popup>
     </div>

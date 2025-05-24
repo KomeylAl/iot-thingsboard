@@ -30,7 +30,7 @@ interface AddDeviceProps {
 
 const AddDevice = ({ onDeviceAdded }: AddDeviceProps) => {
   const { data: userData, isLoading } = useUser();
-  const { data: profilesData } = useDeviceProfiles(100, 0);
+  const { data: profilesData } = useDeviceProfiles(0, 100);
   const { mutate: addDevice, isPending } = useAddDevice(() => {
     onDeviceAdded();
   });

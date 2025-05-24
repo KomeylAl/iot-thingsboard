@@ -1,11 +1,17 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
-export function useDevices(page: number = 0, pageSize: number = 1) {
+export function useDevices(
+  page: number = 0,
+  pageSize: number = 1,
+  textSearch: string = ""
+) {
   return useQuery({
-    queryKey: ["devices"],
+    queryKey: ["devices", page, pageSize],
     queryFn: async () => {
-      const res = await fetch(`/api/devices?page=${page}&pageSize=${pageSize}`);
+      const res = await fetch(
+        `/api/devices?page=${page}&pageSize=${pageSize}&textSearch=${textSearch}`
+      );
       if (!res.ok) {
         throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
       }
@@ -63,7 +69,9 @@ export function useTestDevice(deviceId: string, tenantId: string) {
   return useQuery({
     queryKey: ["testDevice"],
     queryFn: async () => {
-      const res = await fetch(`/api/devices/${deviceId}/test-telemtry?tenantId=${tenantId}`);
+      const res = await fetch(
+        `/api/devices/${deviceId}/test-telemtry?tenantId=${tenantId}`
+      );
       if (!res.ok) {
         throw new Error("مشکلی در ارسال اطلاعات پیش آمده!");
       }

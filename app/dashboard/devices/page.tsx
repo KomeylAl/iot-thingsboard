@@ -4,28 +4,36 @@ import Popup from "@/components/Popup";
 import React, { useCallback, useState } from "react";
 import { BiPlus } from "react-icons/bi";
 import AddDevice from "../_components/AddDevice";
-import Table from "@/app/dashboard/_components/Teble";
-import { useLocalDevices, useSearchDevices } from "@/hooks/useDevices";
+import {
+  useDevice,
+  useDevices,
+  useLocalDevices,
+  useSearchDevices,
+} from "@/hooks/useDevices";
 import { PuffLoader } from "react-spinners";
 import debounce from "lodash/debounce";
 import Header from "@/components/Header";
+import { useModal } from "@/hooks/useModal";
+import Table from "@/components/Table";
+import Link from "next/link";
+import { convertISOToJalali } from "@/utils/convert";
 
 const Devices = () => {
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
   const [searchText, setSearchText] = useState("");
 
-  const { data, isLoading, error, refetch } = useLocalDevices();
-  const {
-    data: searchData,
-    isLoading: searchLoading,
-    error: searchError,
-    refetch: search,
-  } = useSearchDevices(0, 10, searchText);
+  const { data, isLoading, error, refetch } = useDevices(
+    page,
+    pageSize,
+    searchText
+  );
 
   const debouncedSearch = useCallback(
     debounce((text) => {
-      search();
+      refetch();
     }, 300),
-    [search]
+    [refetch]
   );
 
   const onSearchChange = (e: any) => {
@@ -33,55 +41,67 @@ const Devices = () => {
     debouncedSearch(e.target.value);
   };
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const toggleMpdal = () => setIsModalOpen(!isModalOpen);
+  const { isOpen, openModal, closeModal } = useModal();
 
   const columns = [
-    { header: "نام", accessor: "name" },
+    {
+      header: "نام",
+      accessor: (item: any) => (
+        <Link
+          href={`/dashboard/devices/${item.id.id}`}
+          className="hover:text-blue-500"
+        >
+          {item.name}
+        </Link>
+      ),
+    },
     { header: "پروفایل", accessor: "type" },
     { header: "برچسب", accessor: "label" },
-    { header: "زمان ایجاد", accessor: "createdTime" },
+    {
+      header: "زمان ایجاد",
+      accessor: (item: any) => convertISOToJalali(item.createdTime),
+    },
   ];
 
   return (
-    <div className="p-6 lg:p-20 w-full h-screen flex flex-col items-center justify-between gap-6">
-      <div className="w-full h-[15%] flex flex-col items-start justify-between">
-        <Header title="دستگاه ها" isShowSearch searchFn={onSearchChange}/>
-        <div className="flex items-center justify-end w-full">
+    <div className="w-full h-screen">
+      <Header isShowSearch searchFn={onSearchChange} />
+
+      <div className="w-full h-fullp-6 lg:p-12 space-y-6">
+        <div className="flex items-center justify-between w-full">
+          <h1 className="text-xl lg:text-2xl font-bold">دستگاه ها</h1>
           <button
-            onClick={toggleMpdal}
+            onClick={openModal}
             className="py-2 px-4 bg-blue-500 text-white rounded-lg flex items-center"
           >
             <BiPlus size={24} /> افزودن دستگاه جدید
           </button>
         </div>
-      </div>
 
-      {error && <p>خطا در دریافت اطلاعات دستگاه ها</p>}
+        {error && <p>خطا در دریافت اطلاعات </p>}
 
-      {isLoading && (
-        <div className="w-full h-full flex items-center justify-center">
-          <PuffLoader color="#3b82f6" />
-        </div>
-      )}
+        {isLoading && (
+          <div className="w-full h-full flex items-center justify-center">
+            <PuffLoader color="#3b82f6" />
+          </div>
+        )}
 
-      {!data && !isLoading && <p>دستگاهی برای نمایش وجود ندارد!</p>}
-
-      {searchData && (
-        <div className="w-full h-[85%]">
+        {data && (
           <Table
             columns={columns}
-            data={searchData.data}
-            RPP={10}
-            getRowLink={(row: any) => `/dashboard/devices/${row.id.id}`}
+            data={data.data}
+            pageSize={pageSize}
+            totalItems={data.totalElements}
+            currentPage={page + 1}
+            onPageChange={(newPage) => setPage(newPage - 1)}
           />
-        </div>
-      )}
+        )}
+      </div>
 
-      <Popup isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+      <Popup isOpen={isOpen} onClose={closeModal}>
         <AddDevice
           onDeviceAdded={() => {
-            setIsModalOpen(false);
+            closeModal();
             refetch();
           }}
         />

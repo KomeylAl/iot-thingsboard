@@ -7,11 +7,11 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { BiArrowToRight, BiMenu } from "react-icons/bi";
-import { useUser } from "@/hooks/useUser";
 import Image from "next/image";
+import { useUser } from "@/context/UserContext";
 
 const SideBar = () => {
-  const { data, isLoading, error } = useUser();
+  const { user, logout } = useUser();
 
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -29,6 +29,18 @@ const SideBar = () => {
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
+  const userName = () => {
+    let name: string = "";
+    if (!user) {
+      name = "name";
+    } else {
+      if (user.firstName && !user.lastName) name = user.firstName;
+      if (user.lastName && !user.firstName) name = user.lastName;
+      if (!user.firstName && !user.lastName) name = user.name;
+    }
+    return name;
+  };
+
   return (
     <div>
       <div className="fixed top-7 right-7 z-0 p-2 bg-white rounded-md flex items-center">
@@ -36,20 +48,11 @@ const SideBar = () => {
           <BiMenu size={30} />
         </button>
       </div>
-      <div className="w-56 h-screen rounded-bl-3xl rounded-tl-3xl bg-white hidden lg:flex flex-col items-center justify-between shadow-lg fixed py-10">
+      <div className="w-56 h-screen bg-white hidden lg:flex flex-col items-center justify-between fixed py-10 border-l border-gray-300">
         <div>
           <Image src="/images/lotos.png" alt="lotos" width={100} height={100} />
           <div className="flex items-center justify-center gap-2 mt-5">
-            {error && <p>unknown user</p>}
-            {isLoading && <p>...</p>}
-            {data && (
-              <p>
-                {!data.data.firstName && !data.data.lastName
-                  ? "name"
-                  : data.data.firstName}{" "}
-                {data.data.lastName}
-              </p>
-            )}
+            <p>{userName()}</p>
           </div>
         </div>
         <NavBar />
@@ -73,16 +76,7 @@ const SideBar = () => {
         <div>
           <Image src="/images/lotos.png" alt="lotos" width={100} height={100} />
           <div className="flex items-center gap-2">
-            {error && <p>unknown user</p>}
-            {isLoading && <p>...</p>}
-            {data && (
-              <p>
-                {!data.data.firstName && !data.data.lastName
-                  ? "name"
-                  : data.data.firstName}{" "}
-                {data.data.lastName}
-              </p>
-            )}
+            <p>{userName()}</p>
           </div>
         </div>
         <NavBar />
