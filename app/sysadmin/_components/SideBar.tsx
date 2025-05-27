@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { IoExit } from "react-icons/io5";
-import NavBar from "./NavBar";
+import NavBar from "../../../components/AdminNavBar";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";

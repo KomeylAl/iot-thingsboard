@@ -11,6 +11,7 @@ import Header from "@/components/Header";
 import { debounce } from "lodash";
 import Link from "next/link";
 import { useModal } from "@/hooks/useModal";
+import { convertISOToJalali } from "@/utils/convert";
 
 const columns = [
   {
@@ -26,7 +27,7 @@ const columns = [
   },
   { header: "ایمیل", accessor: "email" },
   { header: "تلفن", accessor: "phone" },
-  { header: "زمان ایجاد", accessor: "createdTime" },
+  { header: "زمان ایجاد", accessor: (item: any) => convertISOToJalali(item.createdTime) },
 ];
 
 const Tenants = () => {

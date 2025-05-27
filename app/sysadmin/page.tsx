@@ -45,7 +45,7 @@ const AdminDashboard = () => {
           {/* بخش بالا */}
           <div className="flex-1 flex flex-col lg:flex-row gap-5 overflow-hidden">
             <div className="flex flex-col w-full lg:w-[50%] gap-5">
-              <div className="w-full flex-1 bg-white rounded-lg p-4 flex items-center justify-between relative overflow-hidden">
+              <div className="w-full flex-1 bg-white dark:bg-gray-700 rounded-lg p-4 flex items-center justify-between relative overflow-hidden">
                 <div className="absolute top-1 lg:top-6 left-5 w-20 h-20 bg-sky-500 rounded-full filter blur-2xl" />
 
                 {tenantsError && <p>خطا در دریافت اطلاعات سازمان ها</p>}
@@ -75,7 +75,7 @@ const AdminDashboard = () => {
                   className="w-24 h-24 object-cover"
                 />
               </div>
-              <div className="w-full flex-1 bg-white rounded-lg p-4 flex items-center justify-between relative overflow-hidden">
+              <div className="w-full flex-1 bg-white dark:bg-gray-700 rounded-lg p-4 flex items-center justify-between relative overflow-hidden">
                 <div className="absolute top-1 lg:top-6 left-5 w-20 h-20 bg-amber-500 rounded-full filter blur-2xl" />
                 {profilesError && <p>خطا در دریافت اطلاعات پروفایل ها</p>}
 

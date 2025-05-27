@@ -55,7 +55,7 @@ const SystemInfo = () => {
   return (
     <>
       {/* بخش پایین */}
-      <div className="w-full flex-1 bg-white rounded-lg p-8 flex flex-col gap-3 overflow-auto">
+      <div className="w-full flex-1 bg-white dark:bg-gray-700 rounded-lg p-8 flex flex-col gap-3 overflow-auto">
         {systemInfo.cpuUsage !== 0 && (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             <div className="border border-gray-200 rounded-lg flex flex-col items-start gap-2 p-2">

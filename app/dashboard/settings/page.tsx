@@ -31,7 +31,7 @@ const DashboardSettings = () => {
         <div className="w-full">
           <h2>همگام سازی</h2>
           <div className="w-full md:w-[50%] h-full flex flex-col gap-3 mt-4">
-            <div className="w-full p-3 bg-white rounded-md flex items-center justify-between">
+            <div className="w-full p-3 bg-white dark:bg-gray-700 rounded-md flex items-center justify-between">
               <p>همگام سازی اطلاعات مشتریان</p>
               <button
                 onClick={() => {
@@ -46,7 +46,7 @@ const DashboardSettings = () => {
                 )}
               </button>
             </div>
-            <div className="w-full p-3 bg-white rounded-md flex items-center justify-between">
+            <div className="w-full p-3 bg-white dark:bg-gray-700 rounded-md flex items-center justify-between">
               <p>همگام سازی اطلاعات دستگاه ها</p>
               <button
                 onClick={() => {
@@ -61,7 +61,7 @@ const DashboardSettings = () => {
                 )}
               </button>
             </div>
-            <div className="w-full p-3 bg-white rounded-md flex items-center justify-between">
+            <div className="w-full p-3 bg-white dark:bg-gray-700 rounded-md flex items-center justify-between">
               <p>همگام سازی اطلاعات دارایی ها</p>
               <button
                 onClick={() => {

@@ -50,12 +50,12 @@ export default function Home() {
         <div className="flex items-center justify-between w-full">
           <h1 className="text-xl lg:text-2xl font-bold">داشبورد سازمان</h1>
           <div className="flex items-center gap-2">
-            <div className="py-2 px-6 rounded-md bg-white text-blue-600 shadow-md">
+            <div className="py-2 px-6 rounded-md bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-300 shadow-md">
               افزودن دستگاه
             </div>
             <button
               onClick={toggleMpdal}
-              className="bg-white py-2 px-2 rounded-md text-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-300 shadow-md"
+              className="bg-white dark:bg-gray-700 py-2 px-2 rounded-md text-blue-600 dark:text-blue-300 hover:bg-blue-600 hover:text-white transition-all duration-300 shadow-md"
             >
               <BiPlus size={24} />
             </button>
@@ -69,7 +69,7 @@ export default function Home() {
               {/* اطلاعات دستگاه و دارایی */}
               <div className="flex flex-col w-full lg:w-[50%] gap-6">
                 {/* کارت تعداد دستگاه‌ها */}
-                <div className="relative h-full bg-white rounded-lg p-4 shadow-md flex items-center justify-between overflow-hidden">
+                <div className="relative h-full bg-white dark:bg-gray-700 rounded-lg p-4 shadow-md flex items-center justify-between overflow-hidden">
                   <div className="absolute top-3 left-5 w-16 h-16 bg-sky-500 rounded-full blur-2xl opacity-90" />
                   {devicesError && <p>خطا در دریافت اطلاعات دستگاه ها</p>}
                   {devicesLoading ? (
@@ -94,7 +94,7 @@ export default function Home() {
                 </div>
 
                 {/* کارت تعداد دارایی‌ها */}
-                <div className="relative h-full bg-white rounded-lg p-4 shadow-md flex items-center justify-between overflow-hidden">
+                <div className="relative h-full bg-white dark:bg-gray-700 rounded-lg p-4 shadow-md flex items-center justify-between overflow-hidden">
                   <div className="absolute top-3 left-5 w-16 h-16 bg-amber-500 rounded-full blur-2xl opacity-90" />
                   {assetsError && <p>خطا در دریافت اطلاعات دارایی‌ها</p>}
                   {assetsLoading ? (
@@ -120,7 +120,7 @@ export default function Home() {
               </div>
 
               {/* نمودار یا اطلاعات اضافه */}
-              <div className="w-full lg:w-[50%] min-h-[18rem] bg-white rounded-lg shadow-md p-4 flex flex-col gap-4">
+              <div className="w-full lg:w-[50%] min-h-[18rem] bg-white dark:bg-gray-700 rounded-lg shadow-md p-4 flex flex-col gap-4">
                 {/* اینجا می‌توان نمودار یا محتوای دیگری اضافه کرد */}
                 <p className="text-lg">هشدار ها</p>
                 <div className="w-full flex-1 flex flex-col items-center gap-3">
@@ -139,7 +139,7 @@ export default function Home() {
             </div>
 
             {/* بخش گسترده‌تر */}
-            <div className="w-full h-full bg-white rounded-lg shadow-md p-4 flex flex-col gap-5 pb-20">
+            <div className="w-full h-full bg-white dark:bg-gray-700 rounded-lg shadow-md p-4 flex flex-col gap-5 pb-20">
               <MainRequestsChart
                 deviceId={deviceId}
                 selectFn={(value: any) => {
@@ -151,7 +151,7 @@ export default function Home() {
           </div>
 
           {/* پنل کناری */}
-          <div className="w-full lg:w-[35%] min-h-[20rem] bg-white rounded-lg shadow-md p-4">
+          <div className="w-full lg:w-[35%] min-h-[20rem] bg-white dark:bg-gray-700 rounded-lg shadow-md p-4">
             <MainRequestList
               deviceId={deviceId}
               selectFn={(value: any) => setDeviceId(value)}

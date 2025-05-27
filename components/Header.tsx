@@ -1,11 +1,5 @@
 "use client";
 
-import React, { useState } from "react";
-import { useUnreadNotifsCount } from "@/hooks/useNotifs";
-import NotifIcon from "./NotifIcon";
-import { PiMoonThin } from "react-icons/pi";
-import { PiSunDimLight } from "react-icons/pi";
-import { IoPersonOutline } from "react-icons/io5";
 import Input from "./ui/custom/Input";
 import { CgMenuRightAlt } from "react-icons/cg";
 import UserDropdown from "./UserDropDown";
@@ -20,7 +14,7 @@ interface HeaderProps {
 
 const Header = ({ isShowSearch, searchFn }: HeaderProps) => {
   return (
-    <div className="w-full h-20 p-6 border-b border-gray-300 flex items-center justify-between bg-white">
+    <div className="w-full h-20 p-6 border-b border-gray-300 flex items-center justify-between bg-white dark:bg-gray-900 dark:border-gray-700">
       <div className="w-full flex items-center gap-3">
         <div className="flex items-center justify-center p-2 border rounded-sm">
           <CgMenuRightAlt

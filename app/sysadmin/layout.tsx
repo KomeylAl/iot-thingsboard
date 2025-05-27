@@ -1,11 +1,11 @@
 import React from "react";
 import "@/app/globals.css";
 import { Toaster } from "react-hot-toast";
-import SideBar from "./_components/SideBar";
 import Providers from "./providers";
 import { Metadata } from "next";
 import { UserProvider } from "@/context/UserContext";
 import { ThemeProvider } from "@/context/ThemeContext";
+import SideBar from "@/components/SideBar";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 export default function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <html lang="fa">
-      <body className="bg-gray-100">
+      <body className="bg-gray-100 dark:bg-gray-900">
         <Toaster />
         <Providers>
           <UserProvider>

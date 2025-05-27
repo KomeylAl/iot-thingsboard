@@ -35,7 +35,7 @@ const EntitiesSection = () => {
       {/* بخش راست */}
       <div className="flex-1 flex flex-col lg:flex-row gap-5">
         <div className="flex-1 flex flex-col gap-5">
-          <div className="flex-1 rounded-lg bg-white flex items-center justify-center">
+          <div className="flex-1 rounded-lg bg-white dark:bg-gray-700 flex items-center justify-center">
             {devicesError && <p>خطا در دریافت اطلاعات دستگاه ها</p>}
 
             {devicesLoading && (
@@ -51,7 +51,7 @@ const EntitiesSection = () => {
               </div>
             )}
           </div>
-          <div className="flex-1 rounded-lg bg-white flex items-center justify-center">
+          <div className="flex-1 rounded-lg bg-white dark:bg-gray-700 flex items-center justify-center">
             {usersError && <p>خطا در دریافت اطلاعات کاربران</p>}
 
             {usersLoading && (
@@ -69,7 +69,7 @@ const EntitiesSection = () => {
           </div>
         </div>
         <div className="flex-1 flex flex-col gap-5">
-          <div className="flex-1 rounded-lg bg-white flex items-center justify-center">
+          <div className="flex-1 rounded-lg bg-white dark:bg-gray-700 flex items-center justify-center">
             {assetsError && <p>خطا در دریافت اطلاعات دارایی ها</p>}
 
             {assetsLoading && (
@@ -85,7 +85,7 @@ const EntitiesSection = () => {
               </div>
             )}
           </div>
-          <div className="flex-1 rounded-lg bg-white flex items-center justify-center">
+          <div className="flex-1 rounded-lg bg-white dark:bg-gray-700 flex items-center justify-center">
             {customersError && <p>خطا در دریافت اطلاعات مشتریان</p>}
 
             {customersLoading && (

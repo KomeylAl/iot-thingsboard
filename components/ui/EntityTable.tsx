@@ -23,6 +23,9 @@ const EntityTable = ({
   pageSize = 10,
   onPageChange,
 }: EntityTableProps) => {
+
+  console.log(data);
+
   return (
     <div>
       {error && <p>خطا در دریافت اطلاعات </p>}

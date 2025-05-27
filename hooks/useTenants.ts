@@ -86,3 +86,64 @@ export function useUpdateTenant(onTenantUpdated: () => void) {
     },
   });
 }
+
+export function useTenantUsers(
+  tenantId: string,
+  pageSize: number = 1,
+  page: number = 0
+) {
+  return useQuery({
+    queryKey: ["tenantUsers"],
+    queryFn: async () => {
+      const res = await fetch(
+        `/api/sysadmin/tenants/${tenantId}/users?pageSize=${pageSize}&page=${page}`
+      );
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
+      }
+      const data = await res.json();
+      return data;
+    },
+  });
+}
+
+export function useTenantAlarms(
+  tenantId: string,
+  pageSize: number = 1,
+  page: number = 0
+) {
+  return useQuery({
+    queryKey: ["tenantAlarms"],
+    queryFn: async () => {
+      const res = await fetch(
+        `/api/sysadmin/tenants/${tenantId}/alarms?pageSize=${pageSize}&page=${page}`
+      );
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
+      }
+      return res.json();
+    },
+  });
+}
+
+export function useTenantAudits(
+  tenantId: string,
+  pageSize: number = 1,
+  page: number = 0
+) {
+  return useQuery({
+    queryKey: ["tenantAudits"],
+    queryFn: async () => {
+      const res = await fetch(
+        `/api/sysadmin/tenants/${tenantId}/audits?pageSize=${pageSize}&page=${page}`
+      );
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
+      }
+      return res.json();
+    },
+  });
+}

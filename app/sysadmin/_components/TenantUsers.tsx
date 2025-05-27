@@ -9,13 +9,14 @@ import { BiPlus } from "react-icons/bi";
 import { PuffLoader } from "react-spinners";
 import AddUserForm from "./AddUserForm";
 import { useModal } from "@/hooks/useModal";
+import { useTenantUsers } from "@/hooks/useTenants";
 
 interface TenantUsersProps {
   tenantId: string;
 }
 
 const TenantUsers = ({ tenantId }: TenantUsersProps) => {
-  const { data, isLoading, error, refetch } = useLocalTenantsUsers(tenantId);
+  const { data, isLoading, error, refetch } = useTenantUsers(tenantId, 10, 0);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const toggleModal = () => setIsModalOpen(!isModalOpen);

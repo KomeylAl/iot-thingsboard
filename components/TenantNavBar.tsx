@@ -4,41 +4,59 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
 
+import { MdSpaceDashboard } from "react-icons/md";
+import { FaBoxOpen } from "react-icons/fa";
+import { RiDeviceFill } from "react-icons/ri";
+import { RiBuilding3Fill } from "react-icons/ri";
+import { AiFillProfile } from "react-icons/ai";
+import { IoNotifications } from "react-icons/io5";
+import { RiAlarmFill } from "react-icons/ri";
+import { GiChaingun } from "react-icons/gi";
+import { IoSettings } from "react-icons/io5";
+import { MdPeopleAlt } from "react-icons/md";
+
 const links = [
   {
     id: "dashboard",
     title: "داشبورد",
     href: "/dashboard",
+    icon: <MdSpaceDashboard size={20}/>
   },
   {
     id: "entities",
     title: "موجودیت ها",
+    icon: <FaBoxOpen size={20}/>,
     subItems: [
       {
         id: "devices",
         title: "دستگاه ها",
         href: "/dashboard/devices",
+        icon: <RiDeviceFill size={20}/>,
       },
       {
         id: "assets",
         title: "دارایی ها",
         href: "/dashboard/assets",
+        icon: <RiBuilding3Fill size={20}/>,
       },
     ],
   },
   {
     id: "profiles",
     title: "پروفایل ها",
+    icon: <AiFillProfile size={20}/>,
     subItems: [
       {
         id: "devices-profiles",
         title: "پروفایل دستگاه ها",
         href: "/dashboard/profiles/devices",
+        icon: <RiDeviceFill size={20}/>,
       },
       {
         id: "assets-profiles",
         title: "پروفایل دارایی ها",
         href: "/dashboard/profiles/assets",
+        icon: <RiBuilding3Fill size={20}/>,
       },
     ],
   },
@@ -46,30 +64,35 @@ const links = [
     id: "customers",
     title: "مشتریان",
     href: "/dashboard/customers",
+    icon: <MdPeopleAlt size={20}/>,
   },
   {
     id: "notifications",
     title: "اعلانات",
     href: "/dashboard/notifications",
+    icon: <IoNotifications size={20}/>,
   },
   {
     id: "alarms",
     title: "هشدار ها",
     href: "/dashboard/alarms",
+    icon: <RiAlarmFill size={20}/>,
   },
   {
     id: "rule-chains",
     title: "زنجیره قواعد",
     href: "/dashboard/rule-chains",
+    icon: <GiChaingun size={20}/>,
   },
   {
     id: "settings",
     title: "تنظیمات",
     href: "/dashboard/settings",
+    icon: <IoSettings size={20}/>,
   },
 ];
 
-const NavBar = () => {
+const TenantNavBar = () => {
   const pathName = usePathname();
   const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
 
@@ -93,9 +116,9 @@ const NavBar = () => {
           }`}
         >
           {item.href ? (
-            <Link href={item.href}>{item.title}</Link>
+            <Link className="flex items-center gap-3" href={item.href}>{item.icon} {item.title}</Link>
           ) : (
-            <p className="cursor-pointer">{item.title}</p>
+            <p className="cursor-pointer flex items-center gap-3">{item.icon} {item.title}</p>
           )}
           {item.subItems && (
             <ul
@@ -115,7 +138,7 @@ const NavBar = () => {
                   key={subItem.id}
                 >
                   <li className="text-sm font-semibold pr-2">
-                    <Link href={subItem.href}>{subItem.title}</Link>
+                    <Link className="flex items-center gap-3" href={subItem.href}>{subItem.icon} {subItem.title}</Link>
                   </li>
                 </div>
               ))}
@@ -127,4 +150,4 @@ const NavBar = () => {
   );
 };
 
-export default NavBar;
+export default TenantNavBar;

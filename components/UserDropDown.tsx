@@ -38,13 +38,13 @@ export default function UserDropdown() {
         onClick={toggleDropdown}
         className="w-12 h-12 dropdown-toggle relative flex items-center justify-center text-gray-500 transition-colors bg-white border border-gray-200 rounded-full hover:text-dark-900 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
       >
-        <IoPersonOutline className="text-gray-500 dark:text-white" size={18} />
+        <IoPersonOutline className="" size={18} />
       </button>
 
       <Dropdown
         isOpen={isOpen}
         onClose={closeDropdown}
-        className="absolute left-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark shadow-lg"
+        className="absolute left-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white dark:bg-gray-700 p-3 shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark shadow-lg"
       >
         <div>
           <span className="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">

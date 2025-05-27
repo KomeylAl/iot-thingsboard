@@ -68,8 +68,8 @@ function Table<T>({
           className={cn(
             "px-4 py-1 rounded-md text-lg",
             currentPage === page
-              ? "bg-indigo-100 text-blue-600"
-              : "text-gray-700 hover:bg-gray-200"
+              ? "bg-indigo-100 dark:bg-gray-900 dark:text-white text-blue-600"
+              : "text-gray-700 dark:text-gray-500 dark:hover:bg-gray-900 hover:bg-gray-200"
           )}
         >
           {page}
@@ -110,7 +110,7 @@ function Table<T>({
                   className={`px-6 py-4 text-sm text-right ${
                     col.cellClassName
                       ? col.cellClassName(row)
-                      : "text-gray-800 dark:text-shelfish"
+                      : "text-gray-800 dark:text-white"
                   }`}
                 >
                   {typeof col.accessor === "function"
@@ -138,7 +138,7 @@ function Table<T>({
       </table>
 
       {totalPages > 1 && (
-        <div className="w-full flex items-center justify-between px-4 bg-white py-6">
+        <div className="w-full flex items-center justify-between px-4 bg-white dark:bg-gray-800 py-6">
           <Button
             variant="outline"
             size="lg"

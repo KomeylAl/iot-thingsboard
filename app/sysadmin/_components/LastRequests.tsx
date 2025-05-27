@@ -26,7 +26,7 @@ const LastRequests = () => {
       {data && (
         <div className="space-y-3">
           {data.map((item: any, index: any) => (
-            <div key={index} className="w-full bg-white rounded-md p-3 flex items-center justify-between">
+            <div key={index} className="w-full bg-white dark:bg-gray-700 rounded-md p-3 flex items-center justify-between">
               <p className="text-blue-500">{index + 1}</p>
               <p>{item.tenant.name}</p>
               <p>{item.device.name}</p>

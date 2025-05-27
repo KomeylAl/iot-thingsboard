@@ -57,7 +57,7 @@ const Settings = () => {
         <div className="w-full">
           <h2>همگام سازی</h2>
           <div className="w-full h-full flex gap-3 mt-4">
-            <div className="w-full p-3 bg-white rounded-md flex items-center justify-between">
+            <div className="w-full p-3 bg-white dark:bg-gray-700 rounded-md flex items-center justify-between">
               <p>همگام سازی اطلاعات سازمان ها</p>
               <button
                 onClick={() => {
@@ -73,7 +73,7 @@ const Settings = () => {
                 )}
               </button>
             </div>
-            <div className="w-full p-3 bg-white rounded-md flex items-center justify-between">
+            <div className="w-full p-3 bg-white dark:bg-gray-700 rounded-md flex items-center justify-between">
               <p>همگام سازی اطلاعات پروفایل ها</p>
               <button
                 onClick={() => {

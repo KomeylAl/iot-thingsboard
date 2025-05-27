@@ -4,7 +4,7 @@ import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import ReactSelect from "react-select";
-import { useAssetProfiles, useTenantProfiles } from "@/hooks/useProfiles";
+import { useAssetProfiles } from "@/hooks/useProfiles";
 import { useAddAsset } from "@/hooks/useAssets";
 
 const schema = yup.object({

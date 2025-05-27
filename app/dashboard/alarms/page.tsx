@@ -46,7 +46,7 @@ const Alarms = () => {
       <Header isShowSearch searchFn={onSearchChange} />
 
       <div className="w-full h-fullp-6 lg:p-12 space-y-6">
-        <h1 className="text-xl lg:text-2xl font-bold">اعلانات</h1>
+        <h1 className="text-xl lg:text-2xl font-bold">هشدار ها</h1>
 
         {error && <p>خطا در دریافت اطلاعات هشدار ها</p>}
 

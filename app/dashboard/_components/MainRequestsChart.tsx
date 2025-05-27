@@ -43,7 +43,8 @@ const MainRequestsChart = ({
       />
       <Select
         placeholder="انتخاب کلید"
-        className="w-full"
+        className="w-full dark:bg-gray-800"
+        classNamePrefix='bg-gray-900'
       />
       </div>
       <div className="w-full h-full flex items-center justify-center">
