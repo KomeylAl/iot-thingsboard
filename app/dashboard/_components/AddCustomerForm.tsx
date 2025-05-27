@@ -66,7 +66,7 @@ const AddCustomerForm = ({ onCustomerAdded }: AddCustomerProps) => {
       >
         <input
           {...register("title")}
-          className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
+          className="bg-gray-100 dark:bg-gray-800 p-3 w-full rounded-lg border border-gray-200"
           placeholder="عنوان*"
         />
         {errors.title && (
@@ -75,49 +75,49 @@ const AddCustomerForm = ({ onCustomerAdded }: AddCustomerProps) => {
 
         <input
           {...register("country")}
-          className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
+          className="bg-gray-100 dark:bg-gray-800 p-3 w-full rounded-lg border border-gray-200"
           placeholder="کشور"
         />
 
         <div className="w-full flex items-center gap-3">
           <input
             {...register("city")}
-            className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
+            className="bg-gray-100 dark:bg-gray-800 p-3 w-full rounded-lg border border-gray-200"
             placeholder="شهر"
           />
           <input
             {...register("state")}
-            className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
+            className="bg-gray-100 dark:bg-gray-800 p-3 w-full rounded-lg border border-gray-200"
             placeholder="استان"
           />
           <input
             {...register("zip")}
-            className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
+            className="bg-gray-100 dark:bg-gray-800 p-3 w-full rounded-lg border border-gray-200"
             placeholder="کد پستی"
           />
         </div>
 
         <input
           {...register("address")}
-          className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
+          className="bg-gray-100 dark:bg-gray-800 p-3 w-full rounded-lg border border-gray-200"
           placeholder="نشانی"
         />
 
         <input
           {...register("address2")}
-          className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
+          className="bg-gray-100 dark:bg-gray-800 p-3 w-full rounded-lg border border-gray-200"
           placeholder="نشانی 2"
         />
 
         <input
           {...register("phone")}
-          className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
+          className="bg-gray-100 dark:bg-gray-800 p-3 w-full rounded-lg border border-gray-200"
           placeholder="تلفن"
         />
 
         <input
           {...register("email")}
-          className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
+          className="bg-gray-100 dark:bg-gray-800 p-3 w-full rounded-lg border border-gray-200"
           placeholder="ایمیل"
         />
         {errors.email && (
@@ -126,7 +126,7 @@ const AddCustomerForm = ({ onCustomerAdded }: AddCustomerProps) => {
 
         <textarea
           {...register("additionalInfo.description")}
-          className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
+          className="bg-gray-100 dark:bg-gray-800 p-3 w-full rounded-lg border border-gray-200"
           placeholder="توضیحات"
         />
 

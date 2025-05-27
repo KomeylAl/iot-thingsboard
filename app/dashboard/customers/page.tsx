@@ -92,7 +92,7 @@ const Customers = () => {
         )}
       </div>
 
-      <Popup isOpen={isOpen} onClose={openModal}>
+      <Popup isOpen={isOpen} onClose={closeModal}>
         <AddCustomerForm
           onCustomerAdded={() => {
             closeModal();

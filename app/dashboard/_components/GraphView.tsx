@@ -26,7 +26,6 @@ import {
   useRuleChainMetadata,
   useUpdateRuleChainMetadata,
 } from "@/hooks/useRuleChains";
-import { RuleNode } from "@/lib/types";
 import { NodeType, nodeTypeConfigs } from "./ui/form/nodeTypes";
 import ContextMenu from "./ContextMenu";
 import { GoPlus } from "react-icons/go";
@@ -34,6 +33,7 @@ import { IoHelpSharp } from "react-icons/io5";
 import { IoCheckmarkOutline } from "react-icons/io5";
 import { useModal } from "@/hooks/useModal";
 import { PuffLoader } from "react-spinners";
+import { Modal } from "@/components/Modal";
 
 const initialNodes: Node[] = [
   {
@@ -134,6 +134,7 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
             label: node.name,
             raw: node,
           },
+          className: "bg-white dark:bg-gray-600 dark:text-white"
         })),
       ];
 
@@ -293,7 +294,7 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
       ruleChainConnections: finalJson.ruleChainConnections,
     };
     console.log(finalData);
-    // saveMetadata(finalData);
+    saveMetadata(finalData);
   };
 
   const { isOpen, openModal, closeModal } = useModal();
@@ -310,7 +311,7 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
 
   return (
     <div className="w-full h-full relative" ref={ref}>
-      <div className="w-full flex items-center gap-4 h-20 absolute pr-6">
+      <div className="w-full flex items-center gap-4 h-20 absolute pr-6 z-[500]">
         <button
           onClick={openModal}
           className="w-12 h-12 rounded-full flex items-center justify-center z-10 top-2 left-2 bg-blue-500 text-white"
@@ -367,8 +368,8 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
       >
         <ChangeRuleChainForm onSubmit={handleAddNode} />
       </Popup>
-      <Popup isOpen={isOpen} onClose={closeModal}>
-        <div className="w-full rounded-md bg-white p-4 flex flex-col items-start space-y-4">
+      <Modal isOpen={isOpen} onClose={closeModal} showCloseButton={true} className="max-w-[700px]">
+      <div className="w-full rounded-md bg-white dark:bg-gray-700 p-4 flex flex-col items-start space-y-4 pt-20 pr-8">
           <h2 className="text-lg font-semibold">
             راهنمای استفاده از گراف زنجیره قواعد:
           </h2>
@@ -382,7 +383,7 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
           </p>
           <p>5- نود شروع غیر قابل حذف یا ویرایش می باشد.</p>
         </div>
-      </Popup>
+      </Modal>
       <Popup isOpen={edgeOpen} onClose={closeEdge}>
         <div className="min-w-[600px] rounded-md bg-white p-4 flex flex-col items-start space-y-4">
           <h2 className="text-lg font-semibold">ویرایش یا حذف اتصال</h2>

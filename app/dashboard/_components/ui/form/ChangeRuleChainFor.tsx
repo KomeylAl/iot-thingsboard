@@ -18,7 +18,7 @@ export default function ChangeRuleChainForm({
       <select
         value={nodeType}
         onChange={(e) => setNodeType(e.target.value as NodeType)}
-        className="border p-2 rounded w-full"
+        className="border p-2 rounded w-full dark:bg-gray-800 no-scrollbar"
       >
         {Object.entries(nodeTypeConfigs).filter((node: any) => node.label !== "Start Node").map(([key, value]) => value.label !== "Start Node" && (
           <option key={key} value={key}>
