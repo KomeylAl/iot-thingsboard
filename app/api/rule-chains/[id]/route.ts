@@ -77,6 +77,8 @@ export async function POST(req: NextRequest) {
     );
 
     if (!response.ok) {
+      const data = await response.json();
+      console.log(data);
       return NextResponse.json(
         { message: "Error updating ruleChain" },
         { status: response.status }
@@ -87,7 +89,8 @@ export async function POST(req: NextRequest) {
       { message: "RuleChain updated successfully" },
       { status: 200 }
     );
-  } catch (error) {
+  } catch (error: any) {
+    console.log(error.message)
     return NextResponse.json(
       { message: "Something went wrong" },
       { status: 500 }

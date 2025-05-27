@@ -13,6 +13,7 @@ import Header from "@/components/Header";
 import { useModal } from "@/hooks/useModal";
 import { convertISOToJalali } from "@/utils/convert";
 import Table from "@/components/Table";
+import Link from "next/link";
 
 const RuleChains = () => {
   const [page, setPage] = useState(0);
@@ -59,7 +60,17 @@ const RuleChains = () => {
   };
 
   const columns = [
-    { header: "نام", accessor: "name" },
+    {
+      header: "نام",
+      accessor: (item: any) => (
+        <Link
+          href={`/dashboard/rule-chains/${item.id.id}`}
+          className="hover:text-blue-500"
+        >
+          {item.name}
+        </Link>
+      ),
+    },
     { header: "نوع", accessor: "type" },
     {
       header: "زمان ایجاد",

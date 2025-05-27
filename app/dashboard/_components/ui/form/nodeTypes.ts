@@ -46,6 +46,7 @@ export const nodeTypeConfigs: Record<NodeType, NodeConfig> = {
     label: "Alarm status",
     fields: [
       { name: "defaultTTL", label: "Default TTL", type: "number", default: 0 },
+      { name: "ACTIVE_ACK", label: "تصدیق شده فعال", type: "boolean", default: true },
     ],
     relations: [
       { name: "Failure", label: "Failure" },

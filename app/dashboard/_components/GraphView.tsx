@@ -105,7 +105,7 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
 
   const { data: metadata } = useRuleChainMetadata(ruleChainId);
   // console.log(metadata)
-  console.log("Nodes" + nodes);
+  // console.log(metadata);
 
   useEffect(() => {
     const fetchAndParse = async () => {
@@ -125,7 +125,7 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
         },
         ...metadata.nodes.map((node: any) => ({
           id: node.id.id,
-          type: "default",
+          type: node.type,
           position: {
             x: node.additionalInfo?.layoutX || 0,
             y: node.additionalInfo?.layoutY || 0,
@@ -137,26 +137,40 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
         })),
       ];
 
-      const parsedEdges = metadata.connections !== null ? [
-        metadata.firstNodeIndex !== null && {
+      const parsedEdges = [];
+
+      if (metadata.firstNodeIndex !== null) {
+        parsedEdges.push({
           id: `e-start-node`,
           source: "start-node",
           target: metadata.nodes[metadata.firstNodeIndex].id.id,
           type: "floating",
           animated: true,
           label: "",
-        },
-        ...metadata.connections.map((conn: any) => ({
-          id: `e${metadata.nodes[conn.fromIndex].id.id}-${
-            metadata.nodes[conn.toIndex].id.id
-          }`,
-          source: metadata.nodes[conn.fromIndex].id.id,
-          target: metadata.nodes[conn.toIndex].id.id,
+        });
+      }
+
+      const connectionMap = new Map<string, string[]>();
+
+      metadata.connections?.forEach((conn: any) => {
+        const key = `${conn.fromIndex}-${conn.toIndex}`;
+        if (!connectionMap.has(key)) {
+          connectionMap.set(key, []);
+        }
+        connectionMap.get(key)!.push(conn.type);
+      });
+
+      connectionMap.forEach((labels, key) => {
+        const [fromIndex, toIndex] = key.split("-").map(Number);
+        parsedEdges.push({
+          id: `e${metadata.nodes[fromIndex].id.id}-${metadata.nodes[toIndex].id.id}`,
+          source: metadata.nodes[fromIndex].id.id,
+          target: metadata.nodes[toIndex].id.id,
           type: "floating",
           animated: true,
-          label: conn.type,
-        })),
-      ] : [];
+          label: labels.join(" | "),
+        });
+      });
 
       setNodes(parsedNodes);
       setEdges(parsedEdges);
@@ -182,16 +196,15 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
       //   return;
       // }
 
-      console.log(from);
+      // console.log(nodes);
 
-      const node = nodes.filter((node) => node.id === from && node);
-      console.log(node)
-      // const nodeType = Object.entries(nodeTypeConfigs).filter((n) => n[0] === node[0].data.raw.type)
-      // console.log(nodeType)
+      const node = nodes.filter((node) => node.id === from && node)[0];
+      console.log(node);
+      const nodeType = nodeTypeConfigs[node.type as NodeType];
+      console.log(nodeType)
 
       // setConnections(nodeType[0][1].relations)
 
-      
       setEdges((eds) =>
         addEdge(
           {
@@ -279,8 +292,8 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
       connections: finalJson.metaData.connections,
       ruleChainConnections: finalJson.ruleChainConnections,
     };
-    // console.log(finalData);
-    saveMetadata(finalData);
+    console.log(finalData);
+    // saveMetadata(finalData);
   };
 
   const { isOpen, openModal, closeModal } = useModal();
@@ -386,7 +399,11 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
                 closeEdge();
               }}
             >
-              {connections.map((con: any, index: number) => (<option key={index} value={con.label}>{con.label}</option>))}
+              {connections.map((con: any, index: number) => (
+                <option key={index} value={con.label}>
+                  {con.label}
+                </option>
+              ))}
             </select>
             <button
               onClick={deleteEdge}

@@ -41,6 +41,7 @@ export function useUnreadNotifs(pageSize: number = 1, page: number = 0) {
       }
       return res.json();
     },
+    placeholderData: (prevData) => prevData
   });
 }
 
