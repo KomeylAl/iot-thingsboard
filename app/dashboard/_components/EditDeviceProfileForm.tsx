@@ -27,7 +27,7 @@ const EditDeviceProfileForm = ({
   profileData,
   onProfileEditted,
 }: EditDeviceProfileFormProps) => {
-  const { data, isLoading, error } = useRuleChains(100, 0);
+  const { data, isLoading, error } = useRuleChains(0, 100);
   const {
     data: queues,
     isLoading: queuesLoading,

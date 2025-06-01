@@ -25,7 +25,7 @@ const schema = yup.object({
 });
 
 const AddDeviceProfileForm = ({ onProfileAdded }: AddDeviceProfileFormProps) => {
-  const { data, isLoading, error } = useRuleChains(100, 0);
+  const { data, isLoading, error } = useRuleChains(0, 100);
   const {
     data: queues,
     isLoading: queuesLoading,

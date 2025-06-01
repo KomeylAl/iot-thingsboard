@@ -122,7 +122,7 @@ const RuleChains = () => {
         )}
       </div>
 
-      <Popup isOpen={isOpen} onClose={openModal}>
+      <Popup isOpen={isOpen} onClose={closeModal}>
         <AddRuleChainForm
           onRuleChainAdded={() => {
             closeModal();

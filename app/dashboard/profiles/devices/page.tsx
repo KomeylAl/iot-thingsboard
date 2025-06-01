@@ -116,7 +116,7 @@ const DeviceProfiles = () => {
         )}
       </div>
 
-      <Popup isOpen={isOpen} onClose={openModal}>
+      <Popup isOpen={isOpen} onClose={closeModal}>
         <AddDeviceProfileForm
           onProfileAdded={() => {
             closeModal();

@@ -113,7 +113,7 @@ const AssetProfiles = () => {
         )}
       </div>
 
-      <Popup isOpen={isOpen} onClose={openModal}>
+      <Popup isOpen={isOpen} onClose={closeModal}>
         <AddAssetProfileForm
           onProfileAdded={() => {
             closeModal();

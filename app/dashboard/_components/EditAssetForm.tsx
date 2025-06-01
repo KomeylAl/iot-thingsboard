@@ -27,7 +27,7 @@ interface EditAssetProps {
 }
 
 const EditAssetForm = ({ assetData, onAssetUpdated }: EditAssetProps) => {
-  const { data, isLoading } = useAssetProfiles(100, 0);
+  const { data, isLoading } = useAssetProfiles(0, 100);
   const { mutate: updateDevice, isPending } = useUpdateAsset(() => {
     onAssetUpdated();
   });
