@@ -1,6 +1,5 @@
 import React from "react";
 import { NodeType, nodeTypeConfigs } from "./nodeTypes";
-import AlarmStatusForm from "./AlarmStatusForm";
 
 type Props = {
   nodeType: NodeType;

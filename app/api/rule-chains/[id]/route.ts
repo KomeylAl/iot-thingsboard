@@ -71,6 +71,7 @@ export async function POST(req: NextRequest) {
         body: JSON.stringify(finalData),
         headers: {
           "Content-type": "application/json",
+          'x-custom-lang': 'fa',
           Authorization: `Bearer ${token?.value}`,
         },
       }

@@ -34,15 +34,7 @@ import { IoCheckmarkOutline } from "react-icons/io5";
 import { useModal } from "@/hooks/useModal";
 import { PuffLoader } from "react-spinners";
 import { Modal } from "@/components/Modal";
-
-const initialNodes: Node[] = [
-  {
-    id: "start",
-    type: "default",
-    position: { x: 100, y: 100 },
-    data: { label: "Start Node" },
-  },
-];
+import RuleNodeForm from "./ui/form/RuleNodeForm";
 
 interface NodeGraphEditorProps {
   ruleChainId: string;
@@ -55,6 +47,12 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
   const [menu, setMenu]: any = useState(null);
   const [edgeId, setEdgeId] = useState<string>("");
   const [connections, setConnections] = useState<Array<Object>>([]);
+  const [edgeLabel, setEdgeLabel] = useState("");
+
+  const [node, setNode] = useState<Node>();
+  const [config, setConfig] = useState<Record<string, any>>(
+    node?.data.raw.configuration || {}
+  );
 
   const {
     isOpen: edgeOpen,
@@ -62,50 +60,64 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
     closeModal: closeEdge,
   } = useModal();
 
+  const {
+    isOpen: menuOpen,
+    openModal: openMenu,
+    closeModal: closeMenu,
+  } = useModal();
+
   const onNodeContextMenu = useCallback(
     (event: any, node: any) => {
       event.preventDefault();
 
       if (node?.data?.label === "Start Node" || node?.data?.label === "Start") {
-        // اگه Start Node بود اصلا کاری نکن
         return;
       }
 
-      if (!ref.current) return;
+      // if (!ref.current) return;
 
-      const pane = ref.current.getBoundingClientRect();
+      // const pane = ref.current.getBoundingClientRect();
 
-      setMenu({
-        id: node.id,
-        name: node.data.label,
-        top: event.clientY < pane.height - 200 && event.clientY,
-        left: event.clientX < pane.width - 200 && event.clientX,
-        right: event.clientX >= pane.width - 200 && pane.width - event.clientX,
-        bottom:
-          event.clientY >= pane.height - 200 && pane.height - event.clientY,
-      });
+      // setMenu({
+      //   id: node.id,
+      //   name: node.data.label,
+      //   top: event.clientY < pane.height - 200 && event.clientY,
+      //   left: event.clientX < pane.width - 200 && event.clientX,
+      //   right: event.clientX >= pane.width - 200 && pane.width - event.clientX,
+      //   bottom:
+      //     event.clientY >= pane.height - 200 && pane.height - event.clientY,
+      // });
+      setNode(node);
+      setConfig(node?.data.raw.configuration);
+
+      openMenu();
     },
-    [setMenu]
+    [setMenu, config, setConfig, node]
   );
 
-  const onEdgeContextMenu = useCallback((event: any, edge: any) => {
-    event.preventDefault();
+  const onEdgeContextMenu = useCallback(
+    (event: any, edge: any) => {
+      event.preventDefault();
 
-    if (edge.source === "start-node") return;
+      if (edge.source === "start-node") return;
+      const from = edge.source;
+      console.log(from);
+      nodes.map((node: Node) => {
+        node.id == from && setConnections(node.data.relations);
+      });
 
-    setEdgeId(edge.id);
-    openEdge();
-  }, []);
+      setEdgeId(edge.id);
+      openEdge();
+    },
+    [nodes]
+  );
 
   const onPaneClick = useCallback(() => {
     setMenu(null);
   }, [setMenu]);
 
-  const [newNodes, setNewNodes] = useState<CustomNode[]>([]);
-
   const { data: metadata } = useRuleChainMetadata(ruleChainId);
-  // console.log(metadata)
-  // console.log(metadata);
+  console.log(metadata);
 
   useEffect(() => {
     const fetchAndParse = async () => {
@@ -133,8 +145,9 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
           data: {
             label: node.name,
             raw: node,
+            relations: nodeTypeConfigs[node.type as NodeType]?.relations ?? [],
           },
-          className: "bg-white dark:bg-gray-600 dark:text-white"
+          className: "bg-white dark:bg-gray-600 dark:text-white",
         })),
       ];
 
@@ -188,7 +201,6 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
 
   const onConnect = useCallback(
     (params: Connection) => {
-      // console.log(params);
       const from = params.source!;
       const to = params.target!;
 
@@ -196,15 +208,6 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
       //   toast.error("اتصال ایجاد شده باعث حلقه می‌شود!");
       //   return;
       // }
-
-      // console.log(nodes);
-
-      const node = nodes.filter((node) => node.id === from && node)[0];
-      console.log(node);
-      const nodeType = nodeTypeConfigs[node.type as NodeType];
-      console.log(nodeType)
-
-      // setConnections(nodeType[0][1].relations)
 
       setEdges((eds) =>
         addEdge(
@@ -221,53 +224,26 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
     [nodes, edges]
   );
 
-  const addNewNode = () => {
-    const id = uuidv4();
-    setNodes((prev) => [
-      ...prev,
-      {
-        id,
-        type: "default",
-        position: { x: Math.random() * 400, y: Math.random() * 400 },
-        data: { label: `Node ${prev.length}` },
-      },
-    ]);
-  };
-
   const handleAddNode = (type: NodeType, config: Record<string, any>) => {
     const id = uuidv4();
 
+    console.log(config);
+
     setNodes((prev) => [
       ...prev,
       {
         id,
-        type: "default",
+        type: type,
         position: {
           x: Math.random() * 400,
           y: Math.random() * 400,
         },
         data: {
           label: nodeTypeConfigs[type]?.label || "Custom Node",
+          relations: nodeTypeConfigs[type as NodeType]?.relations ?? [],
           row: {
             type,
           },
-          config,
-        },
-      },
-    ]);
-
-    setNewNodes((prev: any) => [
-      ...prev,
-      {
-        id,
-        type: "default",
-        position: {
-          x: Math.random() * 400,
-          y: Math.random() * 400,
-        },
-        data: {
-          label: nodeTypeConfigs[type]?.label || "Custom Node",
-          type,
           config,
         },
       },
@@ -293,7 +269,7 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
       connections: finalJson.metaData.connections,
       ruleChainConnections: finalJson.ruleChainConnections,
     };
-    console.log(finalData);
+    // console.log("FinalData" + finalData);
     saveMetadata(finalData);
   };
 
@@ -354,7 +330,7 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
         onNodeClick={onNodeContextMenu}
         onEdgeClick={onEdgeContextMenu}
       >
-        <MiniMap />
+        {/* <MiniMap /> */}
         <Controls />
         <Background />
         {menu && <ContextMenu onClick={onPaneClick} {...menu} />}
@@ -368,8 +344,13 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
       >
         <ChangeRuleChainForm onSubmit={handleAddNode} />
       </Popup>
-      <Modal isOpen={isOpen} onClose={closeModal} showCloseButton={true} className="max-w-[700px]">
-      <div className="w-full rounded-md bg-white dark:bg-gray-700 p-4 flex flex-col items-start space-y-4 pt-20 pr-8">
+      <Modal
+        isOpen={isOpen}
+        onClose={closeModal}
+        showCloseButton={true}
+        className="max-w-[700px]"
+      >
+        <div className="w-full rounded-md bg-white dark:bg-gray-700 p-4 flex flex-col items-start space-y-4 pt-20 pr-8">
           <h2 className="text-lg font-semibold">
             راهنمای استفاده از گراف زنجیره قواعد:
           </h2>
@@ -384,19 +365,23 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
           <p>5- نود شروع غیر قابل حذف یا ویرایش می باشد.</p>
         </div>
       </Modal>
-      <Popup isOpen={edgeOpen} onClose={closeEdge}>
-        <div className="min-w-[600px] rounded-md bg-white p-4 flex flex-col items-start space-y-4">
+      <Modal
+        isOpen={edgeOpen}
+        onClose={closeEdge}
+        className="max-w-[600px]"
+        showCloseButton={false}
+      >
+        <div className="w-full rounded-md bg-white dark:bg-gray-700 p-4 flex flex-col items-start space-y-4">
           <h2 className="text-lg font-semibold">ویرایش یا حذف اتصال</h2>
           <div className="w-full flex items-center gap-4">
             <select
               name=""
               id=""
-              className="w-full flex-1 px-4 py-2 rounded-lg border border-gray-300"
+              className="w-full flex-1 px-4 py-2 rounded-lg border dark:bg-gray-700 border-gray-300"
               onChange={(event: any) => {
                 const edge = edges.filter((edge) => edge.id === edgeId);
                 edge[0].label = event.target.value;
                 // console.log(edge)
-                // setEdgeLabel(event.target.value);
                 closeEdge();
               }}
             >
@@ -414,7 +399,34 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
             </button>
           </div>
         </div>
-      </Popup>
+      </Modal>
+      <Modal
+        isOpen={menuOpen}
+        onClose={closeMenu}
+        showCloseButton={false}
+        className="max-w-[600px]"
+      >
+        <div className="w-full rounded-md bg-white dark:bg-gray-700 p-4 flex flex-col items-start space-y-4">
+          <h2 className="text-lg font-semibold">ویرایش یا حذف نود</h2>
+          <RuleNodeForm
+            nodeType={node?.type as NodeType}
+            value={config}
+            onChange={(newConfig) => {
+              setConfig(newConfig); // 👈 این باعث ری‌رن میشه
+              console.log(newConfig);
+            }}
+          />
+
+          <button
+            className="w-64 px-4 py-2 rounded-md bg-blue-500 text-white text-center"
+            onClick={() => {
+              
+            }}
+          >
+            ذخیره تغییرات
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 }

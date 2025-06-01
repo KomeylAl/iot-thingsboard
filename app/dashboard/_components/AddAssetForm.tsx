@@ -25,10 +25,9 @@ interface AddAssetProps {
 }
 
 const AddAssetForm = ({ onAssetAdded }: AddAssetProps) => {
-
-  const { data, isLoading, error} = useAssetProfiles(100, 0);
+  const { data, isLoading, error } = useAssetProfiles(0, 100);
   const { mutate: addAsset, isPending } = useAddAsset(() => {
-   onAssetAdded();
+    onAssetAdded();
   });
 
   const profilesOptions =
@@ -50,8 +49,10 @@ const AddAssetForm = ({ onAssetAdded }: AddAssetProps) => {
   const onSubmit = (data: any) => {
     const formattedData = {
       ...data,
-      assetprofileId: data.assetProfileId.value ? data.assetProfileId.value : profilesOptions[0].value
-    }
+      assetprofileId: data.assetProfileId.value
+        ? data.assetProfileId.value
+        : profilesOptions[0].value,
+    };
     addAsset(formattedData);
   };
 
@@ -97,11 +98,11 @@ const AddAssetForm = ({ onAssetAdded }: AddAssetProps) => {
           placeholder="نوع"
         />
 
-          <input
-            {...register("label")}
-            className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
-            placeholder="برچسب"
-          />
+        <input
+          {...register("label")}
+          className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
+          placeholder="برچسب"
+        />
 
         <textarea
           {...register("additionalInfo.description")}

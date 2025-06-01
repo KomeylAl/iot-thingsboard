@@ -262,6 +262,8 @@ export function prepareRuleChainForServer(
   ruleChainId: string
 ): PreparedRuleChain {
 
+  console.log(nodes);
+
   const filteredNodes = nodes.filter((node: any) => node.id !== 'start-node');
   const nodeIndexMap = new Map<string, number>(); // mapping node.id => index in filteredNodes
 
@@ -287,7 +289,7 @@ export function prepareRuleChainForServer(
           entityType: 'RULE_CHAIN',
           id: ruleChainId,
         },
-        type: node.data.type,
+        type: node.type,
         name: node.data.label,
         debugSettings: null,
         singletonMode: false,

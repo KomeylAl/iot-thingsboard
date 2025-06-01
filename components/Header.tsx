@@ -10,11 +10,12 @@ interface HeaderProps {
   title?: string;
   isShowSearch: boolean;
   searchFn: (e: any) => void;
+  className?: string;
 }
 
-const Header = ({ isShowSearch, searchFn }: HeaderProps) => {
+const Header = ({ isShowSearch, searchFn, className }: HeaderProps) => {
   return (
-    <div className="w-full h-20 p-6 border-b border-gray-300 flex items-center justify-between bg-white dark:bg-gray-900 dark:border-gray-700">
+    <div className={`${className} w-full h-20 p-6 border-b border-gray-300 flex items-center justify-between bg-white dark:bg-gray-900 dark:border-gray-700`}>
       <div className="w-full flex items-center gap-3">
         <div className="flex items-center justify-center p-2 border rounded-sm">
           <CgMenuRightAlt

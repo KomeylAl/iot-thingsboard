@@ -1,5 +1,9 @@
-import React, { useCallback } from 'react';
+import { Modal } from '@/components/Modal';
+import { useModal } from '@/hooks/useModal';
+import React, { useCallback, useState } from 'react';
 import { useReactFlow } from 'reactflow';
+import RuleNodeForm from './ui/form/RuleNodeForm';
+import { NodeType } from './ui/form/nodeTypes';
 
 interface ContextMenuProps extends React.HTMLAttributes<HTMLDivElement> {
   id: string;
@@ -8,6 +12,7 @@ interface ContextMenuProps extends React.HTMLAttributes<HTMLDivElement> {
   left?: number;
   right?: number;
   bottom?: number;
+  type: NodeType;
 }
 
 export default function ContextMenu({
@@ -17,32 +22,21 @@ export default function ContextMenu({
   left,
   right,
   bottom,
+  type,
   ...props
 }: ContextMenuProps) {
   const { getNode, setNodes, addNodes, setEdges } = useReactFlow();
-
-  const duplicateNode = useCallback(() => {
-    const node = getNode(id);
-    if (!node) return;
-    
-    const position = {
-      x: node.position.x + 50,
-      y: node.position.y + 50,
-    };
-
-    addNodes({
-      ...node,
-      selected: false,
-      dragging: false,
-      id: `${node.id}-copy`,
-      position,
-    });
-  }, [id, getNode, addNodes]);
+  
+  const [isOpen, setIsOpen] = useState(false)
 
   const deleteNode = useCallback(() => {
     setNodes((nodes) => nodes.filter((node) => node.id !== id));
     setEdges((edges) => edges.filter((edge) => edge.source !== id && edge.target !== id));
   }, [id, setNodes, setEdges]);
+
+  const [config, setConfig] = useState<Record<string, any>>({});
+
+  if (isOpen) {console.log("open")} else {console.log("close")};
 
   return (
     <div
@@ -59,7 +53,7 @@ export default function ContextMenu({
          <span className="font-semibold">{name}</span> :نود
       </p>
       <button
-        onClick={duplicateNode}
+        onClick={() => setIsOpen(true)}
         className="text-right text-sm px-2 py-1 rounded text-blue-500 hover:bg-gray-100 transition"
       >
         ویرایش
