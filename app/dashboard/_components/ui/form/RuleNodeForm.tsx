@@ -58,9 +58,6 @@ type Props = {
 };
 
 const RuleNodeForm = ({ nodeType, value, onChange }: Props) => {
-
-  console.log(value);
-
   switch (nodeType) {
     case "org.thingsboard.rule.engine.filter.TbCheckAlarmStatusNode":
       return <AlarmStatusForm onChange={onChange} value={value} />;

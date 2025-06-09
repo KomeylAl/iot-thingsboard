@@ -1,7 +1,10 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { RuleNode } from "./types";
-import { NodeType, nodeTypeConfigs } from "@/app/dashboard/_components/ui/form/nodeTypes";
+import {
+  NodeType,
+  nodeTypeConfigs,
+} from "@/app/dashboard/_components/ui/form/nodeTypes";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -14,7 +17,7 @@ export function willCreateLoop(
   edges: any[]
 ): boolean {
   const graph: Record<string, string[]> = {};
-  console.log(edges)
+  console.log(edges);
 
   nodes.forEach((node) => (graph[node.id] = []));
   edges.forEach((edge) => {
@@ -72,12 +75,14 @@ export function generateRuleChainJson(originalJson: any, newFlowNodes: any) {
 
     if (node.connections && node.connections.length > 0) {
       node.connections.forEach((target: any) => {
-        const targetIndex = mergedNodes.findIndex(n => n.name === target.name);
+        const targetIndex = mergedNodes.findIndex(
+          (n) => n.name === target.name
+        );
         if (targetIndex !== -1) {
           newConnections.push({
             fromIndex: realIndex,
             toIndex: targetIndex,
-            type: target.type || 'default',
+            type: target.type || "default",
           });
         }
       });
@@ -91,7 +96,6 @@ export function generateRuleChainJson(originalJson: any, newFlowNodes: any) {
     connections: newConnections,
   };
 }
-
 
 export interface CustomNode {
   id: string;
@@ -172,7 +176,6 @@ interface FinalConnection {
 //   };
 // }
 
-
 // export function createFinalJsonFromEditor(
 //   nodes: Node[],
 //   edges: Edge[],
@@ -232,8 +235,7 @@ interface FinalConnection {
 //   };
 // }
 
-
-import { Node as FlowNode, Edge as FlowEdge } from 'reactflow';
+import { Node as FlowNode, Edge as FlowEdge } from "reactflow";
 
 type NodeData = {
   label: string;
@@ -261,22 +263,26 @@ export function prepareRuleChainForServer(
   edges: Edge[],
   ruleChainId: string
 ): PreparedRuleChain {
-
-  console.log(nodes);
-
-  const filteredNodes = nodes.filter((node: any) => node.id !== 'start-node');
+  const filteredNodes = nodes.filter((node: any) => node.id !== "start-node");
   const nodeIndexMap = new Map<string, number>(); // mapping node.id => index in filteredNodes
-
-  console.log(filteredNodes)
 
   const preparedNodes = filteredNodes.map((node: any, index: any) => {
     nodeIndexMap.set(node.id, index);
 
     const raw = node.data.raw;
-    
+
     if (raw) {
       return {
-        ...raw,
+        configurationVersion: 1,
+        createdTime: raw.createdTime,
+        ruleChainId: {
+          entityType: "RULE_CHAIN",
+          id: ruleChainId,
+        },
+        name: node.data.label,
+        type: node.type,
+        singletonMode: false,
+        configuration: node.data.configuratin,
         additionalInfo: {
           ...raw.additionalInfo,
           layoutX: node.position.x,
@@ -286,19 +292,15 @@ export function prepareRuleChainForServer(
     } else {
       return {
         ruleChainId: {
-          entityType: 'RULE_CHAIN',
+          entityType: "RULE_CHAIN",
           id: ruleChainId,
         },
         type: node.type,
         name: node.data.label,
-        debugSettings: null,
         singletonMode: false,
-        queueName: null,
         configurationVersion: 0,
-        externalId: null,
-        configuration: {},
         additionalInfo: {
-          description: '',
+          description: "",
           layoutX: node.position.x,
           layoutY: node.position.y,
         },
@@ -306,28 +308,26 @@ export function prepareRuleChainForServer(
     }
   });
 
-  // console.log(preparedNodes)
-
   const preparedConnections = edges
-  .filter((edge) => edge.source !== 'start-node')
-  .map((edge) => {
-    const fromIndex = nodeIndexMap.get(edge.source);
-    const toIndex = nodeIndexMap.get(edge.target);
-    return {
-      fromIndex,
-      toIndex,
-      type: typeof edge.label === 'string' ? edge.label : 'Success',
-    };
-  })
-  .filter(
-    (conn): conn is { fromIndex: number; toIndex: number; type: string } =>
-      typeof conn.fromIndex === 'number' &&
-      typeof conn.toIndex === 'number' &&
-      typeof conn.type === 'string'
-  );
+    .filter((edge) => edge.source !== "start-node")
+    .map((edge) => {
+      const fromIndex = nodeIndexMap.get(edge.source);
+      const toIndex = nodeIndexMap.get(edge.target);
+      return {
+        fromIndex,
+        toIndex,
+        type: typeof edge.label === "string" ? edge.label : "Success",
+      };
+    })
+    .filter(
+      (conn): conn is { fromIndex: number; toIndex: number; type: string } =>
+        typeof conn.fromIndex === "number" &&
+        typeof conn.toIndex === "number" &&
+        typeof conn.type === "string"
+    );
 
-  const firstNodeId = edges.find((e) => e.source === 'start-node')?.target;
-  const firstNodeIndex = nodeIndexMap.get(firstNodeId ?? '') ?? 0;
+  const firstNodeId = edges.find((e) => e.source === "start-node")?.target;
+  const firstNodeIndex = nodeIndexMap.get(firstNodeId ?? "") ?? 0;
 
   const result: PreparedRuleChain = {
     metaData: {
@@ -340,3 +340,44 @@ export function prepareRuleChainForServer(
 
   return result;
 }
+
+export const toThingsboardMetadata = (
+  rfNodes: Node[],
+  rfEdges: Edge[],
+  ruleChainId: string
+) => {
+  const nodeIdToIndex = rfNodes
+    .filter((node) => node.id !== "start-node")
+    .reduce((acc: any, node: any, index: any) => {
+      acc[node.id] = index;
+      return acc;
+    }, {} as Record<string, number>);
+
+  const nodes = rfNodes
+    .filter((n: any) => n.id !== "start-node")
+    .map((node: any) => ({
+      ruleChainId: {
+        entityType: "RULE_CHAIN",
+        id: ruleChainId,
+      },
+      id: node.data.id || null,
+      type: node.data.nodeType,
+      name: node.data.label,
+      additionalInfo: {
+        layoutX: node.position.x,
+        layoutY: node.position.y,
+      },
+      configuration: node.data.config || {},
+    }));
+
+  const connections = rfEdges
+    .filter((edge) => edge.id !== "e-start")
+    .map((edge) => ({
+      fromIndex: nodeIdToIndex[edge.source],
+      toIndex: nodeIdToIndex[edge.target],
+      type: edge.label || "Success", // اگر لیبل نداره بزار پیش‌فرض "Success"
+      additionalInfo: {},
+    }));
+
+  return { nodes, connections };
+};

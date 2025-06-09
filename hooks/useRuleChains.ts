@@ -99,7 +99,8 @@ export function useUpdateRuleChainMetadata(ruleChainId: string) {
       });
       if (!res.ok) {
         const data = await res.json();
-        throw new Error("مشکلی در ذخیره تغییرات پیش آمده!");
+        console.log(data);
+        throw new Error(data.message);
       }
     },
     onError(error) {

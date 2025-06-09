@@ -26,6 +26,7 @@ export async function POST(req: NextRequest) {
     const data = await response.json();
     console.log(data);
     const userInfo = await getUserInfo(data.token);
+    console.log(userInfo)
 
     if (
       userInfo.authority !== "TENANT_ADMIN" &&
@@ -35,13 +36,9 @@ export async function POST(req: NextRequest) {
     }
 
     const cookies = [
-      `token=${data.token}; HttpOnly; Path=/; Max-Age=${60 * 60 * 24};`,
-      `refreshToken=${data.refreshToken}; HttpOnly; Path=/; Max-Age=${
-        60 * 60 * 24 * 30
-      };`,
-      `role=${userInfo.authority}; HttpOnly; Path=/; Max-Age=${
-        60 * 60 * 24 * 30
-      };`,
+      `token=${data.token}; Path=/; Max-Age=${60 * 60 * 24}; Secure; SameSite=None`,
+      `refreshToken=${data.refreshToken}; HttpOnly; Path=/; Max-Age=${60 * 60 * 24 * 30}; Secure; SameSite=None`,
+      `role=${userInfo.authority}; HttpOnly; Path=/; Max-Age=${60 * 60 * 24 * 30}; Secure; SameSite=None`,
     ].join(", ");
 
     const headers = new Headers();

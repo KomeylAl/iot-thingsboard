@@ -4,13 +4,11 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import ReactFlow, {
   Background,
   Controls,
-  MiniMap,
   addEdge,
   Connection,
   Node,
   useNodesState,
   useEdgesState,
-  MarkerType,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { v4 as uuidv4 } from "uuid";
@@ -46,6 +44,7 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [menu, setMenu]: any = useState(null);
   const [edgeId, setEdgeId] = useState<string>("");
+  const [nodeId, setNodeId] = useState<string>("");
   const [connections, setConnections] = useState<Array<Object>>([]);
   const [edgeLabel, setEdgeLabel] = useState("");
 
@@ -74,21 +73,9 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
         return;
       }
 
-      // if (!ref.current) return;
-
-      // const pane = ref.current.getBoundingClientRect();
-
-      // setMenu({
-      //   id: node.id,
-      //   name: node.data.label,
-      //   top: event.clientY < pane.height - 200 && event.clientY,
-      //   left: event.clientX < pane.width - 200 && event.clientX,
-      //   right: event.clientX >= pane.width - 200 && pane.width - event.clientX,
-      //   bottom:
-      //     event.clientY >= pane.height - 200 && pane.height - event.clientY,
-      // });
       setNode(node);
-      setConfig(node?.data.raw.configuration);
+      setNodeId(node.id);
+      setConfig(node?.data.raw.configuration || {});
 
       openMenu();
     },
@@ -252,6 +239,25 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
     setIsModalOpen(false); // مودال بسته بشه
   };
 
+  const updateNodeConfig = (nodeId: string, newConfig: any) => {
+    setNodes((nodes) =>
+      nodes.map((node) =>
+        node.id === nodeId
+          ? {
+              ...node,
+              data: {
+                ...node.data,
+                configuratin: {
+                  ...node.data?.configuratin,
+                  ...newConfig,
+                },
+              },
+            }
+          : node
+      )
+    );
+  };
+
   const { mutate: saveMetadata, isPending } =
     useUpdateRuleChainMetadata(ruleChainId);
 
@@ -269,7 +275,7 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
       connections: finalJson.metaData.connections,
       ruleChainConnections: finalJson.ruleChainConnections,
     };
-    // console.log("FinalData" + finalData);
+    console.log(finalData);
     saveMetadata(finalData);
   };
 
@@ -283,6 +289,23 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
       closeEdge();
     },
     [edgeId]
+  );
+
+  const deleteNode = useCallback(
+    (event: any) => {
+      event.preventDefault();
+
+      // حذف نود
+      setNodes((nodes) => nodes.filter((node) => node.id !== nodeId));
+
+      // حذف تمام edgeهایی که به نود متصل هستن
+      setEdges((edges) =>
+        edges.filter((edge) => edge.source !== nodeId && edge.target !== nodeId)
+      );
+
+      closeMenu();
+    },
+    [nodeId]
   );
 
   return (
@@ -413,17 +436,25 @@ export function NodeGraphEditor({ ruleChainId }: NodeGraphEditorProps) {
             value={config}
             onChange={(newConfig) => {
               setConfig(newConfig); // 👈 این باعث ری‌رن میشه
-              console.log(newConfig);
+              // console.log(newConfig);
             }}
           />
 
           <button
             className="w-64 px-4 py-2 rounded-md bg-blue-500 text-white text-center"
             onClick={() => {
-              
+              updateNodeConfig(node!.id, config);
+              closeMenu();
             }}
           >
             ذخیره تغییرات
+          </button>
+
+          <button
+            className="w-64 px-4 py-2 rounded-md bg-rose-500 text-white text-center"
+            onClick={deleteNode}
+          >
+            حذف نود
           </button>
         </div>
       </Modal>

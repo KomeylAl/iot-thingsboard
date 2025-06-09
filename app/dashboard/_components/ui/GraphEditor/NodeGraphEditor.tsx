@@ -1,157 +1,282 @@
+// صفحه ویرایش Rule Chain با React Flow با قابلیت نمایش فرم کانفیگ نود
+
 "use client";
 
-import { useRuleChainMetadata } from "@/hooks/useRuleChains";
-import { useCallback, useEffect, useState } from "react";
-
-import React, { useRef } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import ReactFlow, {
-  addEdge,
   Background,
-  Connection,
   Controls,
   MiniMap,
+  addEdge,
   useEdgesState,
   useNodesState,
+  MarkerType,
+  Node,
+  Edge,
 } from "reactflow";
 import "reactflow/dist/style.css";
+import { Button } from "@/components/ui/button";
 import { NodeType, nodeTypeConfigs } from "../form/nodeTypes";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { DialogTitle } from "@radix-ui/react-dialog";
+import dynamic from "next/dynamic";
+import { ConfigFormPops, RuleNode } from "@/lib/types";
+import {
+  useRuleChainMetadata,
+  useUpdateRuleChainMetadata,
+} from "@/hooks/useRuleChains";
+import { toThingsboardMetadata } from "@/lib/utils";
 
-interface NodeGrapgEditorProps {
+interface RuleChainEditorPageProps {
   ruleChainId: string;
 }
 
-const NodeGraphEditor = ({ ruleChainId }: NodeGrapgEditorProps) => {
-  const ref = useRef<HTMLDivElement>(null);
+export default function RuleChainEditorPage({
+  ruleChainId,
+}: RuleChainEditorPageProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [metadata, setMetadata] = useState<any>();
+  const [openTypeDialog, setOpenTypeDialog] = useState(false);
+  const [openConfigDialog, setOpenConfigDialog] = useState(false);
+  const [selectedNodeName, setSelectedNodeName] = useState<string | null>(null);
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [defaultConfig, setDefaultConfig] = useState<any>(null);
 
-  const { data: metadata } = useRuleChainMetadata(ruleChainId);
+  const fetchRuleChain = async () => {
+    const res = await fetch(`/api/rule-chains/${ruleChainId}/metadata`);
+    const metadata = await res.json();
+    console.log(metadata);
+    setMetadata(metadata);
+    const { nodes: tbNodes, connections } = metadata;
+
+    const rfNodes: Node[] = tbNodes.map((n: any, index: number) => ({
+      id: n.id.id,
+      type: "default",
+      position: {
+        x: n.additionalInfo?.layoutX || 200 + index * 100,
+        y: n.additionalInfo?.layoutY || 200,
+      },
+      data: {
+        label: n.name,
+        name: nodeTypeConfigs[n.type as NodeType]?.name || "",
+        nodeType: n.type,
+        config: n.configuration,
+        id: n.id,
+      },
+    }));
+
+    const rfEdges: Edge[] = connections
+      ? connections.map((conn: any, index: number) => {
+          const fromNode = tbNodes[conn.fromIndex];
+          const toNode = tbNodes[conn.toIndex];
+          return {
+            id: `e${index}`,
+            source: fromNode.id.id,
+            target: toNode.id.id,
+            label: conn.type,
+            markerEnd: { type: MarkerType.ArrowClosed },
+            animated: true,
+          };
+        })
+      : [];
+
+    const parsedNodes = [
+      {
+        id: "start-node",
+        type: "input",
+        position: { x: 50, y: 150 },
+        data: { label: "Input" },
+        draggable: false,
+        deletable: false,
+        style: {
+          backgroundColor: "#0094e3", // آبی تیره (tailwind: bg-blue-600)
+          color: "white",
+          border: "1px solid #ffffff",
+        },
+      },
+      ...rfNodes,
+    ];
+
+    const parsedEdges: Edge[] = [];
+
+    if (metadata.firstNodeIndex !== null) {
+      parsedEdges.push({
+        id: `e-start`,
+        source: "start-node",
+        target: metadata.nodes[metadata.firstNodeIndex].id.id,
+        label: "",
+        markerEnd: { type: MarkerType.ArrowClosed },
+        animated: true,
+      });
+    }
+
+    rfEdges.forEach((edge) => parsedEdges.push(edge));
+    // console.log(parsedEdges)
+
+    setNodes(parsedNodes);
+    setEdges(parsedEdges);
+  };
 
   useEffect(() => {
-    const fetchAndParse = async () => {
-      const parsedNodes = [
-        {
-          id: "start-node",
-          type: "input",
-          position: { x: 50, y: 50 },
-          data: { label: "Start" },
-          draggable: false,
-          deletable: false,
-          style: {
-            backgroundColor: "#0094e3",
-            color: "white",
-            border: "1px solid #ffffff",
-          },
-        },
-        ...metadata.nodes.map((node: any) => ({
-          id: node.id.id,
-          type: node.type,
-          position: {
-            x: node.additionalInfo?.layoutX || 0,
-            y: node.additionalInfo?.layoutY || 0,
-          },
-          data: {
-            label: node.name,
-            raw: node,
-          },
-          className: "bg-white dark:bg-gray-600 dark:text-white",
-        })),
-      ];
+    fetchRuleChain();
+  }, []);
 
-      const parsedEdges = [];
-
-      if (metadata.firstNodeIndex !== null) {
-        parsedEdges.push({
-          id: `e-start-node`,
-          source: "start-node",
-          target: metadata.nodes[metadata.firstNodeIndex].id.id,
-          type: "floating",
-          animated: true,
-          label: "",
-        });
-      }
-
-      const connectionMap = new Map<string, string[]>();
-
-      metadata.connections?.forEach((conn: any) => {
-        const key = `${conn.fromIndex}-${conn.toIndex}`;
-        if (!connectionMap.has(key)) {
-          connectionMap.set(key, []);
-        }
-        connectionMap.get(key)!.push(conn.type);
-      });
-
-      connectionMap.forEach((labels, key) => {
-        const [fromIndex, toIndex] = key.split("-").map(Number);
-        parsedEdges.push({
-          id: `e${metadata.nodes[fromIndex].id.id}-${metadata.nodes[toIndex].id.id}`,
-          source: metadata.nodes[fromIndex].id.id,
-          target: metadata.nodes[toIndex].id.id,
-          type: "floating",
-          animated: true,
-          label: labels.join(" | "),
-        });
-      });
-
-      setNodes(parsedNodes);
-      setEdges(parsedEdges);
+  const handleAddNode = (type: NodeType) => {
+    const id = `${Date.now()}`;
+    const newNode: Node = {
+      id,
+      type: "default",
+      position: { x: 250, y: 100 },
+      data: {
+        name: nodeTypeConfigs[type].name,
+        label: nodeTypeConfigs[type].label,
+        nodeType: type,
+      },
     };
+    setNodes((nds) => [...nds, newNode]);
+    setOpenTypeDialog(false);
+    setSelectedNodeId(id);
+    setSelectedNodeName(nodeTypeConfigs[type].name);
+    setDefaultConfig(null);
+    setOpenConfigDialog(true);
+  };
 
-    if (metadata) {
-      fetchAndParse();
-    }
-  }, [metadata]);
+  const handleEditNode = (node: Node) => {
+    setSelectedNodeId(node.id);
+    setSelectedNodeName(node.data.name);
+    setDefaultConfig(node.data.config || null);
+    setOpenConfigDialog(true);
+  };
 
-  const onConnect = useCallback(
-    (params: Connection) => {
-      // console.log(params);
-      const from = params.source!;
-      const to = params.target!;
+  const handleSaveNodeConfig = (config: any) => {
+    setNodes((nds) =>
+      nds.map((n) =>
+        n.id === selectedNodeId ? { ...n, data: { ...n.data, config } } : n
+      )
+    );
+    setOpenConfigDialog(false);
+    setSelectedNodeId(null);
+    setSelectedNodeName(null);
+    setDefaultConfig(null);
 
-      // if (willCreateLoop(from, to, nodes, edges)) {
-      //   toast.error("اتصال ایجاد شده باعث حلقه می‌شود!");
-      //   return;
-      // }
+    console.log(config);
+  };
 
-      // console.log(nodes);
+  const handleDeleteNode = () => {
+    setNodes((nds) => nds.filter((n) => n.id !== selectedNodeId));
+    setEdges((eds) =>
+      eds.filter(
+        (e) => e.source !== selectedNodeId && e.target !== selectedNodeId
+      )
+    );
+    setOpenConfigDialog(false);
+    setSelectedNodeId(null);
+    setSelectedNodeName(null);
+    setDefaultConfig(null);
+  };
 
-      const node = nodes.filter((node) => node.id === from && node)[0];
-      console.log(node);
-      const nodeType = nodeTypeConfigs[node.type as NodeType];
-      console.log(nodeType);
-
-      // setConnections(nodeType[0][1].relations)
-
-      setEdges((eds) =>
-        addEdge(
-          {
-            ...params,
-            animated: true,
-            label: params.source === "start-node" ? "" : "label",
-            style: { stroke: "#4f46e5" },
-          },
-          eds
-        )
-      );
-    },
-    [nodes, edges]
+  const ConfigForm = dynamic<ConfigFormPops>(
+    () => import(`../form/forms/${selectedNodeName}Form`),
+    { ssr: false, loading: () => <p>Loading...</p> }
   );
 
+  const { mutate: saveMetadata, isPending } =
+    useUpdateRuleChainMetadata(ruleChainId);
+
+  const saveRuleChainMetadata = async () => {
+    const payload = toThingsboardMetadata(
+      nodes as RuleNode[],
+      edges,
+      ruleChainId
+    );
+    const finalData = {
+      ruleChainId: {
+        entityType: "RULE_CHAIN",
+        id: ruleChainId,
+      },
+      firstNodeIndex: metadata.firstNodeIndex,
+      version: metadata.version,
+      nodes: payload.nodes,
+      connections: payload.connections,
+      ruleChainConnections: null,
+    };
+
+    console.log(finalData);
+    saveMetadata(finalData);
+  };
+
   return (
-    <div className="w-full h-full relative" ref={ref}>
+    <div className="h-screen w-full relative">
+      <Button
+        className="absolute top-4 right-4 z-50"
+        onClick={saveRuleChainMetadata}
+        disabled={isPending}
+      >
+        ذخیره تغییرات
+      </Button>
+
       <ReactFlow
-        ref={ref}
         nodes={nodes}
         edges={edges}
-        onConnect={onConnect}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={(params) =>
+          setEdges((eds) =>
+            addEdge(
+              { ...params, markerEnd: { type: MarkerType.ArrowClosed } },
+              eds
+            )
+          )
+        }
+        onNodeClick={(_, node) => handleEditNode(node)}
         fitView
-        className="absolute inset-0"
       >
+        <MiniMap />
         <Controls />
         <Background />
       </ReactFlow>
+
+      {/* دیالوگ انتخاب نود */}
+      <div className="absolute top-4 left-4">
+        <Dialog open={openTypeDialog} onOpenChange={setOpenTypeDialog}>
+          <DialogTrigger asChild>
+            <Button variant="default">افزودن نود</Button>
+          </DialogTrigger>
+          <DialogContent className="max-h-[80vh] overflow-y-auto">
+            <DialogTitle className="text-lg font-bold mb-2 mt-6">
+              انتخاب نوع نود
+            </DialogTitle>
+            <div className="grid grid-cols-2 gap-2">
+              {Object.entries(nodeTypeConfigs).map(([type, config]) => (
+                <Button
+                  key={type}
+                  onClick={() => handleAddNode(type as NodeType)}
+                  variant="outline"
+                >
+                  {config.label}
+                </Button>
+              ))}
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {/* دیالوگ کانفیگ نود */}
+      {ConfigForm && (
+        <Dialog open={openConfigDialog} onOpenChange={setOpenConfigDialog}>
+          <DialogContent>
+            <DialogTitle className="mt-6">تنظیمات نود</DialogTitle>
+            <div className="mb-4">
+              <ConfigForm
+                defaultValues={defaultConfig}
+                onSubmit={handleSaveNodeConfig}
+                onDeleteNode={handleDeleteNode}
+              />
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
-};
-
-export default NodeGraphEditor;
+}

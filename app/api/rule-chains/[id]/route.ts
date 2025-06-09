@@ -62,7 +62,6 @@ export async function POST(req: NextRequest) {
     ruleChainConnections,
   };
 
-  // console.log(finalData);
   try {
     const response = await fetch(
       `${process.env.THINGSBOARD_URL}/api/ruleChain/metadata`,
@@ -81,7 +80,7 @@ export async function POST(req: NextRequest) {
       const data = await response.json();
       console.log(data);
       return NextResponse.json(
-        { message: "Error updating ruleChain" },
+        { message: data.message },
         { status: response.status }
       );
     }
@@ -90,10 +89,9 @@ export async function POST(req: NextRequest) {
       { message: "RuleChain updated successfully" },
       { status: 200 }
     );
-  } catch (error: any) {
-    console.log(error.message)
+  } catch (error) {
     return NextResponse.json(
-      { message: "Something went wrong" },
+      { message: `Something went wrong: ${error}` },
       { status: 500 }
     );
   }

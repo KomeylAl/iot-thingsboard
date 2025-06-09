@@ -2,7 +2,7 @@
 
 import React from "react";
 import { NodeGraphEditor } from "../../_components/GraphView";
-// import NodeGraphEditor from "../../_components/ui/GraphEditor/NodeGraphEditor";
+import RuleChainEditorPage from "../../_components/ui/GraphEditor/NodeGraphEditor";
 
 interface Params {
   ruleChainId: string;
@@ -16,7 +16,9 @@ const RuleChainPage = ({ params }: PageProps) => {
   const { ruleChainId } = React.use<Params>(params);
   return (
     <div className="w-full h-screen">
-      <NodeGraphEditor ruleChainId={ruleChainId} />
+      <RuleChainEditorPage 
+        ruleChainId={ruleChainId}
+      />
     </div>
   );
 };
