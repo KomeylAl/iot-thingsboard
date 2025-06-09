@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     }
 
     const cookies = [
-      `token=${data.token}; Path=/; Max-Age=${60 * 60 * 24}; Secure; SameSite=None`,
+      `token=${data.token}; HttpOnly; Path=/; Max-Age=${60 * 60 * 24}; Secure; SameSite=None`,
       `refreshToken=${data.refreshToken}; HttpOnly; Path=/; Max-Age=${60 * 60 * 24 * 30}; Secure; SameSite=None`,
       `role=${userInfo.authority}; HttpOnly; Path=/; Max-Age=${60 * 60 * 24 * 30}; Secure; SameSite=None`,
     ].join(", ");
