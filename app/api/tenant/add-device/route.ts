@@ -4,15 +4,16 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
-    const {
-      token,
-      name,
-      label,
-      type,
-      additionalInfo: { location, description },
-    } = await req.json();
+    const { token, name, label } = await req.json();
 
     const userInfo = await getUserInfo(token);
+
+    if (!userInfo) {
+      return NextResponse.json(
+        { message: "Token has expired." },
+        { status: 401 }
+      );
+    }
 
     const tenant = await prisma.tenant.findUnique({
       where: { things_id: userInfo.tenantId.id },
@@ -25,26 +26,25 @@ export async function POST(req: NextRequest) {
       );
     }
 
-
     const sendData = JSON.stringify({
       name,
       label,
-      type,
-      additionalInfo: { location, description },
     });
 
     const response = await fetch(`${process.env.THINGSBOARD_URL}/api/device`, {
       method: "POST",
       headers: {
         "Content-type": "application/json",
-        Authorization: `Bearer ${token?.value}`,
+        Authorization: `Bearer ${token}`,
       },
       body: sendData,
     });
 
     if (!response.ok) {
+      const data = await response.json();
+      console.log(data);
       return NextResponse.json(
-        { message: "Error adding device" },
+        { message: `Error adding device: ${data.message}` },
         { status: response.status }
       );
     }
@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
         data: {
           things_id: data.id.id,
           name,
-          type,
+          type: data.type,
           tenantId: tenant!.id,
         },
       });
@@ -72,14 +72,15 @@ export async function POST(req: NextRequest) {
         method: "GET",
         headers: {
           "Content-type": "application/json",
-          Authorization: `Bearer ${token?.value}`,
+          Authorization: `Bearer ${token}`,
         },
       }
     );
 
     if (!tokenResponse.ok) {
+      const data = await tokenResponse.json();
       return NextResponse.json(
-        { message: "Failed to get device credentials" },
+        { message: `Failed to get device credentials: ${data.message}` },
         { status: tokenResponse.status }
       );
     }
