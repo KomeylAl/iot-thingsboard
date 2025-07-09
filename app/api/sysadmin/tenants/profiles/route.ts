@@ -1,3 +1,4 @@
+import prisma from "@/utils/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -8,6 +9,7 @@ export async function GET(req: NextRequest) {
   const textSearch = params.get("textSearch") || "";
 
   try {
+    // 1. گرفتن پروفایل ها از ThingsBoard
     const response = await fetch(
       `${process.env.THINGSBOARD_URL}/api/tenantProfiles?pageSize=${pageSize}&page=${page}&textSearch=${textSearch}&sortProperty=createdTime&sortOrder=DESC`,
       {
@@ -27,8 +29,47 @@ export async function GET(req: NextRequest) {
     }
 
     const data = await response.json();
+    const tbProfiles = data.data;
 
-    return NextResponse.json(data, { status: 200 });
+    // 2. گرفتن پروفایل های local
+    const localProfiles = await prisma.profile.findMany({
+      where: { type: "TENANT" },
+    });
+
+    // 3. Map برای سریع پیدا کردن
+    const localProfilesMap = new Map(
+      localProfiles.map((p) => [p.things_id, p])
+    );
+
+    // 4. Merge
+    const mergedProfiles = tbProfiles.map((profile: any) => {
+      const local = localProfilesMap.get(profile.id.id);
+
+      return {
+        id: profile.id.id,
+        createdTime: profile.createdTime,
+        name: profile.name,
+        description: profile.description,
+        isolatedTbRuleEngine: profile.isolatedTbRuleEngine,
+        default: profile.default,
+        profileData: {
+          ...profile.profileData,
+          ...(typeof local?.config === "object" &&
+          local?.config !== null &&
+          "unitPrices" in local.config
+            ? { unitPrices: (local.config as any).unitPrices }
+            : {}),
+        },
+      };
+    });
+
+    const finalData = {
+      data: mergedProfiles,
+      totalElements: data.totalElements,
+      totalPages: data.totalPages,
+    };
+
+    return NextResponse.json(finalData, { status: 200 });
   } catch (error: any) {
     return NextResponse.json(
       { message: `Something went wrong: ${error.message}` },
@@ -70,26 +111,29 @@ export async function POST(req: NextRequest) {
 
     const id = set_id && { id: set_id, entityType: "TENANT_PROFILE" };
 
+    const profileData = {
+      unitPrices,
+      configuration: {
+        type,
+        maxDevices,
+        maxAssets,
+        maxCustomers,
+        maxUsers,
+        maxDashboards,
+        maxRuleChains,
+        maxEmails,
+        smsEnabled,
+        maxSms,
+        transportTenantMsgRateLimit: `${limit1}:${interval1},${limit2}:${interval2}`,
+        maxDataPointsPerRollingArg: 1,
+      },
+    };
+
     const reqData = JSON.stringify({
       id,
       name,
       description,
-      profileData: {
-        configuration: {
-          type,
-          maxDevices,
-          maxAssets,
-          maxCustomers,
-          maxUsers,
-          maxDashboards,
-          maxRuleChains,
-          maxEmails,
-          smsEnabled,
-          maxSms,
-          transportTenantMsgRateLimit: `${limit1}:${interval1},${limit2}:${interval2}`,
-          maxDataPointsPerRollingArg: 1,
-        },
-      },
+      profileData,
     });
 
     const response = await fetch(
@@ -111,6 +155,33 @@ export async function POST(req: NextRequest) {
         { message: `Error adding profile: ${data}` },
         { status: response.status }
       );
+    }
+
+    const resData = await response.json();
+
+    const profile = await prisma.profile.findUnique({
+      where: { things_id: resData.id.id },
+    });
+
+    if (!profile) {
+      await prisma.profile.create({
+        data: {
+          things_id: resData.id.id,
+          name,
+          type: "TENANT",
+          config: profileData,
+        },
+      });
+    } else {
+      await prisma.profile.update({
+        where: { things_id: set_id },
+        data: {
+          things_id: resData.id.id,
+          name,
+          type: "TENANT",
+          config: profileData,
+        },
+      });
     }
 
     return NextResponse.json(

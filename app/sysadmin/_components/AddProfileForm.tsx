@@ -78,10 +78,10 @@ const schema = yup.object({
   smsEnabled: yup.boolean().optional().default(false),
   maxSms: numberField().default(0),
 
-  limit1: numberField().min(1),
-  interval1: numberField().min(1),
-  limit2: numberField().min(1),
-  interval2: numberField().min(1),
+  limit1: numberField().min(1).default(1),
+  interval1: numberField().min(1).default(1),
+  limit2: numberField().min(1).default(10),
+  interval2: numberField().min(1).default(60),
 
   default: yup.boolean().optional(),
 });

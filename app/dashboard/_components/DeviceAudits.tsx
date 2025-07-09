@@ -10,7 +10,7 @@ interface DeviceAuditsProps {
 }
 
 const DeviceAudits = ({ deviceId }: DeviceAuditsProps) => {
-  const { data, isLoading, error, refetch } = useDeviceAudits(deviceId, 10, 0);
+  const { data, isLoading, error } = useDeviceAudits(deviceId, 10, 0);
 
   const columns = [
     { header: "نام", accessor: "entityName" },

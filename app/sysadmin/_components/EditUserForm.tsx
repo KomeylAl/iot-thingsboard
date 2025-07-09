@@ -16,13 +16,14 @@ const schema = yup.object({
   email: yup.string().required().email("ایمیل معتبر نیست").optional(),
 });
 
-interface AddUserProps {
-  onUserAdded: () => void;
+interface EditUserProps {
+  onUserEdited: () => void;
   tenantId: string;
+  userData: any;
 }
 
-const AddUserForm = ({ onUserAdded, tenantId }: AddUserProps) => {
-  const { mutate: addUser, isPending } = useAddUser(tenantId, onUserAdded);
+const EditUserForm = ({ onUserEdited, tenantId, userData }: EditUserProps) => {
+  const { mutate: addUser, isPending } = useAddUser(tenantId, onUserEdited);
 
   const {
     register,
@@ -32,6 +33,12 @@ const AddUserForm = ({ onUserAdded, tenantId }: AddUserProps) => {
   } = useForm({
     resolver: yupResolver(schema),
   });
+
+  useEffect(() => {
+   if (userData) {
+     reset(userData);
+   }
+ }, [userData, reset])
 
   const onSubmit = (data: any) => {
     addUser(data);
@@ -78,4 +85,4 @@ const AddUserForm = ({ onUserAdded, tenantId }: AddUserProps) => {
   );
 };
 
-export default AddUserForm;
+export default EditUserForm;

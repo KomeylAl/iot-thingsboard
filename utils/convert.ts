@@ -123,5 +123,14 @@ export const transformToFormValues = (data: any) => {
     interval1: rateLimits?.[0]?.interval ?? 0,
     limit2: rateLimits?.[1]?.limit ?? 0,
     interval2: rateLimits?.[1]?.interval ?? 0,
+
+    unitPrices: {
+      maxDevices: profileData?.unitPrices?.maxDevices ?? 0,
+      maxAssets: profileData?.unitPrices?.maxAssets ?? 0,
+      maxCustomers: profileData?.unitPrices?.maxCustomers ?? 0,
+      maxUsers: profileData?.unitPrices?.maxUsers ?? 0,
+      maxDashboards: profileData?.unitPrices?.maxDashboards ?? 0,
+      maxRuleChains: profileData?.unitPrices?.maxRuleChains ?? 0,
+    },
   };
 };

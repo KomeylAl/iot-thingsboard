@@ -67,8 +67,6 @@ const Profiles = () => {
     refetch();
   });
 
-  console.log(data);
-
   return (
     <div className="w-full h-screen">
       <Header isShowSearch searchFn={onSearchChange} />
@@ -102,7 +100,7 @@ const Profiles = () => {
             onPageChange={(newPage) => setPage(newPage - 1)}
             showActions
             onDelete={(item: any) => {
-              setId(item.id.id);
+              setId(item.id);
               openDelete();
             }}
             onEdit={(item: any) => {
@@ -113,7 +111,7 @@ const Profiles = () => {
         )}
       </div>
       <Dialog open={isOpen} onOpenChange={closeModal}>
-        <DialogContent className="overflow-y-auto max-h-[80%] max-w-[500px] rounded-md">
+        <DialogContent className="overflow-y-auto max-h-[80%] max-w-[400px] rounded-md">
           <DialogTitle className="text-lg font-bold mb-2 mt-6">
             افزودن پروفایل سازمان
           </DialogTitle>
@@ -125,15 +123,20 @@ const Profiles = () => {
           />
         </DialogContent>
       </Dialog>
-      <Popup isOpen={editOpen} onClose={closeEdit}>
-        <EditProfileForm
-          profileData={profile}
-          onProfileEdited={() => {
-            closeEdit();
-            refetch();
-          }}
-        />
-      </Popup>
+      <Dialog open={editOpen} onOpenChange={closeEdit}>
+        <DialogContent className="overflow-y-auto max-h-[80%] max-w-[400px] rounded-md">
+          <DialogTitle className="text-lg font-bold mb-2 mt-6">
+            ویرایش پروفایل سازمان
+          </DialogTitle>
+          <EditProfileForm
+            profileData={profile}
+            onProfileEdited={() => {
+              closeEdit();
+              refetch();
+            }}
+          />
+        </DialogContent>
+      </Dialog>
       <Popup isOpen={deleteOpen} onClose={closeDelete}>
         <DeleteModal
           onCancel={closeDelete}

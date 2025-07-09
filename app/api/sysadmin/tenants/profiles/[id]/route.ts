@@ -1,3 +1,4 @@
+import prisma from "@/utils/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
@@ -65,6 +66,10 @@ export async function DELETE(
         { status: response.status }
       );
     }
+
+    await prisma.profile.delete({
+      where: { things_id: id },
+    });
 
     return NextResponse.json(
       { message: "Profile deleted successfully" },
