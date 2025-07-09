@@ -1,7 +1,6 @@
 "use client";
 
-import Popup from "@/components/Popup";
-import React, { useState } from "react";
+import React from "react";
 import { Tab, Tabs } from "@/components/Tabs";
 import UnreadNotifs from "../_components/UnreadNotifs";
 import AllNotifs from "../_components/AllNotis";

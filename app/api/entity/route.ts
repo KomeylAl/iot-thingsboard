@@ -18,7 +18,6 @@ const getApiPathFromEntity = (entity: string) => {
       return "/api/edges";
     case "RULE_CHAIN":
       return "/api/ruleChains";
-    // سایر entityها...
     default:
       throw new Error("Invalid entity type");
   }
@@ -55,7 +54,7 @@ export async function GET(req: NextRequest) {
       const data = await response.json();
       console.log(data);
       return NextResponse.json(
-        { message: "Error getting devices" },
+        { message: "Error getting entities" },
         { status: response.status }
       );
     }
@@ -65,7 +64,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(data, { status: 200 });
   } catch (error: any) {
     return NextResponse.json(
-      { message: `Error geting devices: ${error.message}` },
+      { message: `Error geting entities: ${error.message}` },
       { status: 500 }
     );
   }

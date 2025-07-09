@@ -165,6 +165,19 @@ export function useAddDevice(onDeviceAdded: () => void) {
   });
 }
 
+export function useDeviceToken(deviceId: string) {
+  return useQuery({
+    queryKey: ["deviceToken"],
+    queryFn: async () => {
+      const res = await fetch(`/api/devices/${deviceId}/token`);
+      if (!res.ok) {
+        throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
+      }
+      return res.json();
+    },
+  });
+}
+
 export function useDeleteDevice(deviceId: string, onDeviceDeleted: () => void) {
   return useMutation({
     mutationFn: async () => {

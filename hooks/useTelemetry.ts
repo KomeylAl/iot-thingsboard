@@ -7,15 +7,18 @@ export function useKeys(deviceId: string) {
     enabled: false,
     queryFn: async () => {
       const res = await fetch(`/api/telemetry/keys?id=${deviceId}`);
+      if (!res.ok) toast.error("خطا! دوباره تلاش کنید.");
       return res.json();
     },
   });
 }
 
-export function useDeleteTenant(deviceId: string) {
-  return useMutation({
-    mutationFn: async () => {
-      const res = await fetch(`/api/telemetry?id=${deviceId}`, {
+export function useGetTelemtryInfo(deviceId: string, key: string) {
+  return useQuery({
+    queryKey: ["telemetry"],
+    enabled: false,
+    queryFn: async () => {
+      const res = await fetch(`/api/telemetry?id=${deviceId}&key=${key}`, {
         method: "GET",
       });
       if (!res.ok) {
@@ -23,9 +26,6 @@ export function useDeleteTenant(deviceId: string) {
       }
       const data = await res.json();
       return data;
-    },
-    onError(error) {
-      toast.error(error.message);
     },
   });
 }

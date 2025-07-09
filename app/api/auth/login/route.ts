@@ -24,9 +24,7 @@ export async function POST(req: NextRequest) {
     }
 
     const data = await response.json();
-    console.log(data);
     const userInfo = await getUserInfo(data.token);
-    console.log(userInfo);
 
     if (
       userInfo.authority !== "TENANT_ADMIN" &&
@@ -52,6 +50,7 @@ export async function POST(req: NextRequest) {
       headers,
     });
   } catch (error: any) {
+    console.log(error);
     return NextResponse.json(
       { message: `Something went wrong ${error.message}` },
       { status: 500 }

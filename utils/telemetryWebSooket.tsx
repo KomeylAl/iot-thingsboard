@@ -56,6 +56,7 @@ const TelemetryDevices = ({ deviceId }: { deviceId: string }) => {
 
         setData((prevData: any) => {
           const newData = transformTelemetryData(receivedData.data);
+          console.log(newData);
 
           // ترکیب داده‌های قبلی و جدید، بدون حذف ردیف‌های قدیمی
           const mergedData = [...prevData];

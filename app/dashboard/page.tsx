@@ -11,8 +11,11 @@ import { useAssets } from "@/hooks/useAssets";
 import { IoIosWarning } from "react-icons/io";
 import MainRequestsChart from "./_components/MainRequestsChart";
 import MainRequestList from "./_components/MainRequestList";
-import NotifIcon from "@/components/NotifIcon";
 import Header from "@/components/Header";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { DialogTitle } from "@radix-ui/react-dialog";
+import { useModal } from "@/hooks/useModal";
+import { useAlarms } from "@/hooks/useAlarms";
 
 export default function Home() {
   const {
@@ -26,7 +29,19 @@ export default function Home() {
     data: assetsData,
     isLoading: assetsLoading,
     error: assetsError,
-  } = useAssets();
+  } = useAssets(0, 1);
+
+  const {
+    data: alarmsData,
+    isLoading: alarmsLoading,
+    error: alarmsError,
+  } = useAlarms();
+
+  const {
+    data: majorAlarmsData,
+    isLoading: majorAlarmsLoading,
+    error: majorAlarmsError,
+  } = useAlarms(1, 0, "", "MAJOR");
 
   const options =
     devicesData?.data.map((device: any) => ({
@@ -34,10 +49,9 @@ export default function Home() {
       label: device.name,
     })) || [];
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [deviceId, setDeviceId] = useState("");
 
-  const toggleMpdal = () => setIsModalOpen(!isModalOpen);
+  const { isOpen, openModal, closeModal } = useModal();
 
   return (
     <div className="w-full min-h-screen flex flex-col overflow-y-auto">
@@ -54,7 +68,7 @@ export default function Home() {
               افزودن دستگاه
             </div>
             <button
-              onClick={toggleMpdal}
+              onClick={openModal}
               className="bg-white dark:bg-gray-700 py-2 px-2 rounded-md text-blue-600 dark:text-blue-300 hover:bg-blue-600 hover:text-white transition-all duration-300 shadow-md"
             >
               <BiPlus size={24} />
@@ -124,15 +138,39 @@ export default function Home() {
                 {/* اینجا می‌توان نمودار یا محتوای دیگری اضافه کرد */}
                 <p className="text-lg">هشدار ها</p>
                 <div className="w-full flex-1 flex flex-col items-center gap-3">
-                  <div className="w-full flex-1 p-8 bg-amber-400/20 rounded-md flex items-center justify-between hover:shadow-md">
-                    <p className="flex items-center gap-2 text-xl">
-                      بحرانی <IoIosWarning />
-                    </p>
-                    <p className="text-lg font-bold">0</p>
+                  <div className="w-full flex-1 p-8 bg-amber-400/20 rounded-md hover:shadow-md">
+                    {majorAlarmsError && <p>خطا در دریافت اطلاعات هشدار ها</p>}
+                    {majorAlarmsLoading ? (
+                      <div className="w-full flex items-center justify-center">
+                        <PuffLoader color="#3b82f6" size={45} />
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-between">
+                        <p className="flex items-center gap-2 text-xl">
+                          بحرانی <IoIosWarning />
+                        </p>
+                        <p className="text-lg font-bold">
+                          {majorAlarmsData?.totalElements ?? 0}
+                        </p>
+                      </div>
+                    )}
                   </div>
-                  <div className="w-full flex-1 p-8 bg-sky-400/20 rounded-md flex items-center justify-between hover:shadow-md">
-                    <p className="flex items-center gap-2 text-xl">مجموع</p>
-                    <p className="text-lg font-bold">0</p>
+                  <div className="w-full flex-1 p-8 bg-sky-400/20 rounded-md hover:shadow-md">
+                  {alarmsError && <p>خطا در دریافت اطلاعات هشدار ها</p>}
+                    {alarmsLoading ? (
+                      <div className="w-full flex items-center justify-center">
+                        <PuffLoader color="#3b82f6" size={45} />
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-between">
+                        <p className="flex items-center gap-2 text-xl">
+                          مجموع <IoIosWarning />
+                        </p>
+                        <p className="text-lg font-bold">
+                          {alarmsData?.totalElements ?? 0}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -162,14 +200,21 @@ export default function Home() {
       </div>
 
       {/* مودال افزودن دستگاه */}
-      <Popup isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <AddDevice
-          onDeviceAdded={() => {
-            setIsModalOpen(false);
-            refetchDevices();
-          }}
-        />
-      </Popup>
+      <Dialog open={isOpen} onOpenChange={closeModal}>
+        <DialogContent className="max-w-96 overflow-y-auto">
+          <DialogTitle className="text-lg font-bold mb-2 mt-6">
+            افزودن دستگاه
+          </DialogTitle>
+          <div className="mt-2">
+            <AddDevice
+              onDeviceAdded={() => {
+                closeModal();
+                refetchDevices();
+              }}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

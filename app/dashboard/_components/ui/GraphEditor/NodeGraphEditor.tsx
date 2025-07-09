@@ -2,7 +2,7 @@
 
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactFlow, {
   Background,
   Controls,
@@ -22,7 +22,6 @@ import { DialogTitle } from "@radix-ui/react-dialog";
 import dynamic from "next/dynamic";
 import { ConfigFormPops, RuleNode } from "@/lib/types";
 import {
-  useRuleChainMetadata,
   useUpdateRuleChainMetadata,
 } from "@/hooks/useRuleChains";
 import { toThingsboardMetadata } from "@/lib/utils";
@@ -112,7 +111,6 @@ export default function RuleChainEditorPage({
     }
 
     rfEdges.forEach((edge) => parsedEdges.push(edge));
-    // console.log(parsedEdges)
 
     setNodes(parsedNodes);
     setEdges(parsedEdges);
@@ -122,7 +120,7 @@ export default function RuleChainEditorPage({
     fetchRuleChain();
   }, []);
 
-  const handleAddNode = (type: NodeType) => {
+  const handleAddNode = (type: NodeType): any => {
     const id = `${Date.now()}`;
     const newNode: Node = {
       id,
@@ -178,7 +176,7 @@ export default function RuleChainEditorPage({
 
   const ConfigForm = dynamic<ConfigFormPops>(
     () => import(`../form/forms/${selectedNodeName}Form`),
-    { ssr: false, loading: () => <p>Loading...</p> }
+    { ssr: false, loading: () => <p>در حال بارگزاری...</p> }
   );
 
   const { mutate: saveMetadata, isPending } =
@@ -201,8 +199,6 @@ export default function RuleChainEditorPage({
       connections: payload.connections,
       ruleChainConnections: null,
     };
-
-    console.log(finalData);
     saveMetadata(finalData);
   };
 
@@ -221,14 +217,14 @@ export default function RuleChainEditorPage({
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        onConnect={(params) =>
+        onConnect={(params) =>{
           setEdges((eds) =>
             addEdge(
               { ...params, markerEnd: { type: MarkerType.ArrowClosed } },
               eds
             )
-          )
-        }
+          );
+        }}
         onNodeClick={(_, node) => handleEditNode(node)}
         fitView
       >

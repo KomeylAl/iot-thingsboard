@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler, Resolver } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useStoreProfile } from "@/hooks/useProfiles";
@@ -11,32 +11,80 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+
+interface AddProfileProps {
+  onProfileAdded: () => void;
+}
+
+type ProfileFormValues = {
+  name: string;
+  description?: string;
+  type?: string;
+
+  maxDevices?: number;
+  maxDashboards?: number;
+  maxAssets?: number;
+  maxUsers?: number;
+  maxCustomers?: number;
+  maxRuleChains?: number;
+
+  maxEmails?: number;
+  smsEnabled?: boolean;
+  maxSms?: number;
+
+  limit1?: number;
+  interval1?: number;
+  limit2?: number;
+  interval2?: number;
+
+  default?: boolean;
+};
+
+const entityKeys = [
+  "maxDevices",
+  "maxDashboards",
+  "maxAssets",
+  "maxUsers",
+  "maxCustomers",
+  "maxRuleChains",
+] as const;
+
+type EntityKey = (typeof entityKeys)[number];
+
+const numberField = () =>
+  yup
+    .number()
+    .transform((value, originalValue) =>
+      originalValue === "" ? undefined : value
+    )
+    .optional();
 
 const schema = yup.object({
   name: yup.string().required("نام الزامی است"),
   description: yup.string().optional(),
 
   type: yup.string().default("DEFAULT"),
-  maxDevices: yup.number().optional(),
-  maxAssets: yup.number().optional(),
-  maxCustomers: yup.number().optional(),
-  maxUsers: yup.number().optional(),
-  maxDashboards: yup.number().optional(),
-  maxRuleChains: yup.number().optional(),
-  maxEmails: yup.number().optional().default(0),
+
+  maxDevices: numberField(),
+  maxDashboards: numberField(),
+  maxAssets: numberField(),
+  maxUsers: numberField(),
+  maxCustomers: numberField(),
+  maxRuleChains: numberField(),
+
+  maxEmails: numberField().default(0),
   smsEnabled: yup.boolean().optional().default(false),
-  maxSms: yup.number().optional().default(0),
-  limit1: yup.number().optional().min(1),
-  interval1: yup.number().optional().min(1),
-  limit2: yup.number().optional().min(1),
-  interval2: yup.number().optional().min(1),
+  maxSms: numberField().default(0),
 
-  default: yup.bool(),
+  limit1: numberField().min(1),
+  interval1: numberField().min(1),
+  limit2: numberField().min(1),
+  interval2: numberField().min(1),
+
+  default: yup.boolean().optional(),
 });
-
-interface AddProfileProps {
-  onProfileAdded: () => void;
-}
 
 const AddProfileForm = ({ onProfileAdded }: AddProfileProps) => {
   const { mutate: addProfile, isPending } = useStoreProfile(() => {
@@ -44,7 +92,16 @@ const AddProfileForm = ({ onProfileAdded }: AddProfileProps) => {
   });
 
   const [isSmsShow, setIsSmsShow] = useState(false);
-  const toggleSmsShowe = () => setIsSmsShow(!isSmsShow);
+  const toggleSmsShow = () => setIsSmsShow((prev) => !prev);
+
+  const [unitPrices, setUnitPrices] = useState<Record<EntityKey, number>>({
+    maxDevices: 0,
+    maxDashboards: 0,
+    maxAssets: 0,
+    maxUsers: 0,
+    maxCustomers: 0,
+    maxRuleChains: 0,
+  });
 
   const {
     register,
@@ -52,24 +109,41 @@ const AddProfileForm = ({ onProfileAdded }: AddProfileProps) => {
     reset,
     watch,
     formState: { errors, isSubmitting },
-  } = useForm({
-    resolver: yupResolver(schema),
+  } = useForm<ProfileFormValues>({
+    resolver: yupResolver(schema) as Resolver<ProfileFormValues>,
   });
 
-  const onSubmit = (data: any) => {
-    addProfile(data);
+  const handleUnitPriceChange = (field: EntityKey, value: number) => {
+    setUnitPrices((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const watchValues = watch(entityKeys);
+  const totalPrice = watchValues.reduce((acc, val, idx) => {
+    const count = Number(val) || 0;
+    const price = unitPrices[entityKeys[idx]] || 0;
+    return acc! + count * price;
+  }, 0);
+
+  const onSubmit: SubmitHandler<ProfileFormValues> = (data) => {
+    const sendData = {
+      ...data,
+      unitPrices,
+    };
+    console.log(sendData);
+    addProfile(sendData);
   };
 
   return (
-    <div className="flex flex-col items-start gap-8 max-h-screen overflow-auto">
-      <h1 className="font-bold text-xl">افزودن پروفایل سازمان</h1>
+    <div className="flex flex-col items-start gap-8">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col gap-3 w-72 md:w-96"
+        className="flex flex-col gap-3 w-full"
       >
-        <input
+        <Input
           {...register("name")}
-          className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
           placeholder="عنوان پروفایل*"
         />
         {errors.name && (
@@ -81,101 +155,82 @@ const AddProfileForm = ({ onProfileAdded }: AddProfileProps) => {
             <AccordionTrigger>کانفیگ پروفایل</AccordionTrigger>
             <AccordionContent>
               <div className="flex flex-col gap-3">
-                <div className="border border-gray-200 rounded-lg p-3">
-                  <p>موجودیت ها (از 0 تا بینهایت)</p>
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-3">
+                  <p className="font-semibold">موجودیت‌ها + قیمت گذاری</p>
                   <div className="mt-3 grid grid-cols-2 gap-3">
-                    <input
-                      {...register("maxDevices")}
-                      type="number"
-                      className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
-                      placeholder="حداکثر دستگاه*"
-                    />
-                    <input
-                      {...register("maxDashboards")}
-                      type="number"
-                      className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
-                      placeholder="حداکثر داشبورد*"
-                    />
-                    <input
-                      {...register("maxAssets")}
-                      type="number"
-                      className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
-                      placeholder="حداکثر دارایی*"
-                    />
-                    <input
-                      {...register("maxUsers")}
-                      type="number"
-                      className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
-                      placeholder="حداکثر کاربر*"
-                    />
-                    <input
-                      {...register("maxCustomers")}
-                      type="number"
-                      className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
-                      placeholder="حداکثر مشتری*"
-                    />
-                    <input
-                      {...register("maxRuleChains")}
-                      type="number"
-                      className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
-                      placeholder="حداکثر زنجیره قواعد*"
-                    />
+                    {entityKeys.map((key) => (
+                      <div key={key} className="flex flex-col gap-1">
+                        <Input
+                          {...register(key)}
+                          type="number"
+                          placeholder={`تعداد ${key}`}
+                        />
+                        <Input
+                          type="number"
+                          value={unitPrices[key]}
+                          onChange={(e) =>
+                            handleUnitPriceChange(key, Number(e.target.value))
+                          }
+                          placeholder={`قیمت هر ${key}`}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-4 p-3 border-t text-right">
+                    <p className="font-semibold">
+                      قیمت کل پروفایل: {totalPrice?.toLocaleString() ?? 0} تومان
+                    </p>
                   </div>
                 </div>
 
-                <div className="border border-gray-200 rounded-lg p-3">
-                  <p>حداکثر تعداد پیام (از 0 تا بینهایت)</p>
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-3">
+                  <p>حداکثر تعداد پیام</p>
                   <div className="mt-3 grid grid-cols-2 gap-3">
-                    <input
+                    <Input
                       {...register("limit1")}
                       type="number"
-                      className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
                       placeholder="حداکثر پیام در بازه اول*"
                     />
-                    <input
+                    <Input
                       {...register("interval1")}
                       type="number"
-                      className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
                       placeholder="زمان بازه اول (ثانیه)*"
                     />
-                    <input
+                    <Input
                       {...register("limit2")}
                       type="number"
-                      className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
                       placeholder="حداکثر پیام در بازه دوم*"
                     />
-                    <input
+                    <Input
                       {...register("interval2")}
                       type="number"
-                      className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
                       placeholder="زمان بازه دوم (ثانیه)*"
                     />
                   </div>
                 </div>
 
-                <div className="border border-gray-200 rounded-lg p-3">
-                  <p>هشدار ها و اعلانات (از 0 تا بینهایت)</p>
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-3">
+                  <p>هشدارها و اعلانات</p>
                   <label className="flex items-center gap-2 mt-3">
                     <input
                       {...register("smsEnabled")}
                       type="checkbox"
-                      onClick={toggleSmsShowe}
+                      onClick={toggleSmsShow}
                     />
                     فعال سازی پیامک
                   </label>
                   <div className="mt-3 grid grid-cols-2 gap-3">
-                    <input
+                    <Input
                       {...register("maxSms")}
                       type="number"
-                      className={`bg-gray-100 p-3 w-full rounded-lg border border-gray-200 ${
+                      className={` ${
                         isSmsShow ? "block" : "hidden"
                       }`}
                       placeholder="حداکثر تعداد پیامک*"
                     />
-                    <input
+                    <Input
                       {...register("maxEmails")}
                       type="number"
-                      className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
                       placeholder="حداکثر تعداد ایمیل*"
                     />
                   </div>
@@ -185,9 +240,8 @@ const AddProfileForm = ({ onProfileAdded }: AddProfileProps) => {
           </AccordionItem>
         </Accordion>
 
-        <textarea
+        <Textarea
           {...register("description")}
-          className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
           placeholder="توضیحات"
         />
 

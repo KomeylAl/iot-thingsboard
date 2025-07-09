@@ -31,6 +31,7 @@ export async function GET(
     }
 
     const credentials = await tokenResponse.json();
+    console.log(credentials);
 
     const response = await fetch(
       `${process.env.THINGSBOARD_URL}/api/v1/${credentials.credentialsId}/telemetry`,
@@ -40,11 +41,13 @@ export async function GET(
           "Content-type": "application/json",
           Authorization: `Bearer ${token?.value}`,
         },
-        body: JSON.stringify({ temperature }),
+        body: JSON.stringify({ temperature, weather: "Rainy" }),
       }
     );
 
     if (!response.ok) {
+      const data = await response.json();
+      console.log(data);
       return NextResponse.json(
         { message: "Failed to send teemtry data" },
         { status: response.status }
@@ -59,7 +62,7 @@ export async function GET(
       where: { things_id: id },
     });
 
-    await prisma.request.create({
+    tenant && device && await prisma.request.create({
       data: {
         requestType: "telemetry",
         status: "success",

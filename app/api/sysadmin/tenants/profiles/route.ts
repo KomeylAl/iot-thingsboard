@@ -6,7 +6,7 @@ export async function GET(req: NextRequest) {
   const pageSize = params.get("pageSize") || 1;
   const page = params.get("page") || 0;
   const textSearch = params.get("textSearch") || "";
-  
+
   try {
     const response = await fetch(
       `${process.env.THINGSBOARD_URL}/api/tenantProfiles?pageSize=${pageSize}&page=${page}&textSearch=${textSearch}&sortProperty=createdTime&sortOrder=DESC`,
@@ -65,10 +65,10 @@ export async function POST(req: NextRequest) {
       interval1,
       limit2,
       interval2,
+      unitPrices,
     } = data;
 
-    const id = set_id && {id: set_id,
-      entityType: "TENANT_PROFILE",}
+    const id = set_id && { id: set_id, entityType: "TENANT_PROFILE" };
 
     const reqData = JSON.stringify({
       id,
@@ -86,22 +86,27 @@ export async function POST(req: NextRequest) {
           maxEmails,
           smsEnabled,
           maxSms,
-          transportTenantMsgRateLimit: `${limit1}:${interval1},${limit2}:${interval2}`
+          transportTenantMsgRateLimit: `${limit1}:${interval1},${limit2}:${interval2}`,
+          maxDataPointsPerRollingArg: 1,
         },
       },
     });
 
-    const response = await fetch(`${process.env.THINGSBOARD_URL}/api/tenantProfile`, {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-        Authorization: `Bearer ${token?.value}`,
-      },
-      body: reqData
-    });
+    const response = await fetch(
+      `${process.env.THINGSBOARD_URL}/api/tenantProfile`,
+      {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${token?.value}`,
+        },
+        body: reqData,
+      }
+    );
 
     if (!response.ok) {
       const data = await response.json();
+      console.log(data);
       return NextResponse.json(
         { message: `Error adding profile: ${data}` },
         { status: response.status }

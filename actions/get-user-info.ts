@@ -3,7 +3,7 @@ import { parseJwt } from "@/utils/token";
 export async function getUserInfo(token: string | undefined) {
   const decoded = parseJwt(token);
   try {
-    const user = await fetch(
+    const response = await fetch(
       `${process.env.THINGSBOARD_URL}/api/user/${decoded.userId}`,
       {
         method: "GET",
@@ -14,7 +14,12 @@ export async function getUserInfo(token: string | undefined) {
       }
     );
 
-    const userInfo = await user.json();
+    if (!response.ok) {
+      const data = await response.json();
+      console.log(data);
+    }
+
+    const userInfo = await response.json();
     return userInfo;
   } catch (error) {
     console.log("ERR_GETING_USER_INFO", error);

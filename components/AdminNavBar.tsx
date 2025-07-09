@@ -14,27 +14,27 @@ const links = [
   {
     title: "داشبورد",
     href: "/sysadmin",
-    icon: <MdSpaceDashboard size={20}/>
+    icon: <MdSpaceDashboard size={20} />,
   },
   {
     title: "سازمان ها",
     href: "/sysadmin/tenants",
-    icon: <RiBuilding2Fill size={20}/>
+    icon: <RiBuilding2Fill size={20} />,
   },
   {
     title: "پروفایل ها",
     href: "/sysadmin/profiles",
-    icon: <AiFillProfile size={20}/>
+    icon: <AiFillProfile size={20} />,
   },
   {
     title: "اعلانات",
     href: "/sysadmin/notifications",
-    icon: <IoNotifications size={20}/>
+    icon: <IoNotifications size={20} />,
   },
   {
     title: "تنظیمات",
     href: "/sysadmin/settings",
-    icon: <IoSettings size={20}/>
+    icon: <IoSettings size={20} />,
   },
 ];
 
@@ -52,7 +52,9 @@ const AdminNavBar = () => {
               : ""
           }`}
         >
-          <Link className="flex items-center gap-3" href={link.href}>{link.icon} {link.title}</Link>
+          <Link className="flex items-center gap-3" href={link.href}>
+            {link.icon} {link.title}
+          </Link>
         </div>
       ))}
     </div>

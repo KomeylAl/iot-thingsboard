@@ -12,6 +12,8 @@ import { debounce } from "lodash";
 import Header from "@/components/Header";
 import Table from "@/components/Table";
 import { useModal } from "@/hooks/useModal";
+import { convertISOToJalali } from "@/utils/convert";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 const Profiles = () => {
   const [page, setPage] = useState(0);
@@ -41,7 +43,11 @@ const Profiles = () => {
   const columns = [
     { header: "نام", accessor: "name", type: "string" },
     { header: "توضیحات", accessor: "description", type: "string" },
-    { header: "زمان ایجاد", accessor: "createdTime", type: "string" },
+    {
+      header: "زمان ایجاد",
+      accessor: (item: any) => convertISOToJalali(item.createdTime),
+      type: "string",
+    },
   ];
 
   const { isOpen, openModal, closeModal } = useModal();
@@ -60,6 +66,8 @@ const Profiles = () => {
     closeDelete();
     refetch();
   });
+
+  console.log(data);
 
   return (
     <div className="w-full h-screen">
@@ -104,14 +112,19 @@ const Profiles = () => {
           />
         )}
       </div>
-      <Popup isOpen={isOpen} onClose={closeModal}>
-        <AddProfileForm
-          onProfileAdded={() => {
-            closeModal();
-            refetch();
-          }}
-        />
-      </Popup>
+      <Dialog open={isOpen} onOpenChange={closeModal}>
+        <DialogContent className="overflow-y-auto max-h-[80%] max-w-[500px] rounded-md">
+          <DialogTitle className="text-lg font-bold mb-2 mt-6">
+            افزودن پروفایل سازمان
+          </DialogTitle>
+          <AddProfileForm
+            onProfileAdded={() => {
+              closeModal();
+              refetch();
+            }}
+          />
+        </DialogContent>
+      </Dialog>
       <Popup isOpen={editOpen} onClose={closeEdit}>
         <EditProfileForm
           profileData={profile}

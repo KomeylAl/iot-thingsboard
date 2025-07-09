@@ -28,7 +28,7 @@ interface EditDeviceProps {
 }
 
 const EditDeviceForm = ({ deviceData, onDeviceUpdated }: EditDeviceProps) => {
-  const { data, isLoading } = useDeviceProfiles(100, 0);
+  const { data, isLoading } = useDeviceProfiles(0, 100);
   const { mutate: updateDevice, isPending } = useUpdateDevice(() => {
     onDeviceUpdated();
   });

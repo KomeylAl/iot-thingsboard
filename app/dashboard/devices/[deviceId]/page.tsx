@@ -5,6 +5,7 @@ import {
   useDeleteDevice,
   useDevice,
   useDeviceAlarms,
+  useDeviceToken,
   useTestDevice,
 } from "@/hooks/useDevices";
 import { useRouter } from "next/navigation";
@@ -18,9 +19,13 @@ import DeviceAudits from "../../_components/DeviceAudits";
 import DeviceEvents from "../../_components/DeviceEvents";
 import EditDeviceForm from "../../_components/EditDeviceForm";
 import DeleteModal from "@/components/DeleteModal";
-import { useUser } from "@/hooks/useUser";
 import { alarmColumns } from "@/utils/columns";
 import EntityTable from "@/components/ui/EntityTable";
+import { Button } from "@/components/ui/button";
+import { useModal } from "@/hooks/useModal";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import CopyField from "@/components/ui/custom/CopyField";
+import { useUser } from "@/context/UserContext";
 
 interface Params {
   deviceId: string;
@@ -43,11 +48,16 @@ const DevicePage = ({ params }: PageProps) => {
   } = useDeviceAlarms(deviceId, 10, 0);
 
   const { data: serverData } = useDevice(deviceId);
-  const { data: user } = useUser();
+  const { user } = useUser();
   const { isLoading: testLoading, refetch: testRefetch } = useTestDevice(
     deviceId,
-    user?.data.tenantId.id
+    user?.tenantId.id
   );
+  const {
+    data: token,
+    isLoading: tokenLoading,
+    error: tokenError,
+  } = useDeviceToken(deviceId);
   const { mutate: deleteDevice, isPending: isDeleting } = useDeleteDevice(
     deviceId,
     () => {
@@ -59,6 +69,8 @@ const DevicePage = ({ params }: PageProps) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const toggleMpdal = () => setIsModalOpen(!isModalOpen);
 
+  const { isOpen, openModal, closeModal } = useModal();
+
   return (
     <div className="p-6 lg:p-20 w-full h-screen flex flex-col items-center justify-between gap-6">
       <div className="w-full h-[15%] flex flex-col items-start justify-between">
@@ -67,20 +79,22 @@ const DevicePage = ({ params }: PageProps) => {
             دستگاه {data && data.name}
           </h1>
           <div className="flex items-center gap-4">
-            <button
+            <Button onClick={openModal}>دریافت Token</Button>
+            <Button
+              variant="outline"
               onClick={() => testRefetch()}
               className="py-2 px-4 border border-blue-500 text-blue-500 rounded-lg flex items-center"
             >
               {testLoading ? "در حال ارسال..." : "تست ارسال داده"}
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={toggleMpdal}
               className="py-2 px-4 bg-blue-500 text-white rounded-lg flex items-center"
             >
               <BiPencil size={24} />
               ویرایش اطلاعات دستگاه
-            </button>
-            <button
+            </Button>
+            <Button
               disabled={isDeleting}
               onClick={() => setIsDeleteModalOpen(true)}
               className={`py-2 px-4 bg-rose-500 text-white rounded-lg flex items-center ${
@@ -89,7 +103,7 @@ const DevicePage = ({ params }: PageProps) => {
             >
               <MdDelete size={24} />
               {isDeleting ? "در حال حذف" : "حذف دستگاه"}
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -148,6 +162,24 @@ const DevicePage = ({ params }: PageProps) => {
           onCancel={() => setIsDeleteModalOpen(false)}
         />
       </Popup>
+      <Dialog open={isOpen} onOpenChange={closeModal}>
+        <DialogContent className="max-h-[80vh] overflow-y-auto">
+          <DialogTitle className="text-lg font-bold mb-2 mt-6">
+            توکن دستگاه
+          </DialogTitle>
+          {tokenLoading && (
+            <div className="w-full h-full flex items-center justify-center">
+              <PuffLoader color="#3b82f6" />
+            </div>
+          )}
+          {tokenError && (
+            <div className="w-full h-full flex items-center justify-center">
+              <p style={{ color: "red" }}>{tokenError.message}</p>
+            </div>
+          )}
+          {token && <CopyField value={token} />}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

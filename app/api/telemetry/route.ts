@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: NextRequest, res: NextResponse) {
+export async function GET(req: NextRequest, res: NextResponse) {
   const token = req.cookies.get("token");
   const params = req.nextUrl.searchParams;
   const id = params.get("id") || "";
+  const key = params.get("key") || "";
+
+  const now = Date.now();
+  const sevenDaysAgo = now - 7 * 24 * 60 * 60 * 1000;
+
+  const startTs = sevenDaysAgo;
+  const endTs = now;
 
   if (!token || !token.value) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -11,7 +18,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
   try {
     const response = await fetch(
-      `${process.env.THINGSBOARD_URL}/api/plugins/telemetry/DEVICE/2843c5b0-f771-11ef-a623-d54177c2ca67/keys/timeseries`,
+      `${process.env.THINGSBOARD_URL}/api/plugins/telemetry/DEVICE/${id}/values/timeseries?keys=${key}&startTs=${"1751379732000"}&endTs=${endTs}&interval=0&limit=100&useStrictDataTypes=false`,
       {
         method: "GET",
         headers: {
@@ -23,7 +30,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
     if (!response.ok) {
       return NextResponse.json(
-        { message: "Error getting keys" },
+        { message: "Error getting telemetries" },
         { status: response.status }
       );
     }
@@ -33,7 +40,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
     return NextResponse.json(data, { status: 200 });
   } catch (error: any) {
     return NextResponse.json(
-      { message: `Error geting keys: ${error.message}` },
+      { message: `Error geting telemetries: ${error.message}` },
       { status: 500 }
     );
   }
