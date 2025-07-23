@@ -38,13 +38,10 @@ export async function POST(req: NextRequest) {
         status: "success",
         deviceId: intDeviseId,
         tenantId: intTenantId,
-      }
+      },
     });
 
-    return NextResponse.json(
-      { request },
-      { status: 201 }
-    );
+    return NextResponse.json({ request }, { status: 201 });
   } catch (error: any) {
     return NextResponse.json(
       { message: `Error getting tenants: ${error.message}` },

@@ -5,7 +5,7 @@ import React, { useCallback, useState } from "react";
 import { BiPlus } from "react-icons/bi";
 import { PuffLoader } from "react-spinners";
 import { useCustomers } from "@/hooks/useCustomers";
-import AddCustomerForm from "../_components/AddCustomerForm";
+import AddCustomerForm from "../_components/forms/AddCustomerForm";
 import { debounce } from "lodash";
 import Header from "@/components/Header";
 import Table from "@/components/Table";

@@ -1,11 +1,13 @@
 "use client";
 
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import ReactSelect from "react-select";
 import { useEffect } from "react";
 import { useUpdateCustomer } from "@/hooks/useCustomers";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 
 const schema = yup.object({
   title: yup.string().required("عنوان الزامی است"),
@@ -18,9 +20,11 @@ const schema = yup.object({
   phone: yup.string().optional(),
   region: yup.string().optional(),
   profile: yup.string().optional(),
-  additionalInfo: yup.object({
-    description: yup.string().optional(),
-  }),
+  additionalInfo: yup
+    .object({
+      description: yup.string().optional(),
+    })
+    .optional(),
   email: yup.string().email("ایمیل معتبر نیست").optional(),
 });
 
@@ -68,7 +72,7 @@ const EditCustomerForm = ({
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col gap-3 w-72 md:w-96"
       >
-        <input
+        <Input
           {...register("title")}
           className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
           placeholder="عنوان*"
@@ -79,45 +83,45 @@ const EditCustomerForm = ({
           </p>
         )}
 
-        <input
+        <Input
           {...register("country")}
           className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
           placeholder="کشور"
         />
         <div className="w-full flex items-center gap-3">
-          <input
+          <Input
             {...register("city")}
             className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
             placeholder="شهر"
           />
-          <input
+          <Input
             {...register("state")}
             className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
             placeholder="استان"
           />
-          <input
+          <Input
             {...register("zip")}
             className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
             placeholder="کد پستی"
           />
         </div>
 
-        <input
+        <Input
           {...register("address")}
           className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
           placeholder="نشانی"
         />
-        <input
+        <Input
           {...register("address2")}
           className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
           placeholder="نشانی ۲"
         />
-        <input
+        <Input
           {...register("phone")}
           className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
           placeholder="تلفن"
         />
-        <input
+        <Input
           {...register("email")}
           className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
           placeholder="ایمیل"
@@ -128,19 +132,19 @@ const EditCustomerForm = ({
           </p>
         )}
 
-        <textarea
+        <Textarea
           {...register("additionalInfo.description")}
           className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
           placeholder="توضیحات"
         />
 
-        <button
+        <Button
           type="submit"
           disabled={isPending || isSubmitting}
           className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg"
         >
           {isPending || isSubmitting ? "⏳ در حال ویرایش..." : "ویرایش مشتری"}
-        </button>
+        </Button>
       </form>
     </div>
   );

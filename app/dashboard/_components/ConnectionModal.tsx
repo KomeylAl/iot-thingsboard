@@ -1,6 +1,6 @@
 "use client";
 
-import { NodeType, nodeTypeConfigs } from "./ui/form/nodeTypes";
+import { NodeType, nodeTypeConfigs } from "./ui/GraphEditor/nodeTypes";
 
 interface Props {
   nodeType: NodeType;

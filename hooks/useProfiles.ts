@@ -29,7 +29,7 @@ export function useDeviceProfiles(
     queryKey: ["deviceProfiles", page, pageSize],
     queryFn: async () => {
       const res = await fetch(
-        `/api/devices/profiles?pageSize=${pageSize}&page=${page}&textSearch=${textSearch}`
+        `/api/tenant/devices/profiles?pageSize=${pageSize}&page=${page}&textSearch=${textSearch}`
       );
       if (!res.ok) {
         throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
@@ -48,7 +48,7 @@ export function useAssetProfiles(
     queryKey: ["assetProfiles", page, pageSize],
     queryFn: async () => {
       const res = await fetch(
-        `/api/assets/profiles?pageSize=${pageSize}&page=${page}&textSearch=${textSearch}`
+        `/api/tenant/assets/profiles?pageSize=${pageSize}&page=${page}&textSearch=${textSearch}`
       );
       if (!res.ok) {
         throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
@@ -128,7 +128,7 @@ export function useDeleteProfile(
 export function useStoreDevicesProfile(onProfileStored: () => void) {
   return useMutation({
     mutationFn: async (profileData: any) => {
-      const res = await fetch("/api/devices/profiles", {
+      const res = await fetch("/api/tenant/devices/profiles", {
         method: "POST",
         body: JSON.stringify(profileData),
       });
@@ -150,7 +150,7 @@ export function useStoreDevicesProfile(onProfileStored: () => void) {
 export function useUpdateDevicesProfile(onProfileStored: () => void) {
   return useMutation({
     mutationFn: async (profileData: any) => {
-      const res = await fetch("/api/devices/profiles", {
+      const res = await fetch("/api/tenant/devices/profiles", {
         method: "POST",
         body: JSON.stringify(profileData),
       });
@@ -172,7 +172,7 @@ export function useUpdateDevicesProfile(onProfileStored: () => void) {
 export function useDeleteDevicesProfile(onDeletedProfile: () => void) {
   return useMutation({
     mutationFn: async (profileId: string) => {
-      const res = await fetch(`/api/devices/profiles/${profileId}`, {
+      const res = await fetch(`/api/tenant/devices/profiles/${profileId}`, {
         method: "DELETE",
       });
       if (!res.ok) {
@@ -192,7 +192,7 @@ export function useDeleteDevicesProfile(onDeletedProfile: () => void) {
 export function useStoreAssetsProfile(onProfileStored: () => void) {
   return useMutation({
     mutationFn: async (profileData: any) => {
-      const res = await fetch("/api/assets/profiles", {
+      const res = await fetch("/api/tenant/assets/profiles", {
         method: "POST",
         body: JSON.stringify(profileData),
       });
@@ -214,7 +214,7 @@ export function useStoreAssetsProfile(onProfileStored: () => void) {
 export function useUpdateAssetsProfile(onProfileStored: () => void) {
   return useMutation({
     mutationFn: async (profileData: any) => {
-      const res = await fetch("/api/assets/profiles", {
+      const res = await fetch("/api/tenant/assets/profiles", {
         method: "POST",
         body: JSON.stringify(profileData),
       });
@@ -236,7 +236,7 @@ export function useUpdateAssetsProfile(onProfileStored: () => void) {
 export function useDeleteAssetsProfile(onDeletedProfile: () => void) {
   return useMutation({
     mutationFn: async (profileId: string) => {
-      const res = await fetch(`/api/assets/profiles/${profileId}`, {
+      const res = await fetch(`/api/tenant/assets/profiles/${profileId}`, {
         method: "DELETE",
       });
       if (!res.ok) {

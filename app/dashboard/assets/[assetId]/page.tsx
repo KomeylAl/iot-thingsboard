@@ -11,7 +11,7 @@ import { useAsset, useDeleteAsset } from "@/hooks/useAssets";
 import AssetAudits from "../../_components/AssetAudits";
 import AssetAlarms from "../../_components/AssetAlarms";
 import AssetEvents from "../../_components/AssetEvents";
-import EditAssetForm from "../../_components/EditAssetForm";
+import EditAssetForm from "../../_components/forms/EditAssetForm";
 import DeleteModal from "@/components/DeleteModal";
 
 interface Params {

@@ -70,10 +70,8 @@ const MainRequestList = ({
     }));
   }, [telemetryData, selectedKey]);
 
-  console.log(listData);
-
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 max-h-screen overflow-y-auto">
       <p className="text-lg">لیست Telemetry دستگاه</p>
 
       <div className="flex items-center gap-3">
@@ -137,7 +135,7 @@ const MainRequestList = ({
             {listData.map((item: any, index: any) => (
               <div
                 key={index}
-                className="w-full bg-white border border-gray-100 rounded-md p-2"
+                className="w-full bg-white border border-gray-100 dark:bg-gray-600 dark:border-gray-700 rounded-md p-2"
               >
                 <p>زمان: {item.time}</p>
                 <p>مقدار: {item.value}</p>

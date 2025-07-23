@@ -10,7 +10,7 @@ export function useDevices(
     queryKey: ["devices", page, pageSize],
     queryFn: async () => {
       const res = await fetch(
-        `/api/devices?page=${page}&pageSize=${pageSize}&textSearch=${textSearch}`
+        `/api/tenant/devices?page=${page}&pageSize=${pageSize}&textSearch=${textSearch}`
       );
       if (!res.ok) {
         throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
@@ -29,7 +29,7 @@ export function useSearchDevices(
     queryKey: ["serachDevices"],
     queryFn: async () => {
       const res = await fetch(
-        `/api/devices/search?page=${page}&pageSize=${pageSize}&textSearch=${textSearch}`
+        `/api/tenant/devices/search?page=${page}&pageSize=${pageSize}&textSearch=${textSearch}`
       );
       if (!res.ok) {
         throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
@@ -43,7 +43,7 @@ export function useLocalDevices() {
   return useQuery({
     queryKey: ["localDevices"],
     queryFn: async () => {
-      const res = await fetch("/api/devices/local");
+      const res = await fetch("/tenant/api/devices/local");
       if (!res.ok) {
         throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
       }
@@ -56,7 +56,7 @@ export function useDevice(deviceId: string) {
   return useQuery({
     queryKey: ["device"],
     queryFn: async () => {
-      const res = await fetch(`/api/devices/${deviceId}`);
+      const res = await fetch(`/api/tenant/devices/${deviceId}`);
       if (!res.ok) {
         throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
       }
@@ -70,7 +70,7 @@ export function useTestDevice(deviceId: string, tenantId: string) {
     queryKey: ["testDevice"],
     queryFn: async () => {
       const res = await fetch(
-        `/api/devices/${deviceId}/test-telemtry?tenantId=${tenantId}`
+        `/api/tenant/devices/${deviceId}/test-telemtry?tenantId=${tenantId}`
       );
       if (!res.ok) {
         throw new Error("مشکلی در ارسال اطلاعات پیش آمده!");
@@ -91,7 +91,7 @@ export function useDeviceAlarms(
     queryKey: ["deviceAlarms"],
     queryFn: async () => {
       const res = await fetch(
-        `/api/devices/${deviceId}/alarms?pageSize=${pageSize}&page=${page}`
+        `/api/tenant/devices/${deviceId}/alarms?pageSize=${pageSize}&page=${page}`
       );
       if (!res.ok) {
         const data = await res.json();
@@ -111,7 +111,7 @@ export function useDeviceAudits(
     queryKey: ["deviceAudits"],
     queryFn: async () => {
       const res = await fetch(
-        `/api/devices/${deviceId}/audits?pageSize=${pageSize}&page=${page}`
+        `/api/tenant/devices/${deviceId}/audits?pageSize=${pageSize}&page=${page}`
       );
       if (!res.ok) {
         const data = await res.json();
@@ -132,7 +132,7 @@ export function useDeviceEvents(
     queryKey: ["deviceEvents"],
     queryFn: async () => {
       const res = await fetch(
-        `/api/devices/${deviceId}/events?tenantId=${tenantId}&pageSize=${pageSize}&page=${page}`
+        `/api/tenant/devices/${deviceId}/events?tenantId=${tenantId}&pageSize=${pageSize}&page=${page}`
       );
       if (!res.ok) {
         const data = await res.json();
@@ -146,7 +146,7 @@ export function useDeviceEvents(
 export function useAddDevice(onDeviceAdded: () => void) {
   return useMutation({
     mutationFn: async (assetData: any) => {
-      const res = await fetch("/api/devices", {
+      const res = await fetch("/api/tenant/devices", {
         method: "POST",
         body: JSON.stringify(assetData),
       });
@@ -169,7 +169,7 @@ export function useDeviceToken(deviceId: string) {
   return useQuery({
     queryKey: ["deviceToken"],
     queryFn: async () => {
-      const res = await fetch(`/api/devices/${deviceId}/token`);
+      const res = await fetch(`/api/tenant/devices/${deviceId}/token`);
       if (!res.ok) {
         throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
       }
@@ -181,7 +181,7 @@ export function useDeviceToken(deviceId: string) {
 export function useDeleteDevice(deviceId: string, onDeviceDeleted: () => void) {
   return useMutation({
     mutationFn: async () => {
-      const res = await fetch(`/api/devices/${deviceId}`, {
+      const res = await fetch(`/api/tenant/devices/${deviceId}`, {
         method: "DELETE",
       });
       if (!res.ok) {
@@ -201,7 +201,7 @@ export function useDeleteDevice(deviceId: string, onDeviceDeleted: () => void) {
 export function useUpdateDevice(onDeviceUpdated: () => void) {
   return useMutation({
     mutationFn: async (tenantData: any) => {
-      const res = await fetch("/api/devices/", {
+      const res = await fetch("/api/tenant/devices/", {
         method: "POST",
         body: JSON.stringify(tenantData),
       });
@@ -243,7 +243,7 @@ export function useLocalTenantDevices() {
   return useQuery({
     queryKey: ["ocalTenantDevices"],
     queryFn: async () => {
-      const res = await fetch("/api/devices");
+      const res = await fetch("/api/tenant/devices");
       if (!res.ok) {
         throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
       }

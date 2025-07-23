@@ -1,5 +1,3 @@
-// صفحه ویرایش Rule Chain با React Flow با قابلیت نمایش فرم کانفیگ نود
-
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -16,7 +14,7 @@ import ReactFlow, {
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { Button } from "@/components/ui/button";
-import { NodeType, nodeTypeConfigs } from "../form/nodeTypes";
+import { NodeType, nodeTypeConfigs } from "./nodeTypes";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import dynamic from "next/dynamic";
@@ -43,9 +41,8 @@ export default function RuleChainEditorPage({
   const [defaultConfig, setDefaultConfig] = useState<any>(null);
 
   const fetchRuleChain = async () => {
-    const res = await fetch(`/api/rule-chains/${ruleChainId}/metadata`);
+    const res = await fetch(`/api/tenant/rule-chains/${ruleChainId}/metadata`);
     const metadata = await res.json();
-    console.log(metadata);
     setMetadata(metadata);
     const { nodes: tbNodes, connections } = metadata;
 
@@ -175,7 +172,7 @@ export default function RuleChainEditorPage({
   };
 
   const ConfigForm = dynamic<ConfigFormPops>(
-    () => import(`../form/forms/${selectedNodeName}Form`),
+    () => import(`./forms/${selectedNodeName}Form`),
     { ssr: false, loading: () => <p>در حال بارگزاری...</p> }
   );
 

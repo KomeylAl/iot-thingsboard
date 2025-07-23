@@ -9,7 +9,6 @@ import toast from "react-hot-toast";
 import { ClipLoader } from "react-spinners";
 
 const Login = () => {
-
   const { setUser } = useUser();
 
   const [formData, setFormData] = useState({
@@ -53,9 +52,6 @@ const Login = () => {
           <h2 className="text-2xl md:text-[40px] font-bold">
             داشبورد خدمات هوشمند اینترنت اشیاء
           </h2>
-          {/* <p className="mt-4">
-            قدرت گرفته با <span className="text-sky-600">Thingsboard</span>
-          </p> */}
         </div>
         <div className="w-full">
           <form onSubmit={handleSubmit} className="flex flex-col w-full">
@@ -87,9 +83,11 @@ const Login = () => {
             />
             <button
               type="submit"
-              className={`flex items-center justify-center text-white text-xl hover:bg-sky-700 transition-all duration-300 bg-sky-500 py-2 px-4 rounded-md mt-8 ${isLoading ? "w-fit" : "w-48"}`}
+              className={`flex items-center justify-center text-white text-xl hover:bg-sky-700 transition-all duration-300 bg-sky-500 py-2 px-4 rounded-md mt-8 ${
+                isLoading ? "w-fit" : "w-48"
+              }`}
             >
-              {isLoading ? <ClipLoader color="#ffffff" size={30}/> : "ورود"}
+              {isLoading ? <ClipLoader color="#ffffff" size={30} /> : "ورود"}
             </button>
           </form>
         </div>

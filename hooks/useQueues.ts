@@ -9,7 +9,7 @@ export function useQueues(
     queryKey: ["queues"],
     queryFn: async () => {
       const res = await fetch(
-        `/api/queues?pageSize=${pageSize}&page=${page}&textSearch=${textSearch}`
+        `/api/tenant/queues?pageSize=${pageSize}&page=${page}&textSearch=${textSearch}`
       );
       if (!res.ok) {
         throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");

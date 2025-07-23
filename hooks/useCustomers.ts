@@ -10,7 +10,7 @@ export function useCustomers(
     queryKey: ["customers", page, pageSize],
     queryFn: async () => {
       const res = await fetch(
-        `/api/customers?pageSize=${pageSize}&page=${page}&textSearch=${textSearch}`
+        `/api/tenant/customers?pageSize=${pageSize}&page=${page}&textSearch=${textSearch}`
       );
       if (!res.ok) {
         throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
@@ -24,7 +24,7 @@ export function useCustomer(customerId: string) {
   return useQuery({
     queryKey: ["customer"],
     queryFn: async () => {
-      const res = await fetch(`/api/customers/${customerId}`);
+      const res = await fetch(`/api/tenant/customers/${customerId}`);
       if (!res.ok) {
         throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
       }
@@ -37,7 +37,7 @@ export function useLocalCustomers() {
   return useQuery({
     queryKey: ["localCustomers"],
     queryFn: async () => {
-      const res = await fetch("/api/customers/local");
+      const res = await fetch("/api/tenant/customers/local");
       if (!res.ok) {
         throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
       }
@@ -49,7 +49,7 @@ export function useLocalCustomers() {
 export function useUpdateCustomer(onCustomerUpdated: () => void) {
   return useMutation({
     mutationFn: async (customerData: any) => {
-      const res = await fetch("/api/customers", {
+      const res = await fetch("/api/tenant/customers", {
         method: "POST",
         body: JSON.stringify(customerData),
       });
@@ -74,7 +74,7 @@ export function useDeleteCustomer(
 ) {
   return useMutation({
     mutationFn: async () => {
-      const res = await fetch(`/api/customers/${customerId}`, {
+      const res = await fetch(`/api/tenant/customers/${customerId}`, {
         method: "DELETE",
       });
       if (!res.ok) {
@@ -100,7 +100,7 @@ export function useCustomerAlarms(
     queryKey: ["customerAlarms"],
     queryFn: async () => {
       const res = await fetch(
-        `/api/customers/${customerId}/alarms?pageSize=${pageSize}&page=${page}`
+        `/api/tenant/customers/${customerId}/alarms?pageSize=${pageSize}&page=${page}`
       );
       if (!res.ok) {
         const data = await res.json();
@@ -120,7 +120,7 @@ export function useCustomerAudits(
     queryKey: ["customerAudits"],
     queryFn: async () => {
       const res = await fetch(
-        `/api/customers/${customerId}/audits?pageSize=${pageSize}&page=${page}`
+        `/api/tenant/customers/${customerId}/audits?pageSize=${pageSize}&page=${page}`
       );
       if (!res.ok) {
         const data = await res.json();
@@ -141,7 +141,7 @@ export function useCustomerEvents(
     queryKey: ["customerEvents"],
     queryFn: async () => {
       const res = await fetch(
-        `/api/customers/${customerId}/events?tenantId=${tenantId}&pageSize=${pageSize}&page=${page}`
+        `/api/tenant/customers/${customerId}/events?tenantId=${tenantId}&pageSize=${pageSize}&page=${page}`
       );
       if (!res.ok) {
         const data = await res.json();
@@ -161,7 +161,7 @@ export function useCustomerUsers(
     queryKey: ["customerUsers"],
     queryFn: async () => {
       const res = await fetch(
-        `/api/customers/${customerId}/users?pageSize=${pageSize}&page=${page}`
+        `/api/tenant/customers/${customerId}/users?pageSize=${pageSize}&page=${page}`
       );
       if (!res.ok) {
         const data = await res.json();
@@ -180,7 +180,7 @@ export function useAddCustomerUser(
   return useMutation({
     mutationKey: ["addUser"],
     mutationFn: async function (userData) {
-      const res = await fetch(`/api/customers/${customerId}/users`, {
+      const res = await fetch(`/api/tenant/customers/${customerId}/users`, {
         method: "POST",
         body: JSON.stringify(userData),
       });

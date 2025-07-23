@@ -10,7 +10,7 @@ export function useAssets(
     queryKey: ["assets", page, pageSize],
     queryFn: async () => {
       const res = await fetch(
-        `/api/assets?pageSize=${pageSize}&page=${page}&textSearch=${textSearch}`
+        `/api/tenant/assets?pageSize=${pageSize}&page=${page}&textSearch=${textSearch}`
       );
       if (!res.ok) {
         throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
@@ -24,7 +24,7 @@ export function useAsset(assetId: string) {
   return useQuery({
     queryKey: ["asset"],
     queryFn: async () => {
-      const res = await fetch(`/api/assets/${assetId}`);
+      const res = await fetch(`/api/tenant/assets/${assetId}`);
       if (!res.ok) {
         throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
       }
@@ -42,7 +42,7 @@ export function useAssetAlarms(
     queryKey: ["assetAlarms"],
     queryFn: async () => {
       const res = await fetch(
-        `/api/assets/${deviceId}/alarms?pageSize=${pageSize}&page=${page}`
+        `/api/tenant/assets/${deviceId}/alarms?pageSize=${pageSize}&page=${page}`
       );
       if (!res.ok) {
         const data = await res.json();
@@ -62,7 +62,7 @@ export function useAssetAudits(
     queryKey: ["assetAudits"],
     queryFn: async () => {
       const res = await fetch(
-        `/api/assets/${deviceId}/audits?pageSize=${pageSize}&page=${page}`
+        `/api/tenant/assets/${deviceId}/audits?pageSize=${pageSize}&page=${page}`
       );
       if (!res.ok) {
         const data = await res.json();
@@ -83,7 +83,7 @@ export function useAssetEvents(
     queryKey: ["assetEvents"],
     queryFn: async () => {
       const res = await fetch(
-        `/api/assets/${deviceId}/events?tenantId=${tenantId}&pageSize=${pageSize}&page=${page}`
+        `/api/tenant/assets/${deviceId}/events?tenantId=${tenantId}&pageSize=${pageSize}&page=${page}`
       );
       if (!res.ok) {
         const data = await res.json();
@@ -97,7 +97,7 @@ export function useAssetEvents(
 export function useDeleteAsset(assetId: string, onAssetDeleted: () => void) {
   return useMutation({
     mutationFn: async () => {
-      const res = await fetch(`/api/assets/${assetId}`, {
+      const res = await fetch(`/api/tenant/assets/${assetId}`, {
         method: "DELETE",
       });
       if (!res.ok) {
@@ -117,7 +117,7 @@ export function useDeleteAsset(assetId: string, onAssetDeleted: () => void) {
 export function useUpdateAsset(onAssetUpdated: () => void) {
   return useMutation({
     mutationFn: async (assetData: any) => {
-      const res = await fetch("/api/assets/", {
+      const res = await fetch("/api/tenant/assets/", {
         method: "POST",
         body: JSON.stringify(assetData),
       });
@@ -140,7 +140,7 @@ export function useLocalAssets() {
   return useQuery({
     queryKey: ["localAssets"],
     queryFn: async () => {
-      const res = await fetch("/api/assets/local");
+      const res = await fetch("/api/tenant/assets/local");
       if (!res.ok) {
         throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
       }
@@ -152,7 +152,7 @@ export function useLocalAssets() {
 export function useAddAsset(onAssetAdded: () => void) {
   return useMutation({
     mutationFn: async (assetData: any) => {
-      const res = await fetch("/api/assets", {
+      const res = await fetch("/api/tenant/assets", {
         method: "POST",
         body: JSON.stringify(assetData),
       });

@@ -6,7 +6,7 @@ export function useKeys(deviceId: string) {
     queryKey: ["keys"],
     enabled: false,
     queryFn: async () => {
-      const res = await fetch(`/api/telemetry/keys?id=${deviceId}`);
+      const res = await fetch(`/api/tenant/telemetry/keys?id=${deviceId}`);
       if (!res.ok) toast.error("خطا! دوباره تلاش کنید.");
       return res.json();
     },
@@ -18,7 +18,7 @@ export function useGetTelemtryInfo(deviceId: string, key: string) {
     queryKey: ["telemetry"],
     enabled: false,
     queryFn: async () => {
-      const res = await fetch(`/api/telemetry?id=${deviceId}&key=${key}`, {
+      const res = await fetch(`/api/tenant/telemetry?id=${deviceId}&key=${key}`, {
         method: "GET",
       });
       if (!res.ok) {

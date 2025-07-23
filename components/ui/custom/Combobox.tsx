@@ -24,8 +24,8 @@ interface ComboboxProps {
   data: EntityType[];
   placeholder: string;
   searchPlaceholder: string;
-  value: string; // ✅ حالا از props میاد
-  onChange: (value: string) => void; // ✅ تک مقداری چون فرم ما یک فیلد تکیه
+  value: string;
+  onChange: (value: string) => void;
 }
 
 export function Combobox({

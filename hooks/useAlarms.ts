@@ -10,7 +10,7 @@ export function useAlarms(
     queryKey: ["alarms"],
     queryFn: async () => {
       const res = await fetch(
-        `/api/alarms?pageSize=${pageSize}&page=${page}&severityList=${severityList}&textSearch=${textSearch}`
+        `/api/tenant/alarms?pageSize=${pageSize}&page=${page}&severityList=${severityList}&textSearch=${textSearch}`
       );
       if (!res.ok) {
         throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");

@@ -1,4 +1,3 @@
-import Popup from "@/components/Popup";
 import { convertISOToJalali } from "@/utils/convert";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";

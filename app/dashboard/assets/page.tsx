@@ -5,7 +5,7 @@ import React, { useCallback, useState } from "react";
 import { BiPlus } from "react-icons/bi";
 import { PuffLoader } from "react-spinners";
 import { useAssets, useLocalAssets } from "@/hooks/useAssets";
-import AddAssetForm from "../_components/AddAssetForm";
+import AddAssetForm from "../_components/forms/AddAssetForm";
 import { debounce } from "lodash";
 import Header from "@/components/Header";
 import { useModal } from "@/hooks/useModal";

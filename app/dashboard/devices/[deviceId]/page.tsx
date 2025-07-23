@@ -17,7 +17,7 @@ import Popup from "@/components/Popup";
 import DeviceTelemetry from "../../_components/DeviceTelemetry";
 import DeviceAudits from "../../_components/DeviceAudits";
 import DeviceEvents from "../../_components/DeviceEvents";
-import EditDeviceForm from "../../_components/EditDeviceForm";
+import EditDeviceForm from "../../_components/forms/EditDeviceForm";
 import DeleteModal from "@/components/DeleteModal";
 import { alarmColumns } from "@/utils/columns";
 import EntityTable from "@/components/ui/EntityTable";

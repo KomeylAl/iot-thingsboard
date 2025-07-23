@@ -9,12 +9,12 @@ import {
 } from "@/hooks/useProfiles";
 import { PuffLoader } from "react-spinners";
 import Popup from "@/components/Popup";
-import AddDeviceProfileForm from "../../_components/AddDeviceProfileForm";
+import AddDeviceProfileForm from "../../_components/forms/AddDeviceProfileForm";
 import { debounce } from "lodash";
 import Header from "@/components/Header";
 import { useModal } from "@/hooks/useModal";
 import DeleteModal from "@/components/DeleteModal";
-import EditDeviceProfileForm from "../../_components/EditDeviceProfileForm";
+import EditDeviceProfileForm from "../../_components/forms/EditDeviceProfileForm";
 import { convertISOToJalali } from "@/utils/convert";
 
 const DeviceProfiles = () => {

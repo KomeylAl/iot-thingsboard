@@ -1,12 +1,10 @@
 "use client";
 
-import {
-  useStoreAssetsProfile,
-  useUpdateAssetsProfile,
-} from "@/hooks/useProfiles";
-import { useRuleChains } from "@/hooks/useRuleChains";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useStoreAssetsProfile } from "@/hooks/useProfiles";
 import { yupResolver } from "@hookform/resolvers/yup";
-import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 
@@ -27,7 +25,6 @@ const AddAssetProfileForm = ({ onProfileAdded }: AddAssetProfileProps) => {
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: yupResolver(schema),
@@ -44,30 +41,18 @@ const AddAssetProfileForm = ({ onProfileAdded }: AddAssetProfileProps) => {
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col gap-3 w-72 md:w-96"
       >
-        <input
-          {...register("name")}
-          className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
-          placeholder="نام*"
-        />
+        <Input {...register("name")} placeholder="نام*" />
         {errors.name && (
           <p className="text-red-500 text-sm">
             {errors.name.message as string}
           </p>
         )}
 
-        <textarea
-          {...register("description")}
-          className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
-          placeholder="توضیحات"
-        />
+        <Textarea {...register("description")} placeholder="توضیحات" />
 
-        <button
-          type="submit"
-          disabled={isPending || isSubmitting}
-          className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg"
-        >
+        <Button type="submit" disabled={isPending || isSubmitting}>
           {isPending || isSubmitting ? "⏳ در حال افزودن..." : "افزودن پروفایل"}
-        </button>
+        </Button>
       </form>
     </div>
   );

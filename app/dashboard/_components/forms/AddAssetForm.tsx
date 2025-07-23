@@ -6,6 +6,9 @@ import * as yup from "yup";
 import ReactSelect from "react-select";
 import { useAssetProfiles } from "@/hooks/useProfiles";
 import { useAddAsset } from "@/hooks/useAssets";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 
 const schema = yup.object({
   name: yup.string().required("نام الزامی است"),
@@ -63,9 +66,8 @@ const AddAssetForm = ({ onAssetAdded }: AddAssetProps) => {
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col gap-3 w-72 md:w-96"
       >
-        <input
+        <Input
           {...register("name")}
-          className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
           placeholder="نام*"
         />
         {errors.name && (
@@ -92,31 +94,27 @@ const AddAssetForm = ({ onAssetAdded }: AddAssetProps) => {
           />
         )}
 
-        <input
+        <Input
           {...register("type")}
-          className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
           placeholder="نوع"
         />
 
-        <input
+        <Input
           {...register("label")}
-          className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
           placeholder="برچسب"
         />
 
-        <textarea
+        <Textarea
           {...register("additionalInfo.description")}
-          className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
           placeholder="توضیحات"
         />
 
-        <button
+        <Button
           type="submit"
           disabled={isPending || isSubmitting}
-          className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg"
         >
           {isPending || isSubmitting ? "⏳ در حال افزودن..." : "افزودن دارایی"}
-        </button>
+        </Button>
       </form>
     </div>
   );

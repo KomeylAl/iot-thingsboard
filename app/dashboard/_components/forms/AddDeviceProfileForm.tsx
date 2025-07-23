@@ -2,12 +2,14 @@
 
 import { useRuleChains } from "@/hooks/useRuleChains";
 import { yupResolver } from "@hookform/resolvers/yup";
-import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import ReactSelect from "react-select";
 import { useQueues } from "@/hooks/useQueues";
 import { useStoreDevicesProfile } from "@/hooks/useProfiles";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 
 interface AddDeviceProfileFormProps {
   onProfileAdded: () => void;
@@ -24,16 +26,14 @@ const schema = yup.object({
   }),
 });
 
-const AddDeviceProfileForm = ({ onProfileAdded }: AddDeviceProfileFormProps) => {
-  const { data, isLoading, error } = useRuleChains(0, 100);
-  const {
-    data: queues,
-    isLoading: queuesLoading,
-    error: queuesError,
-  } = useQueues(100, 0);
+const AddDeviceProfileForm = ({
+  onProfileAdded,
+}: AddDeviceProfileFormProps) => {
+  const { data, isLoading } = useRuleChains(0, 100);
+  const { data: queues, isLoading: queuesLoading } = useQueues(100, 0);
 
-  const { mutate: addDeviceProfile, isPending } = useStoreDevicesProfile(
-    () => onProfileAdded()
+  const { mutate: addDeviceProfile, isPending } = useStoreDevicesProfile(() =>
+    onProfileAdded()
   );
 
   const ruleChainOptions =
@@ -51,7 +51,6 @@ const AddDeviceProfileForm = ({ onProfileAdded }: AddDeviceProfileFormProps) => 
   const {
     register,
     handleSubmit,
-    reset,
     control,
     formState: { errors, isSubmitting },
   } = useForm({
@@ -78,11 +77,7 @@ const AddDeviceProfileForm = ({ onProfileAdded }: AddDeviceProfileFormProps) => 
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col gap-3 w-72 md:w-96"
       >
-        <input
-          {...register("name")}
-          className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
-          placeholder="نام*"
-        />
+        <Input {...register("name")} placeholder="نام*" />
         {errors.name && (
           <p className="text-red-500 text-sm">{errors.name.message}</p>
         )}
@@ -108,11 +103,7 @@ const AddDeviceProfileForm = ({ onProfileAdded }: AddDeviceProfileFormProps) => 
           />
         )}
 
-        <input
-          {...register("type")}
-          className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
-          placeholder="نوع"
-        />
+        <Input {...register("type")} placeholder="نوع" />
 
         <p className="text-sm">انتخاب صف پیش فرض</p>
         {!queuesLoading && (
@@ -135,19 +126,11 @@ const AddDeviceProfileForm = ({ onProfileAdded }: AddDeviceProfileFormProps) => 
           />
         )}
 
-        <textarea
-          {...register("description")}
-          className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
-          placeholder="توضیحات"
-        />
+        <Textarea {...register("description")} placeholder="توضیحات" />
 
-        <button
-          type="submit"
-          disabled={isPending || isSubmitting}
-          className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg"
-        >
+        <Button type="submit" disabled={isPending || isSubmitting}>
           {isPending || isSubmitting ? "⏳ در حال افزودن..." : "افزودن پروفایل"}
-        </button>
+        </Button>
       </form>
     </div>
   );

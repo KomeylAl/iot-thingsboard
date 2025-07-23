@@ -23,7 +23,7 @@ export default function RootLayout({
         <DashboardProviders>
           <UserProvider>
             <SideBar />
-            <div className="lg:pr-56 pt-20 lg:pt-0">
+            <div className="lg:pr-56 lg:pt-0">
               <ThemeProvider>{children}</ThemeProvider>
             </div>
           </UserProvider>

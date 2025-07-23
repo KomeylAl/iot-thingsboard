@@ -58,8 +58,10 @@ const EditAssetForm = ({ assetData, onAssetUpdated }: EditAssetProps) => {
   const onSubmit = (data: any) => {
     const formattedData = {
       ...data,
-      assetprofileId: data.assetProfileId.value ? data.assetProfileId.value : assetData.assetProfileId.id,
-      set_id: assetData.id.id
+      assetprofileId: data.assetProfileId.value
+        ? data.assetProfileId.value
+        : assetData.assetProfileId.id,
+      set_id: assetData.id.id,
     };
     updateDevice(formattedData);
   };
@@ -93,12 +95,10 @@ const EditAssetForm = ({ assetData, onAssetUpdated }: EditAssetProps) => {
                 {...field}
                 placeholder="پروفایل دارایی"
                 options={profilesOptions}
-                value={
-                  profilesOptions.find(
-                    (option: any) => option.value === field.value?.id
-                  )
-                }
-                defaultValue={  
+                value={profilesOptions.find(
+                  (option: any) => option.value === field.value?.id
+                )}
+                defaultValue={
                   profilesOptions.find(
                     (option: any) => option.value === field.value?.id
                   ) || null

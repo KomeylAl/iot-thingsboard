@@ -6,6 +6,9 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 
 const schema = yup.object({
   title: yup.string().required("عنوان الزامی است"),
@@ -49,8 +52,7 @@ const AddCustomerForm = ({ onCustomerAdded }: AddCustomerProps) => {
       toast.success("مشتری جدید با موفقیت اضافه شد");
       onCustomerAdded();
     },
-    onError: (error) => {
-    },
+    onError: (error) => {},
   });
 
   const onSubmit = (data: any) => {
@@ -64,79 +66,38 @@ const AddCustomerForm = ({ onCustomerAdded }: AddCustomerProps) => {
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col gap-3 w-72 md:w-96"
       >
-        <input
-          {...register("title")}
-          className="bg-gray-100 dark:bg-gray-800 p-3 w-full rounded-lg border border-gray-200"
-          placeholder="عنوان*"
-        />
+        <Input {...register("title")} placeholder="عنوان*" />
         {errors.title && (
           <p className="text-red-500 text-sm">{errors.title.message}</p>
         )}
 
-        <input
-          {...register("country")}
-          className="bg-gray-100 dark:bg-gray-800 p-3 w-full rounded-lg border border-gray-200"
-          placeholder="کشور"
-        />
+        <Input {...register("country")} placeholder="کشور" />
 
         <div className="w-full flex items-center gap-3">
-          <input
-            {...register("city")}
-            className="bg-gray-100 dark:bg-gray-800 p-3 w-full rounded-lg border border-gray-200"
-            placeholder="شهر"
-          />
-          <input
-            {...register("state")}
-            className="bg-gray-100 dark:bg-gray-800 p-3 w-full rounded-lg border border-gray-200"
-            placeholder="استان"
-          />
-          <input
-            {...register("zip")}
-            className="bg-gray-100 dark:bg-gray-800 p-3 w-full rounded-lg border border-gray-200"
-            placeholder="کد پستی"
-          />
+          <Input {...register("city")} placeholder="شهر" />
+          <Input {...register("state")} placeholder="استان" />
+          <Input {...register("zip")} placeholder="کد پستی" />
         </div>
 
-        <input
-          {...register("address")}
-          className="bg-gray-100 dark:bg-gray-800 p-3 w-full rounded-lg border border-gray-200"
-          placeholder="نشانی"
-        />
+        <Input {...register("address")} placeholder="نشانی" />
 
-        <input
-          {...register("address2")}
-          className="bg-gray-100 dark:bg-gray-800 p-3 w-full rounded-lg border border-gray-200"
-          placeholder="نشانی 2"
-        />
+        <Input {...register("address2")} placeholder="نشانی 2" />
 
-        <input
-          {...register("phone")}
-          className="bg-gray-100 dark:bg-gray-800 p-3 w-full rounded-lg border border-gray-200"
-          placeholder="تلفن"
-        />
+        <Input {...register("phone")} placeholder="تلفن" />
 
-        <input
-          {...register("email")}
-          className="bg-gray-100 dark:bg-gray-800 p-3 w-full rounded-lg border border-gray-200"
-          placeholder="ایمیل"
-        />
+        <Input {...register("email")} placeholder="ایمیل" />
         {errors.email && (
           <p className="text-red-500 text-sm">{errors.email.message}</p>
         )}
 
-        <textarea
+        <Textarea
           {...register("additionalInfo.description")}
-          className="bg-gray-100 dark:bg-gray-800 p-3 w-full rounded-lg border border-gray-200"
           placeholder="توضیحات"
         />
 
-        <button
-          type="submit"
-          disabled={isPending || isSubmitting}
-          className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg"
-        >
+        <Button type="submit" disabled={isPending || isSubmitting}>
           {isPending || isSubmitting ? "⏳ در حال افزودن..." : "افزودن مشتری"}
-        </button>
+        </Button>
       </form>
     </div>
   );

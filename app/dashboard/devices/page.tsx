@@ -3,12 +3,9 @@
 import Popup from "@/components/Popup";
 import React, { useCallback, useState } from "react";
 import { BiPlus } from "react-icons/bi";
-import AddDevice from "../_components/AddDevice";
+import AddDevice from "../_components/forms/AddDevice";
 import {
-  useDevice,
   useDevices,
-  useLocalDevices,
-  useSearchDevices,
 } from "@/hooks/useDevices";
 import { PuffLoader } from "react-spinners";
 import debounce from "lodash/debounce";
@@ -67,7 +64,7 @@ const Devices = () => {
     <div className="w-full h-screen">
       <Header isShowSearch searchFn={onSearchChange} />
 
-      <div className="w-full h-fullp-6 lg:p-12 space-y-6">
+      <div className="w-full h-fullp-6 p-6 lg:p-12 space-y-6">
         <div className="flex items-center justify-between w-full">
           <h1 className="text-xl lg:text-2xl font-bold">دستگاه ها</h1>
           <button

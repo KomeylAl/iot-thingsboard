@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ConnectionModal } from "./ConnectionModal";
-import { NodeType, nodeTypeConfigs } from "./ui/form/nodeTypes";
+import { NodeType, nodeTypeConfigs } from "./ui/GraphEditor/nodeTypes";
 import { willCreateLoop } from "@/lib/utils";
 import toast from "react-hot-toast";
 

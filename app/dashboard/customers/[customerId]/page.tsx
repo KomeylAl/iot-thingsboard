@@ -17,7 +17,7 @@ import React, { useEffect, useState } from "react";
 import { BiPencil } from "react-icons/bi";
 import { MdDelete } from "react-icons/md";
 import { PuffLoader } from "react-spinners";
-import EditCustomerForm from "../../_components/EditCustomerForm";
+import EditCustomerForm from "../../_components/forms/EditCustomerForm";
 import { useUser } from "@/hooks/useUser";
 import EntityTable from "@/components/ui/EntityTable";
 import {
@@ -27,7 +27,7 @@ import {
   userColumns,
 } from "@/utils/columns";
 import AddUserForm from "@/app/sysadmin/_components/AddUserForm";
-import AddCustomerUserForm from "../../_components/AddCustomerUserForm";
+import AddCustomerUserForm from "../../_components/forms/AddCustomerUserForm";
 
 interface Params {
   customerId: string;

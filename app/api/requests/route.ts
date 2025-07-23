@@ -8,7 +8,9 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const data = await prisma.request.findMany({ include: { device: true, tenant: true } });
+    const data = await prisma.request.findMany({
+      include: { device: true, tenant: true },
+    });
     return NextResponse.json(data, { status: 200 });
   } catch (error: any) {
     return NextResponse.json(

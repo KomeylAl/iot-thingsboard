@@ -1,6 +1,3 @@
-import { AlarmStatusForm } from "./RuleNodeForm";
-
-// nodeTypeConfigs.ts
 export type FieldType = "string" | "number" | "boolean" | "json";
 
 export type NodeRelation = {

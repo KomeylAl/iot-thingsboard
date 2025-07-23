@@ -1,7 +1,8 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useAddCustomerUser } from "@/hooks/useCustomers";
-import { useAddUser } from "@/hooks/useUser";
 import { yupResolver } from "@hookform/resolvers/yup";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -45,53 +46,32 @@ const AddCustomerUserForm = ({ onUserAdded, customerId }: AddUserProps) => {
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col gap-3 w-72 md:w-96"
       >
-        <input
-          {...register("firstName")}
-          className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
-          placeholder="نام*"
-        />
+        <Input {...register("firstName")} placeholder="نام*" />
         {errors.firstName && (
           <p className="text-red-500 text-sm">{errors.firstName.message}</p>
         )}
 
-        <input
-          {...register("lastName")}
-          className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
-          placeholder="نام خانوداگی*"
-        />
+        <Input {...register("lastName")} placeholder="نام خانوداگی*" />
         {errors.lastName && (
           <p className="text-red-500 text-sm">{errors.lastName.message}</p>
         )}
 
-        <input
-          {...register("email")}
-          className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
-          placeholder="ایمیل*"
-        />
+        <Input {...register("email")} placeholder="ایمیل*" />
         {errors.email && (
           <p className="text-red-500 text-sm">{errors.email.message}</p>
         )}
 
-        <input
-          {...register("phone")}
-          className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
-          placeholder="تلفن"
-        />
+        <Input {...register("phone")} placeholder="تلفن" />
 
-        <input
+        <Input
           {...register("password")}
           type="password"
-          className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
           placeholder="رمز عبور*"
         />
 
-        <button
-          type="submit"
-          disabled={isPending || isSubmitting}
-          className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg"
-        >
+        <Button type="submit" disabled={isPending || isSubmitting}>
           {isPending || isSubmitting ? "⏳ در حال افزودن..." : "افزودن کاربر"}
-        </button>
+        </Button>
       </form>
     </div>
   );

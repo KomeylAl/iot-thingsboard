@@ -24,7 +24,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <Providers>
           <UserProvider>
             <SideBar />
-            <div className="lg:pr-56 pt-20 lg:pt-0">
+            <div className="lg:pr-56">
               <ThemeProvider>{children}</ThemeProvider>
             </div>
           </UserProvider>

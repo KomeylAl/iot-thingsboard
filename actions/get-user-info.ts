@@ -17,6 +17,7 @@ export async function getUserInfo(token: string | undefined) {
     if (!response.ok) {
       const data = await response.json();
       console.log(data);
+      return data;
     }
 
     const userInfo = await response.json();

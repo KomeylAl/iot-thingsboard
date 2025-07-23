@@ -27,22 +27,6 @@ model Tenant {
   requests     Request[]
   devices      Device[]
   assets       Asset[]
-  dashboards   Dashboard[]
-  planId       Int
-  plan         Plan     @relation(fields: [planId], references: [id], onDelete: SetNull)
-}
-
-model Dashboard {
-  id        Int        @id @default(autoincrement())
-  things_id String
-  name      String
-  tenantId  Int
-  tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  customers Customer[] @relation("CustomerDashboards") // Prisma خودش جدول واسط می‌سازه
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
 }
 
 model Customer {
@@ -52,8 +36,6 @@ model Customer {
   name      String
   tenantId  Int
   tenant    Tenant   @relation("TenantCustomers", fields: [tenantId], references: [id], onDelete: Cascade)
-
-  dashboards Dashboard[] @relation("CustomerDashboards") // Prisma خودش جدول واسط می‌سازه
 
   devices   Device[]
   createdAt DateTime @default(now())
@@ -101,25 +83,10 @@ model Profile {
   updatedAt DateTime @updatedAt
 }
 
-
-
 enum ProfileType {
   DEVICE
   ASSET
   TENANT
-}
-
-model Test {
-  id   Int   @id @default(autoincrement())
-  ip   String
-  phone String @unique
-}
-
-model TestRequests {
-  id   Int   @id @default(autoincrement())
-  phone String
-  ip    String
-  createdAt DateTime @default(now())
 }
 
 model Asset {
@@ -142,17 +109,6 @@ model Request {
   requestTime DateTime @default(now()) // زمان درخواست
   requestType String  // نوع درخواست، مثلا "GET_TELEMETRY", "COMMAND"
   status     String  // وضعیت پردازش: "PENDING", "SUCCESS", "FAILED"
-}
-
-model Plan {
-  id               Int    @id @default(autoincrement())
-  name             String @unique
-  maxRequestsPerHour Int  // حداکثر درخواست مجاز در ساعت
-  maxDevices      Int
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  tenants         Tenant[]
 }
 
 model SyncLog {
