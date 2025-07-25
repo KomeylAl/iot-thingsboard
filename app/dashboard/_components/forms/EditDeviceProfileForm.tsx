@@ -6,6 +6,9 @@ import { useQueues } from "@/hooks/useQueues";
 import { useRuleChains } from "@/hooks/useRuleChains";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useUpdateDevicesProfile } from "@/hooks/useProfiles";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 
 interface EditDeviceProfileFormProps {
   profileData: any;
@@ -86,7 +89,7 @@ const EditDeviceProfileForm = ({
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col gap-3 w-72 md:w-96"
       >
-        <input
+        <Input
           {...register("name")}
           className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
           placeholder="نام*"
@@ -121,7 +124,7 @@ const EditDeviceProfileForm = ({
           />
         )}
 
-        <input
+        <Input
           {...register("type")}
           className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
           placeholder="نوع"
@@ -153,19 +156,19 @@ const EditDeviceProfileForm = ({
           />
         )}
 
-        <textarea
+        <Textarea
           {...register("description")}
           className="bg-gray-100 p-3 w-full rounded-lg border border-gray-200"
           placeholder="توضیحات"
         />
 
-        <button
+        <Button
           type="submit"
           disabled={isPending || isSubmitting}
           className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg"
         >
-          {isPending || isSubmitting ? "⏳ در حال ویرایش..." : "ویرایش پروفایل"}
-        </button>
+          {isPending || isSubmitting ? "در حال ویرایش..." : "ویرایش پروفایل"}
+        </Button>
       </form>
     </div>
   );
