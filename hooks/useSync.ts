@@ -56,6 +56,7 @@ export function useSyncTenants() {
     queryFn: async () => {
       const res = await fetch("/api/syncronization/tenants");
       if (!res.ok) {
+        console.log(await res.json())
         throw new Error("خطا در همگام سازی اطلاعات سازمان ها");
       }
       toast.success("عملیات موفقت آمیز بود");

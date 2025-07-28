@@ -1,11 +1,7 @@
 "use client";
 
 import Popup from "@/components/Popup";
-import {
-  useDeleteTenant,
-  useLocalTenant,
-  useTenant,
-} from "@/hooks/useTenants";
+import { useDeleteTenant, useLocalTenant, useTenant } from "@/hooks/useTenants";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { BiPencil } from "react-icons/bi";
@@ -13,11 +9,12 @@ import { MdDelete } from "react-icons/md";
 import EditTenantForm from "../../_components/EditTenantForm";
 import { Tab, Tabs } from "@/components/Tabs";
 import DeleteModal from "@/components/DeleteModal";
-import EntityTable from "@/components/ui/EntityTable";
 import { useModal } from "@/hooks/useModal";
 import { useSyncTenantUsers } from "@/hooks/useUser";
 import TenantUsers from "../../_components/TenantUsers";
 import Table from "@/components/Table";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 interface Params {
   tenantId: string;
@@ -58,11 +55,8 @@ const Tenant = ({ params }: PageProps) => {
   const columns = [
     { header: "نام", accessor: "name" },
     { header: "پروفایل", accessor: "type" },
-    // { header: "مشتری", accessor: (item: any) => item.customer.name },
     { header: "وضعیت", accessor: "status" },
   ];
-
-  console.log(data);
 
   return (
     <div className="p-6 lg:p-20 w-full h-screen flex flex-col items-center justify-between gap-6">
@@ -72,20 +66,20 @@ const Tenant = ({ params }: PageProps) => {
             سازمان {data && data.name}
           </h1>
           <div className="flex items-center gap-4">
-            <button
+            <Button
               onClick={() => syncUsersRefetch()}
-              className="py-2 px-4 border border-blue-500 text-blue-500 rounded-lg flex items-center"
+              className="py-2 px-4 border border-blue-500 text-blue-500 rounded-lg flex items-center bg-white"
             >
               {syncUsersLoading ? "در حال ارسال..." : "همگام سازی کاربران"}
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={openEdit}
               className="py-2 px-4 bg-blue-500 text-white rounded-lg flex items-center"
             >
               <BiPencil size={24} />
               ویرایش اطلاعات سازمان
-            </button>
-            <button
+            </Button>
+            <Button
               disabled={isDeleting}
               onClick={openDelete}
               className={`py-2 px-4 bg-rose-500 text-white rounded-lg flex items-center ${
@@ -94,7 +88,7 @@ const Tenant = ({ params }: PageProps) => {
             >
               <MdDelete size={24} />
               {isDeleting ? "در حال حذف" : "حذف سازمان"}
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -114,15 +108,20 @@ const Tenant = ({ params }: PageProps) => {
           </Tab>
         </Tabs>
       </div>
-      <Popup isOpen={editOpen} onClose={closeEdit}>
-        <EditTenantForm
-          onTenantUpdated={() => {
-            closeEdit();
-            refetch();
-          }}
-          tenantData={serverData}
-        />
-      </Popup>
+      <Dialog open={editOpen} onOpenChange={closeEdit}>
+        <DialogContent className="overflow-y-auto max-h-[80%] max-w-[400px] rounded-md">
+          <DialogTitle className="text-lg font-bold mb-2 mt-6">
+            ویرایش اطلاعات سازمان
+          </DialogTitle>
+          <EditTenantForm
+            onTenantUpdated={() => {
+              closeEdit();
+              refetch();
+            }}
+            tenantData={serverData}
+          />
+        </DialogContent>
+      </Dialog>
       <Popup isOpen={deleteOpen} onClose={closeDelete}>
         <DeleteModal
           deleteFunc={deleteTenant}

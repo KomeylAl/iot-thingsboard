@@ -18,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fa">
-      <body className="bg-gray-100 dark:bg-gray-900 h-screen">
+      <body className="bg-gray-100 dark:bg-gray-900 h-screen db-body">
         <Toaster />
         <DashboardProviders>
           <UserProvider>

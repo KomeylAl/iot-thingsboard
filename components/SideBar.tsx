@@ -19,7 +19,7 @@ const SideBar = () => {
             className="w-16"
           />
         </div>
-        <div>
+        <div className="w-full">
           {user &&
             (user.authority === "TENANT_ADMIN" ? (
               <TenantNavBar />

@@ -8,8 +8,7 @@ import { useModal } from "@/hooks/useModal";
 import { useTenantUsers } from "@/hooks/useTenants";
 import Table from "@/components/Table";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import DeleteModal from "@/components/DeleteModal";
-import EditUserForm from "./EditUserForm";
+import { Button } from "@/components/ui/button";
 
 interface TenantUsersProps {
   tenantId: string;
@@ -63,29 +62,20 @@ const TenantUsers = ({ tenantId }: TenantUsersProps) => {
         <div className="w-full h-full flex-1 items-center">
           <div className="w-full h-full">
             <div className="w-full">
-              <button
+              <Button
                 onClick={openModal}
                 className="px-4 py-2 bg-blue-500 rounded-lg text-white mb-3"
               >
                 افزودن کاربر
-              </button>
+              </Button>
             </div>
             <Table
               columns={columns}
               data={data.data}
-              showActions
               pageSize={pageSize}
               totalItems={data.totalElements}
               currentPage={page + 1}
               onPageChange={(newPage) => setPage(newPage - 1)}
-              onDelete={(item: any) => {
-                setId(item.id);
-                openDelete();
-              }}
-              onEdit={(item: any) => {
-                setAdmin(item);
-                openEdit();
-              }}
             />
           </div>
         </div>
@@ -105,15 +95,6 @@ const TenantUsers = ({ tenantId }: TenantUsersProps) => {
           />
         </DialogContent>
       </Dialog>
-
-      <Popup isOpen={deleteOpen} onClose={closeDelete}>
-        {/* <DeleteModal
-          onCancel={closeDelete}
-          deleteFunc={() => deleteUser()}
-          isDeleting={isPending}
-        /> */}
-        <div></div>
-      </Popup>
     </div>
   );
 };

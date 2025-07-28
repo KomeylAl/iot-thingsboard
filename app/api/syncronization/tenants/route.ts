@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
 
     if (!response.ok) {
       return NextResponse.json(
-        { message: "Error getting tenants" },
+        { message: `Error: ${(await response.json()) || "Unknown error"}` },
         { status: response.status }
       );
     }
@@ -30,14 +30,13 @@ export async function GET(req: NextRequest) {
       email: t.email || `no-email-${t.id.id}@example.com`,
       phone: t.phone || `no-phone-${t.id.id}`,
       createdAt: new Date(t.createdTime),
-      planId: 1,
     }));
-    
+
     const localTenants = await prisma.tenant.findMany();
-    
+
     const newTenants = _.differenceBy(tbTenants, localTenants, "things_id");
     const deletedTenants = _.differenceBy(localTenants, tbTenants, "things_id");
-    
+
     const newTenant = newTenants.map((tenant: any) => {
       return {
         things_id: tenant.things_id,
@@ -45,7 +44,6 @@ export async function GET(req: NextRequest) {
         email: tenant.email,
         phone: tenant.phone,
         createdAt: tenant.createdAt,
-        planId: tenant.planId,
       };
     });
 

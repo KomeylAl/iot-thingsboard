@@ -43,7 +43,7 @@ export function useLocalDevices() {
   return useQuery({
     queryKey: ["localDevices"],
     queryFn: async () => {
-      const res = await fetch("/tenant/api/devices/local");
+      const res = await fetch("/api/tenant/devices/local");
       if (!res.ok) {
         throw new Error("مشکلی در دریافت اطلاعات پیش آمده!");
       }
@@ -143,7 +143,7 @@ export function useDeviceEvents(
   });
 }
 
-export function useAddDevice(onDeviceAdded: () => void) {
+export function useStoreDevice(onDeviceAdded: () => void) {
   return useMutation({
     mutationFn: async (assetData: any) => {
       const res = await fetch("/api/tenant/devices", {
@@ -151,8 +151,7 @@ export function useAddDevice(onDeviceAdded: () => void) {
         body: JSON.stringify(assetData),
       });
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error("مشکلی در افزودن دستگاه پیش آمده!");
+        throw new Error(`خطا در افزودن دستگاه! کد خطا: ${res.status}`);
       }
     },
     onError(error) {

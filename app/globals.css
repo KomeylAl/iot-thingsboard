@@ -69,6 +69,12 @@ body {
   font-family: Sans;
 }
 
+.db-body {
+  transition-property: all;
+  transition-timing-function: ease-in-out;
+  transition-duration: 500ms;
+}
+
 .login-body {
   background: url(/images/login_light_bg.jpg);
   background-repeat: no-repeat;
@@ -118,4 +124,11 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.page-transition {
+  opacity: 0;
+  background: #000;
+  transform: translateY(40px);
+  filter: blur(12px);
 }

@@ -3,7 +3,7 @@
 import Popup from "@/components/Popup";
 import React, { useCallback, useState } from "react";
 import { BiPlus } from "react-icons/bi";
-import AddDevice from "../_components/forms/AddDevice";
+import AddDevice from "../_components/forms/StoreDeviceForm";
 import {
   useDevices,
 } from "@/hooks/useDevices";

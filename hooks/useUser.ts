@@ -25,7 +25,7 @@ export function useAllUsers() {
   return useQuery({
     queryKey: ["localUsers"],
     queryFn: async () => {
-      const res = await fetch("/api/users/local");
+      const res = await fetch("/api/tenant/users/local");
       return res.json();
     },
   });
