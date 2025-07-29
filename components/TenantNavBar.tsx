@@ -14,7 +14,6 @@ import { RiAlarmFill } from "react-icons/ri";
 import { GiChaingun } from "react-icons/gi";
 import { IoSettings } from "react-icons/io5";
 import { MdPeopleAlt } from "react-icons/md";
-import TransitionLink from "./TransitionLink";
 
 const links = [
   {
@@ -117,12 +116,12 @@ const TenantNavBar = () => {
           }`}
         >
           {item.href ? (
-            <TransitionLink
+            <Link
               className="flex items-center gap-3"
               href={item.href}
             >
               {item.icon} {item.title}
-            </TransitionLink>
+            </Link>
           ) : (
             <p className="cursor-pointer flex items-center gap-3">
               {item.icon} {item.title}
@@ -146,12 +145,12 @@ const TenantNavBar = () => {
                   key={subItem.id}
                 >
                   <li className="text-sm font-semibold pr-2">
-                    <TransitionLink
+                    <Link
                       className="flex items-center gap-3"
                       href={subItem.href}
                     >
                       {subItem.icon} {subItem.title}
-                    </TransitionLink>
+                    </Link>
                   </li>
                 </div>
               ))}

@@ -2,7 +2,7 @@
 
 import { useDeviceProfiles } from "@/hooks/useProfiles";
 import { useUser } from "@/hooks/useUser";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ReactSelect from "react-select";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -11,6 +11,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { deviceSchema } from "@/validations";
 import { useStoreDevice } from "@/hooks/useDevices";
+import { EntityType } from "@/lib/types";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { Combobox } from "@/components/ui/custom/Combobox";
 
 interface StoreDeviceFormProps {
   onSuccess: () => void;
@@ -18,16 +22,28 @@ interface StoreDeviceFormProps {
 
 const StoreDeviceForm = ({ onSuccess }: StoreDeviceFormProps) => {
   const { data: userData, isLoading } = useUser();
-  const { data: profilesData } = useDeviceProfiles(0, 100);
   const { mutate: storeDevice, isPending } = useStoreDevice(() => {
     onSuccess();
   });
 
-  const profilesOptions =
-    profilesData?.data.map((profile: any) => ({
-      value: profile.id.id,
-      label: profile.name,
-    })) || [];
+  const [profiles, setProfiles] = useState<EntityType[]>([]);
+
+  useEffect(() => {
+    const fetchProfiles = async () => {
+      try {
+        const response = await axios.get(`/api/tenant/devices/profiles`);
+        const entities = response.data.data.map((item: any) => ({
+          label: item.name,
+          value: item.id.id,
+        }));
+        setProfiles(entities);
+      } catch (err: any) {
+        toast.error(err.message);
+      }
+    };
+
+    fetchProfiles();
+  }, []);
 
   const {
     register,
@@ -44,12 +60,13 @@ const StoreDeviceForm = ({ onSuccess }: StoreDeviceFormProps) => {
       tenantid: userData.data.tenantId.id,
       deviceprofileId: data.deviceProfileId.value
         ? data.deviceProfileId.value
-        : profilesOptions[0].value,
+        : profiles[0].value,
     };
     storeDevice(formattedData);
   };
 
   if (isLoading) return <p>Loading...</p>;
+  console.log(profiles);
 
   return (
     <div className="flex flex-col items-start gap-8">
@@ -63,25 +80,26 @@ const StoreDeviceForm = ({ onSuccess }: StoreDeviceFormProps) => {
           <p className="text-red-500 text-sm">{errors.name.message}</p>
         )}
 
-        {!isLoading && (
+        <div className="">
           <Controller
             name="deviceProfileId"
             control={control}
             render={({ field }) => (
-              <ReactSelect
-                {...field}
-                className=""
-                placeholder="پروفایل دستگاه"
-                options={profilesOptions}
-                getOptionLabel={(option) => option.label}
-                getOptionValue={(option) => option.value}
-                defaultValue={
-                  profilesOptions.length > 0 ? profilesOptions[0] : null
-                }
+              <Combobox
+                data={profiles}
+                placeholder="انتخاب پروفایل"
+                searchPlaceholder="جستجو..."
+                value={field.value?.id ?? ""}
+                onChange={field.onChange}
               />
             )}
           />
-        )}
+          {errors.deviceProfileId && (
+            <p className="text-sm text-red-500 mt-1">
+              {errors.deviceProfileId.message}
+            </p>
+          )}
+        </div>
 
         <Input {...register("type")} placeholder="نوع" />
 

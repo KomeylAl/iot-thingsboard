@@ -23,7 +23,7 @@ export async function GET(
     if (!response.ok) {
       return NextResponse.json(
         { message: "Error getting device" },
-        { status: response.status },
+        { status: response.status }
       );
     }
 
@@ -63,14 +63,20 @@ export async function DELETE(
 
     if (!response.ok) {
       return NextResponse.json(
-        { message: "Error deleteing device" },
+        { message: `Error: ${await response.json()}` },
         { status: response.status }
       );
     }
 
-    await prisma.device.delete({
+    const device = await prisma.device.findUnique({
       where: { things_id: id },
     });
+
+    if (device) {
+      await prisma.device.delete({
+        where: { things_id: id },
+      });
+    }
 
     return NextResponse.json(
       { message: "Device deleted successfully" },
