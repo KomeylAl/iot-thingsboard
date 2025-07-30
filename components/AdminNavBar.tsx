@@ -10,6 +10,8 @@ import { AiFillProfile } from "react-icons/ai";
 import { IoNotifications } from "react-icons/io5";
 import { IoSettings } from "react-icons/io5";
 
+import TransitionLink from "./TransitionLink";
+
 const links = [
   {
     title: "داشبورد",
@@ -52,9 +54,9 @@ const AdminNavBar = () => {
               : ""
           }`}
         >
-          <Link className="flex items-center gap-3" href={link.href}>
+          <TransitionLink className="flex items-center gap-3" href={link.href}>
             {link.icon} {link.title}
-          </Link>
+          </TransitionLink>
         </div>
       ))}
     </div>
