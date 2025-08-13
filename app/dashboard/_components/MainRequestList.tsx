@@ -71,7 +71,7 @@ const MainRequestList = ({
   }, [telemetryData, selectedKey]);
 
   return (
-    <div className="space-y-3 max-h-screen overflow-y-auto">
+    <div className="space-y-3 max-h-screen overflow-y-auto no-scrollbar">
       <p className="text-lg">لیست Telemetry دستگاه</p>
 
       <div className="flex items-center gap-3">

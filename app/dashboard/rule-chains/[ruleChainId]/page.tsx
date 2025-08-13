@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { NodeGraphEditor } from "../../_components/GraphView";
 import RuleChainEditorPage from "../../_components/ui/GraphEditor/NodeGraphEditor";
 
 interface Params {

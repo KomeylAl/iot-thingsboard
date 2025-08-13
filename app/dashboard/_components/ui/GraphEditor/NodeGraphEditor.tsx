@@ -19,10 +19,9 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import dynamic from "next/dynamic";
 import { ConfigFormPops, RuleNode } from "@/lib/types";
-import {
-  useUpdateRuleChainMetadata,
-} from "@/hooks/useRuleChains";
+import { useUpdateRuleChainMetadata } from "@/hooks/useRuleChains";
 import { toThingsboardMetadata } from "@/lib/utils";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface RuleChainEditorPageProps {
   ruleChainId: string;
@@ -36,9 +35,13 @@ export default function RuleChainEditorPage({
   const [metadata, setMetadata] = useState<any>();
   const [openTypeDialog, setOpenTypeDialog] = useState(false);
   const [openConfigDialog, setOpenConfigDialog] = useState(false);
+  const [openRelationDialog, setOpenRelationDialog] = useState(false);
   const [selectedNodeName, setSelectedNodeName] = useState<string | null>(null);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [defaultConfig, setDefaultConfig] = useState<any>(null);
+
+  const [pendingEdge, setPendingEdge] = useState<any>(null);
+  const [selectedRelation, setSelectedRelation] = useState<string>("");
 
   const fetchRuleChain = async () => {
     const res = await fetch(`/api/tenant/rule-chains/${ruleChainId}/metadata`);
@@ -214,15 +217,28 @@ export default function RuleChainEditorPage({
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        onConnect={(params) =>{
-          setEdges((eds) =>
-            addEdge(
-              { ...params, markerEnd: { type: MarkerType.ArrowClosed } },
-              eds
-            )
-          );
+        onConnect={(params) => {
+          const sourceNode = nodes.find((n) => n.id === params.source);
+          if (!sourceNode) return;
+
+          const sourceNodeType = sourceNode?.data?.nodeType as NodeType;
+          const relations = nodeTypeConfigs[sourceNodeType]?.relations || [];
+
+          if (relations.length > 0) {
+            setPendingEdge({ ...params, relations });
+            setOpenRelationDialog(true);
+          } else {
+            // اگه relation خاصی نداشت، مستقیم اضافه کن
+            setEdges((eds) =>
+              addEdge(
+                { ...params, markerEnd: { type: MarkerType.ArrowClosed } },
+                eds
+              )
+            );
+          }
         }}
         onNodeClick={(_, node) => handleEditNode(node)}
+        onEdgeClick={(_, edge) => {}}
         fitView
       >
         <MiniMap />
@@ -270,6 +286,47 @@ export default function RuleChainEditorPage({
           </DialogContent>
         </Dialog>
       )}
+
+      <Dialog open={openRelationDialog} onOpenChange={setOpenRelationDialog}>
+        <DialogContent>
+          <DialogTitle>انتخاب Relation</DialogTitle>
+          <Select value={selectedRelation} onValueChange={setSelectedRelation}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="انتخاب کنید..." />
+            </SelectTrigger>
+            <SelectContent>
+              {pendingEdge?.relations?.map((r: any) => (
+                <SelectItem key={r.name} value={r.name}>
+                  {r.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <div className="flex justify-end mt-4">
+            <Button
+              onClick={() => {
+                if (!selectedRelation) return;
+                setEdges((eds) =>
+                  addEdge(
+                    {
+                      ...pendingEdge,
+                      label: selectedRelation,
+                      markerEnd: { type: MarkerType.ArrowClosed },
+                    },
+                    eds
+                  )
+                );
+                setPendingEdge(null);
+                setSelectedRelation("");
+                setOpenRelationDialog(false);
+              }}
+            >
+              تایید
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

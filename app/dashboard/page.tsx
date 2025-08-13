@@ -207,7 +207,7 @@ export default function Home() {
           </DialogTitle>
           <div className="mt-2">
             <AddDevice
-              onDeviceAdded={() => {
+              onSuccess={() => {
                 closeModal();
                 refetchDevices();
               }}
