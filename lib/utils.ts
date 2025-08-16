@@ -11,6 +11,7 @@ export const toThingsboardMetadata = (
   rfEdges: Edge[],
   ruleChainId: string
 ) => {
+  // map node id => index (بدون start-node)
   const nodeIdToIndex = rfNodes
     .filter((node) => node.id !== "start-node")
     .reduce((acc: any, node: any, index: any) => {
@@ -18,6 +19,7 @@ export const toThingsboardMetadata = (
       return acc;
     }, {} as Record<string, number>);
 
+  // ساخت لیست nodes
   const nodes = rfNodes
     .filter((n: any) => n.id !== "start-node")
     .map((node: any) => ({
@@ -35,14 +37,30 @@ export const toThingsboardMetadata = (
       configuration: node.data.config || {},
     }));
 
+  // پیدا کردن firstNodeIndex از start-node
+  const startEdge = rfEdges.find((edge) => edge.source === "start-node");
+  const firstNodeIndex = startEdge
+    ? nodeIdToIndex[startEdge.target]
+    : null; // یا -1 اگر چیزی نبود
+
+  // ساخت connections (حذف edge های start-node)
   const connections = rfEdges
-    .filter((edge) => edge.id !== "e-start")
+    .filter((edge) => edge.source !== "start-node")
     .map((edge) => ({
       fromIndex: nodeIdToIndex[edge.source],
       toIndex: nodeIdToIndex[edge.target],
-      type: edge.label || "Success", // اگر لیبل نداره بزار پیش‌فرض "Success"
+      type: edge.label || "Success",
       additionalInfo: {},
     }));
 
-  return { nodes, connections };
+  return {
+    ruleChainId: {
+      entityType: "RULE_CHAIN",
+      id: ruleChainId,
+    },
+    firstNodeIndex,
+    nodes,
+    connections,
+  };
 };
+

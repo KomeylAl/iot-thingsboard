@@ -21,7 +21,13 @@ import dynamic from "next/dynamic";
 import { ConfigFormPops, RuleNode } from "@/lib/types";
 import { useUpdateRuleChainMetadata } from "@/hooks/useRuleChains";
 import { toThingsboardMetadata } from "@/lib/utils";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface RuleChainEditorPageProps {
   ruleChainId: string;
@@ -42,6 +48,7 @@ export default function RuleChainEditorPage({
 
   const [pendingEdge, setPendingEdge] = useState<any>(null);
   const [selectedRelation, setSelectedRelation] = useState<string>("");
+  const [editingEdge, setEditingEdge] = useState<Edge | null>(null);
 
   const fetchRuleChain = async () => {
     const res = await fetch(`/api/tenant/rule-chains/${ruleChainId}/metadata`);
@@ -147,6 +154,25 @@ export default function RuleChainEditorPage({
     setOpenConfigDialog(true);
   };
 
+  const handleEdgeClick = (event: React.MouseEvent, edge: Edge) => {
+    event.stopPropagation();
+
+    const sourceNode = nodes.find((n) => n.id === edge.source);
+    if (!sourceNode) return;
+
+    const sourceNodeType = sourceNode?.data?.nodeType as NodeType;
+    const relations = nodeTypeConfigs[sourceNodeType]?.relations || [];
+
+    if (relations.length > 0) {
+      setEditingEdge(edge); // برای حالت ویرایش
+      setSelectedRelation(String(edge.label || ""));
+      setPendingEdge({ ...edge, relations });
+      setOpenRelationDialog(true);
+    } else {
+      // اگه relation خاصی نداشت، شاید بخوای فقط نمایش بدی یا حذف کنی
+    }
+  };
+
   const handleSaveNodeConfig = (config: any) => {
     setNodes((nds) =>
       nds.map((n) =>
@@ -157,8 +183,6 @@ export default function RuleChainEditorPage({
     setSelectedNodeId(null);
     setSelectedNodeName(null);
     setDefaultConfig(null);
-
-    console.log(config);
   };
 
   const handleDeleteNode = () => {
@@ -193,14 +217,16 @@ export default function RuleChainEditorPage({
         entityType: "RULE_CHAIN",
         id: ruleChainId,
       },
-      firstNodeIndex: metadata.firstNodeIndex,
       version: metadata.version,
       nodes: payload.nodes,
+      firstNodeIndex: payload.firstNodeIndex,
       connections: payload.connections,
       ruleChainConnections: null,
     };
     saveMetadata(finalData);
   };
+
+  console.log(metadata);
 
   return (
     <div className="h-screen w-full relative">
@@ -238,10 +264,9 @@ export default function RuleChainEditorPage({
           }
         }}
         onNodeClick={(_, node) => handleEditNode(node)}
-        onEdgeClick={(_, edge) => {}}
+        onEdgeClick={handleEdgeClick}
         fitView
       >
-        <MiniMap />
         <Controls />
         <Background />
       </ReactFlow>
@@ -274,7 +299,7 @@ export default function RuleChainEditorPage({
       {/* دیالوگ کانفیگ نود */}
       {ConfigForm && (
         <Dialog open={openConfigDialog} onOpenChange={setOpenConfigDialog}>
-          <DialogContent>
+          <DialogContent className="max-h-[90%] overflow-y-auto overflow-x-hidden">
             <DialogTitle className="mt-6">تنظیمات نود</DialogTitle>
             <div className="mb-4">
               <ConfigForm
@@ -307,23 +332,51 @@ export default function RuleChainEditorPage({
             <Button
               onClick={() => {
                 if (!selectedRelation) return;
-                setEdges((eds) =>
-                  addEdge(
-                    {
-                      ...pendingEdge,
-                      label: selectedRelation,
-                      markerEnd: { type: MarkerType.ArrowClosed },
-                    },
-                    eds
-                  )
-                );
-                setPendingEdge(null);
+
+                if (editingEdge) {
+                  // حالت ویرایش edge موجود
+                  setEdges((eds) =>
+                    eds.map((e) =>
+                      e.id === editingEdge.id
+                        ? { ...e, label: selectedRelation }
+                        : e
+                    )
+                  );
+                  setEditingEdge(null);
+                } else if (pendingEdge) {
+                  // حالت ایجاد edge جدید
+                  setEdges((eds) =>
+                    addEdge(
+                      {
+                        ...pendingEdge,
+                        label: selectedRelation,
+                        markerEnd: { type: MarkerType.ArrowClosed },
+                      },
+                      eds
+                    )
+                  );
+                  setPendingEdge(null);
+                }
+
                 setSelectedRelation("");
                 setOpenRelationDialog(false);
               }}
             >
               تایید
             </Button>
+            {editingEdge && (
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  setEdges((eds) => eds.filter((e) => e.id !== editingEdge.id));
+                  setEditingEdge(null);
+                  setOpenRelationDialog(false);
+                }}
+                className="mt-2"
+              >
+                حذف اتصال
+              </Button>
+            )}
           </div>
         </DialogContent>
       </Dialog>

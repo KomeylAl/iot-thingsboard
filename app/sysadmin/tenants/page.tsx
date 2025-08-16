@@ -12,6 +12,7 @@ import { debounce } from "lodash";
 import Link from "next/link";
 import { useModal } from "@/hooks/useModal";
 import { convertISOToJalali } from "@/utils/convert";
+import TransitionLink from "@/components/TransitionLink";
 
 const columns = [
   {

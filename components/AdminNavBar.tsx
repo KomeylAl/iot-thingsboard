@@ -54,9 +54,9 @@ const AdminNavBar = () => {
               : ""
           }`}
         >
-          <TransitionLink className="flex items-center gap-3" href={link.href}>
+          <Link className="flex items-center gap-3" href={link.href}>
             {link.icon} {link.title}
-          </TransitionLink>
+          </Link>
         </div>
       ))}
     </div>
